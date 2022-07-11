@@ -59,7 +59,7 @@
 		$message = $_POST['message'];
 		$category = $_POST['category'];
 		$from = $email;
-		$to = 'info@thisisrosalyn.com';  // please change this email id
+		$to = 'rosalynhjs@gmail.com';  // please change this email id
 		$subject = 'New Contact Form: this is Rosalyn';
 
 		$body = "From: $name\nE-Mail: $email\nMessage:\n $message";
