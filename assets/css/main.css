@@ -1240,8 +1240,6 @@ input[type="radio"] + label:before {
     font-weight: 900; }
   .icon.brands:before {
     font-family: 'Font Awesome 5 Brands'; }
-  .icon.ai:before {
-    font-family: 'Font Awesome 5 Brands'; }
 
 /* Image */
 .image {
@@ -1383,12 +1381,12 @@ ul.icons {
   ul.icons li {
     display: inline-block;
     padding: 0 1em 0 0; }
-  ul.icons li:last-child {
-    padding-right: 0; }
-  ul.icons li .icon {
-    color: inherit; }
-  ul.icons li .icon:before {
-    font-size: 1.25em; }
+    ul.icons li:last-child {
+      padding-right: 0; }
+    ul.icons li .icon {
+      color: inherit; }
+      ul.icons li .icon:before {
+        font-size: 1.25em; }
 
 /* Contact */
 ul.contact {
@@ -1400,36 +1398,36 @@ ul.contact {
     margin: 1.5em 0 0 0;
     padding: 1.5em 0 0 3em;
     position: relative; }
-  ul.contact li:before {
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    display: inline-block;
-    font-style: normal;
-    font-variant: normal;
-    text-rendering: auto;
-    line-height: 1;
-    text-transform: none !important;
-    font-family: 'Font Awesome 5 Free';
-    font-weight: 400; }
-  ul.contact li:before {
-    color: #000000;
-    display: inline-block;
-    font-size: 1.5em;
-    height: 1.125em;
-    left: 0;
-    line-height: 1.125em;
-    position: absolute;
-    text-align: center;
-    top: 1em;
-    width: 1.5em; }
-  ul.contact li:first-child {
-    border-top: 0;
-    margin-top: 0;
-    padding-top: 0; }
-    ul.contact li:first-child:before {
-      top: 0; }
-  ul.contact li a {
-    color: inherit; }
+    ul.contact li:before {
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-font-smoothing: antialiased;
+      display: inline-block;
+      font-style: normal;
+      font-variant: normal;
+      text-rendering: auto;
+      line-height: 1;
+      text-transform: none !important;
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 400; }
+    ul.contact li:before {
+      color: #000000;
+      display: inline-block;
+      font-size: 1.5em;
+      height: 1.125em;
+      left: 0;
+      line-height: 1.125em;
+      position: absolute;
+      text-align: center;
+      top: 1em;
+      width: 1.5em; }
+    ul.contact li:first-child {
+      border-top: 0;
+      margin-top: 0;
+      padding-top: 0; }
+      ul.contact li:first-child:before {
+        top: 0; }
+    ul.contact li a {
+      color: inherit; }
 
 /* Pagination */
 ul.pagination {
