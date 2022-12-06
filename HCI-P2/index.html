@@ -48,6 +48,7 @@
                      The group analyzeed the data of racial bias existed in the legal systems, law enforcement engages with people of color in California, and recidivism scores. 
                      By drawing the conclusions from the data, it is clear racial disparities within the legal system continue to be a pressing issue for the nation.
                   </p>
+                  
                </div>
             </div>
          </div>
@@ -67,18 +68,54 @@
             </div>
             <div class="row">
                <div class="col-md-12">
-                  <h3>Percent Composition of Arrests by Race</h3>
-                  <p>Discussion about recidivism</p>
+                  <h4>Percent Composition of Arrests by Race (2011-2021)</h4>
+                  <p>African Americans are disproportionately arrested</p>
+                  <p class="lead">
+                     Looking at the percentage composition of arrests by race, it is clear that Black individuals 
+                     are disproportionately arrested considering that they constitute only 13.6% of the population
+                     while making up 27% of all arrests in the last 10 years.
+                  </p>
+                  <br>
+                  <p>The role of the war on drugs</p>
+                  <p class="lead">
+                     A major contributor towards this disproportionality is the role of law enforcement in drug-related
+                     arrests and incarceration. As can be seen by filtering the percent composition of arrests to only
+                     show marijuana related crimes, it can be seen that the inbalance increases. The war on drugs has
+                     contributed to the disproportionate police enforcement on the African American community. This has
+                     then led to inbalances and disadvantages for the African American communities in terms of family well-being,
+                     stability, and employment. You can read more about this in the following 
+                     <a href="https://www.ojp.gov/ncjrs/virtual-library/abstracts/disproportionate-incarceration-african-americans-drug-offenses-us">study</a>.
+                  </p>
                   <div id="arrestRate"></div>
                   <button class="btn btn-outline-primary" onclick="renderArrestGraph('total')">For All Crimes</button>
                   <button class="btn btn-outline-primary" onclick="renderArrestGraph('marijuana-possession')">For Marijuana Possession</button>
                   <button class="btn btn-outline-primary" onclick="renderArrestGraph('marijuana-sale')">For Marijuana Sale and Manufacturing</button>
                </div>
             </div>
+            <br>
             <div class="row">
                <div class="col-md-12">
-                  <h3>Recidivism Rates by Race</h3>
-                  <p>Discussion about percent composition</p>
+                  <h4>Recidivism Rates by Race (Prisoners Released 2008)</h4>
+                  <p>Background on study</p>
+                  <p class="lead">
+                     This data comes from a report from the Department of Justice which follows up on prisoners released
+                     from prison in 2008 from 24 different states. The study was interested in recidivism specifically and
+                     did not have a specific lens on race and ethnicity. They followed these ex-convicts for ten years following
+                     their release and tracked their recidivism rates by year. You can read more
+                     <a href="https://bjs.ojp.gov/BJS_PUB/rpr24s0810yfup0818/Web%20content/508%20compliant%20PDFs">here</a>.
+                  </p>
+                  <br>
+                  <p>Analysis of data by race and ethnicity</p>
+                  <p class="lead">
+                     The findings of interest that we have drawn from the study are those which pertain to race specifically,
+                     so below you can see the recidivism rates in aggregate up to the year selected from the slider. In addition,
+                     we drew specifically the data for all, white, and black prisoners in the study. The key finding that you can 
+                     see here is that African Americans are year on year above the recidivism rates of all races in aggregate and the 
+                     gap only widens when comparing Blacks to Whites specifically. This disproportionality which exists in terms of 
+                     recidivism only further magnifies the disadvantages and imbalances which were mentioned above in terms of arrest 
+                     and incarceration.
+                  </p>
+                  <br>
                   <div id="recidivism"></div>
                   <div class="d-flex justify-content-center my-4">
                      <form class="range-field">
@@ -88,16 +125,55 @@
                   </div>
                </div>
             </div>
+            
             <div class="row">
+               <h3>Disparities in Stops and Reasons for Stops</h3>
+
+               <p class="lead">
+                  Background: This is a graph about disparities between the experiences and outcomes Black and white Californians have during a stop. 
+                  
+                  To start, racial disparities are examed in the frequency of being stopped by law enforcement, and disparities in the reported reason for the stop.               
+               </p>
+               <br>
+               <p class="lead">
+                  Analysis: 
+
+                  When we compare shares each group represents in stops to shares by population, we find considerable disproportionality statewide. 
+                  Black residents accounted for 16 percent of stops made by all participating law enforcement agencies during 2019 but constituted only 7 percent of the state’s population.
+                  Residents identified by law enforcement as Middle Eastern or South Asian were also overrepresented in stops (5%) compared to their share of the state’s population (2%).
+                  White residents were represented fairly proportionally in stops (33%), compared with their population share (34%), as were Latino residents (39% and 41%, respectively). 
+                  Asian individuals were underrepresented in stops (6%) compared with their share of the population (12%), as were multiracial residents (1% and 3%, respectively).
+
+                  Individuals identified as Pacific Islanders were overrepresented (0.5% of stops, compared with 0.3% of the population), and those identified as Native American were underrepresented (0.2% and 0.3%, respectively). The percentage-point differences are small, but as a proportion of the population share, these differences are considerable. 
+                  Again, the racial/ethnic identification comes solely from the officer making the stop.
+               </p>
                <div id="pie-race" class="col-md-6">
-                  <h3>Share of reasons for stop</h3>
-                  <iframe width="100%" height="600" frameborder="0" src="https://observablehq.com/embed/9afc96de5b9bdf55?cells=chart"></iframe>
+                  <iframe width="100%" height="626" frameborder="0"
+                  src="https://observablehq.com/embed/5ffa6a55d8a26d1a?cells=viewof+order%2Cchart"></iframe>
                </div>
       
                <div id="pie-race" class="col-md-6">
-                  <h3>Share of stops and population</h3>
-                  <iframe width="100%" height="320" frameborder="0"src="https://observablehq.com/embed/cf0a98b40fdc53cd?cells=chart"></iframe>
+                  <iframe width="100%" height="626" frameborder="0"src="https://observablehq.com/embed/8d522901482d8d3b?cells=viewof+order%2Cchart"></iframe>
                </div>
+              
+            </div>
+            <div class="row">
+               <h3>A greater share of Black people than white people are stopped for reasonable suspicion</h3>
+
+               <p class="lead">
+                  Background: This is a graph about differences between reasons for stopping people of different races. 
+               </p>
+               <br>
+               <br>
+               <p class="lead">
+                  Analysis: 
+
+                  While more than 90 percent of stops of individuals perceived to be Asian or of Middle East/South Asian origin are stopped for traffic violations, about 75 percent of Black Californians stopped 
+                  are for traffic violations. Conversely, officers report reasonable suspicion in 21 percent of stops of Black people, while 11.7 percent of white people and 5.6 percent of Asian people are stopped for reasonable suspicion.
+                  These racial inequities persist despite adjusting for context, providing empirical support for concerns historically voiced by communities of color. 
+               </p>
+
+               <iframe width="100%" height="626" frameborder="0"src="https://observablehq.com/embed/b908cbdcd060ab35?cells=viewof+layout%2Cchart"></iframe>
             </div>
          </div>
       </div>
@@ -175,7 +251,16 @@
             <div class="row">
                <div class="col-md-12">
                   <div class="testimonial_box">
-                     <h3>WIth an aim to remove human and systematic bias in our legal systems, we have adopted ML algorithms in the legal decisions. However, our analysis shows that ML has increased/incurred greater race disparity in legal decisions</h3>
+                     <h3>
+                        As we discussed and visualized before, it is very clear that African Americans are
+                        disproportionately affected by the current legal system due to human and systematic bias.
+                        They are more likely to be arrested, incarcerated, and re-incarcerated. From the data of 4 million stops by California’s 15 largest law enforcement agencies in 2019, 
+                        we could also see notable differences between African Americans and white Californians. 
+                        This is a problematic cycle which has detrimental effects to the community as a whole. 
+                     </h3>
+                  </div>
+                  <div class="testimonial_box">
+                     <h3>With an aim to remove human and systematic bias in our legal systems, we have adopted ML algorithms in the legal decisions. However, our analysis shows that ML has increased/incurred greater race disparity in legal decisions</h3>
                   </div>
                   <div class="testimonial_box">
                      <h3>If computers could accurately predict which defendants were likely to commit new crimes, the criminal justice system could be fairer and more selective about who is incarcerated and for how long. The trick, of course, is to make sure the computer gets it right. If it’s wrong in one direction, a dangerous criminal could go free. If it’s wrong in another direction, it could result in someone unfairly receiving a harsher sentence or waiting longer for parole than is appropriate.</h3>
@@ -199,7 +284,9 @@
                   <ul>
                      <li><a href="https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing">https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing</a></li>
                      <li><a href="https://www.aclu.org/news/privacy-technology/how-is-face-recognition-surveillance-technology-racist">https://www.aclu.org/news/privacy-technology/how-is-face-recognition-surveillance-technology-racist</a></li>
-                     <li></li>
+                     <li><a href="https://crime-data-explorer.fr.cloud.gov/pages/explorer/crime/arrest">https://crime-data-explorer.fr.cloud.gov/pages/explorer/crime/arrest</a></li>
+                     <li><a href="https://www.census.gov/quickfacts/fact/table/US/PST045221">https://www.census.gov/quickfacts/fact/table/US/PST045221</a></li>
+                     <li><a href="https://www.ppic.org/publication/racial-disparities-in-law-enforcement-stops/">https://www.ppic.org/publication/racial-disparities-in-law-enforcement-stops/</a></li>
                   </ul>
                </div>
             </div>
