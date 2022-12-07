@@ -87,6 +87,7 @@
                      stability, and employment. You can read more about this in the following 
                      <a href="https://www.ojp.gov/ncjrs/virtual-library/abstracts/disproportionate-incarceration-african-americans-drug-offenses-us">study</a>.
                   </p>
+                  <h5>Title of the plot</h5>
                   <div id="arrestRate"></div>
                   <button class="btn btn-outline-primary" onclick="renderArrestGraph('total')">For All Crimes</button>
                   <button class="btn btn-outline-primary" onclick="renderArrestGraph('marijuana-possession')">For Marijuana Possession</button>
@@ -111,6 +112,7 @@
                      The interactive plot below uses the data with an aim to show race and ethnicity differences in the recidivism rates. The slider will allow you to aggregate up the recidivism rates to the year selected. In addition, we drew specifically the data for all, white, and black prisoners in the study. The key finding that you can see here is that African Americans are year on year above the recidivism rates of all races in aggregate and the gap only widens when comparing Blacks to Whites specifically. This disproportionality which exists in terms of recidivism only further magnifies the disadvantages and imbalances which were mentioned above in terms of arrest and incarceration.
                   </p>
                   <br>
+                  <h5>Title of the plot</h5>
                   <div id="recidivism"></div>
                   <div class="d-flex justify-content-center my-4">
                      <form class="range-field">
@@ -135,10 +137,12 @@
 
             <div class="row">
                <div id="pie-race" class="col-md-6">
+                  <h5>Title of the plot</h5>
                   <iframe width="100%" height="626" frameborder="0"src="https://observablehq.com/embed/5ffa6a55d8a26d1a?cells=viewof+order%2Cchart"></iframe>
                </div>
       
                <div id="pie-race" class="col-md-6">
+                  <h5>Title of the plot</h5>
                   <iframe width="100%" height="626" frameborder="0"src="https://observablehq.com/embed/8d522901482d8d3b?cells=viewof+order%2Cchart"></iframe>
                </div>
             </div>
@@ -151,8 +155,8 @@
                      Black residents accounted for 16 percent of stops made by all participating law enforcement agencies during 2019 but constituted only 7 percent of the state’s population.
                      Residents identified by law enforcement as Middle Eastern or South Asian were also overrepresented in stops (5%) compared to their share of the state’s population (2%).
                      White residents were represented fairly proportionally in stops (33%), compared with their population share (34%), as were Latino residents (39% and 41%, respectively). 
-                     Asian individuals were underrepresented in stops (6%) compared with their share of the population (12%), as were multiracial residents (1% and 3%, respectively).<br><br>
-
+                     Asian individuals were underrepresented in stops (6%) compared with their share of the population (12%), as were multiracial residents (1% and 3%, respectively).
+                     <br><br>
                      Individuals identified as Pacific Islanders were overrepresented (0.5% of stops, compared with 0.3% of the population), and those identified as Native American were underrepresented (0.2% and 0.3%, respectively). The percentage-point differences are small, but as a proportion of the population share, these differences are considerable. 
                      Again, the racial/ethnic identification comes solely from the officer making the stop.
                   </p>
@@ -167,6 +171,7 @@
                      The plot below displays different reasons for being stopped across different race groups. 
                   </p>
 
+                  <h5>Title of the plot</h5>
                   <iframe width="100%" height="626" frameborder="0"src="https://observablehq.com/embed/b908cbdcd060ab35?cells=viewof+layout%2Cchart"></iframe>
 
                   <p>Analysis</p>
@@ -226,7 +231,6 @@
                      In the court, judges are often presented with two sets of scores from the ML program -- Risk category (high, medium and low risk), and a corresponding decile score.
                      The following three visuals will explore the trend of predictions for each race/ethnicity group for each set of scores.
                   </p>
-                  <iframe width="100%" height="685" frameborder="0" src="https://observablehq.com/embed/7dbed08ef155e12c?cells=viewof+layout%2Cchart"></iframe>
                </div>             
             </div>
 
@@ -243,23 +247,37 @@
 
             <div class="row">
                <div class="col-md-12">
+                  <h5>Distribution of Deciles Scores among Black and White groups</h5>
+                  <iframe width="100%" height="685" frameborder="0" src="https://observablehq.com/embed/7dbed08ef155e12c?cells=viewof+layout%2Cchart"></iframe>
+               </div>             
+            </div>
+
+            
+
+            <div class="row">
+               <div class="col-md-12">
                   <p>Analysis</p>
                   <p class="lead">
-                     &emsp;The score proved remarkably unreliable in forecasting violent crime: Only 20 percent of the people predicted to commit violent crimes actually went on to do so.
+                     
                      <br><br>
-                     &emsp;When a full range of crimes were taken into account — including misdemeanors such as driving with an expired license — the algorithm was somewhat more accurate than a coin flip. Of those deemed likely to re-offend, 61 percent were arrested for any subsequent crimes within two years.
+                     From the bar plot, we can clearly see a distinct pattern for each group. White individuals' decile scores are skewed toward lower deciles scores. Black individuals' scores are (somewhat) distributed over all scores, exaggerating the gap betwen the number of higher deciles scores between White and Black people.
                   </p>
                </div>             
             </div>
 
             <div class="row">
                <div class="col-md-12">
-                  <h3>Recidivism Scores</h3>
-                  <p>nternet. It uses a dictionary of over 200 Latin words, combined with .</p>
+                  <h3>Prediction Accuracy of ML on Recidivism Scores</h3>
+                  <p class="lead">
+                     In order to argue that ML predictions are being biased, we first need to see how well the ML program predicts the recidivism within two years.
+                     
+
+                  </p>
                   <iframe width="100%" height="779.734375" frameborder="0" src="https://observablehq.com/embed/87a9da5cb68597a9?cells=viewof+N%2Cchart"></iframe>
                   <p>Analysis</p>
                   <p class="lead">
-                     Analysis XXX
+                     The score proved remarkably unreliable in forecasting violent crime: Only 20 percent of the people predicted to commit violent crimes actually went on to do so.
+                     When a full range of crimes were taken into account — including misdemeanors such as driving with an expired license — the algorithm was somewhat more accurate than a coin flip. Of those deemed likely to re-offend, 61 percent were arrested for any subsequent crimes within two years.
                   </p>
                </div> 
             </div>
