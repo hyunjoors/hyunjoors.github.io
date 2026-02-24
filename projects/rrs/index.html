@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Geometry of the Euclidean Algorithm</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: #0a0a0f;
+      color: #e8e6e1;
+      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+      padding: 24px;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    h1 {
+      font-size: 26px; font-weight: 700; letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #e9c46a, #e76f51);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .subtitle { font-size: 13px; color: #888; margin-top: 6px; line-height: 1.5; }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; align-items: center; }
+    .presets { display: flex; flex-wrap: wrap; gap: 6px; }
+    .preset-btn {
+      padding: 5px 10px; font-size: 11px;
+      background: #1a1a24; color: #aaa;
+      border: 1px solid #333; border-radius: 4px;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .preset-btn.active { background: #e9c46a; color: #0a0a0f; }
+    .preset-btn:hover:not(.active) { border-color: #e9c46a; color: #e9c46a; }
+    .input-row { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+    .input-row span.label { font-size: 12px; color: #888; }
+    .input-row span.sep { color: #555; }
+    .num-input {
+      width: 60px; padding: 4px 8px; font-size: 13px;
+      background: #1a1a24; color: #e8e6e1;
+      border: 1px solid #333; border-radius: 4px; font-family: inherit;
+    }
+    .go-btn {
+      padding: 4px 14px; font-size: 12px;
+      background: #2a9d8f; color: #0a0a0f;
+      border: none; border-radius: 4px;
+      cursor: pointer; font-family: inherit; font-weight: 600;
+    }
+    .go-btn:hover { background: #3ab8a8; }
+    .toggle-area { margin-left: auto; display: flex; gap: 12px; align-items: center; }
+    .toggle-area label {
+      font-size: 11px; color: #888; cursor: pointer;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .palette-btn {
+      padding: 3px 10px; font-size: 11px;
+      background: #1a1a24; color: #aaa;
+      border: 1px solid #333; border-radius: 4px;
+      cursor: pointer; font-family: inherit;
+    }
+    .viz-container {
+      background: #12121a; border-radius: 8px;
+      border: 1px solid #222; padding: 16px;
+      display: flex; justify-content: center; overflow: auto;
+    }
+    .info-grid { margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .info-panel {
+      background: #12121a; border-radius: 8px;
+      border: 1px solid #222; padding: 16px;
+    }
+    .info-panel h3 { font-size: 13px; color: #e9c46a; margin-bottom: 12px; font-weight: 600; }
+    .step-row {
+      padding: 2px 8px; border-radius: 3px; cursor: pointer;
+      transition: background 0.15s; display: flex; align-items: center; gap: 8px;
+      font-size: 12px; line-height: 2;
+    }
+    .step-row:hover, .step-row.highlighted { background: rgba(233,196,106,0.12); }
+    .color-dot {
+      width: 10px; height: 10px; border-radius: 2px;
+      display: inline-block; flex-shrink: 0;
+    }
+    .step-label { color: #aaa; }
+    .step-q { color: #e9c46a; font-weight: 700; }
+    .step-r { color: #666; }
+    .step-note { color: #555; margin-left: 6px; }
+    .summary-line { font-size: 12px; line-height: 2.2; }
+    .summary-label { color: #888; }
+    .summary-val-green { color: #2a9d8f; font-weight: 700; }
+    .summary-val-orange { color: #e76f51; font-weight: 700; }
+    .phi-note {
+      margin-top: 10px; padding: 6px 10px;
+      background: rgba(233,196,106,0.08); border-radius: 4px;
+      font-size: 11px; color: #e9c46a;
+      border: 1px solid rgba(233,196,106,0.15);
+    }
+    .hint { margin-top: 8px; color: #666; font-size: 11px; line-height: 1.6; }
+    .back-link {
+      display: inline-block; margin-bottom: 16px;
+      font-size: 12px; color: #2a9d8f; text-decoration: none;
+    }
+    .back-link:hover { text-decoration: underline; }
+    @media (max-width: 640px) {
+      .info-grid { grid-template-columns: 1fr; }
+      .toggle-area { margin-left: 0; margin-top: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="app"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useState, useMemo, useCallback } = React;
+
+    const PALETTES = [
+      ["#264653","#2a9d8f","#e9c46a","#f4a261","#e76f51","#606c38","#dda15e","#bc6c25"],
+      ["#003049","#d62828","#f77f00","#fcbf49","#eae2b7","#588157","#a3b18a","#dad7cd"],
+      ["#10002b","#240046","#3c096c","#5a189a","#7b2cbf","#9d4edd","#c77dff","#e0aaff"],
+    ];
+
+    function euclideanSteps(a, b) {
+      const steps = [];
+      while (b !== 0) {
+        const q = Math.floor(a / b);
+        const r = a % b;
+        steps.push({ a, b, q, r });
+        a = b;
+        b = r;
+      }
+      return steps;
+    }
+
+    function buildSquares(a, b, steps) {
+      const squares = [];
+      let x = 0, y = 0;
+      let horizontal = true;
+      let w = a, h = b;
+      let colorIdx = 0;
+      for (const step of steps) {
+        for (let i = 0; i < step.q; i++) {
+          const side = horizontal ? h : w;
+          squares.push({ x, y, size: side, colorIdx: colorIdx % 8, quotientGroup: colorIdx });
+          if (horizontal) x += side; else y += side;
+        }
+        if (horizontal) w = w - step.q * h; else h = h - step.q * w;
+        horizontal = !horizontal;
+        colorIdx++;
+      }
+      return squares;
+    }
+
+    const PRESETS = [
+      { a: 55, b: 34, label: "55 × 34 (Fibonacci)" },
+      { a: 89, b: 55, label: "89 × 55 (Fibonacci)" },
+      { a: 144, b: 89, label: "144 × 89 (Fibonacci)" },
+      { a: 97, b: 60, label: "97 × 60" },
+      { a: 76, b: 47, label: "76 × 47" },
+      { a: 81, b: 50, label: "81 × 50" },
+      { a: 17, b: 12, label: "17 × 12" },
+      { a: 30, b: 11, label: "30 × 11" },
+    ];
+
+    function App() {
+      const [a, setA] = useState(55);
+      const [b, setB] = useState(34);
+      const [hoveredStep, setHoveredStep] = useState(null);
+      const [paletteIdx, setPaletteIdx] = useState(0);
+      const [showLabels, setShowLabels] = useState(true);
+      const [showSpiral, setShowSpiral] = useState(true);
+      const [inputA, setInputA] = useState("55");
+      const [inputB, setInputB] = useState("34");
+
+      const palette = PALETTES[paletteIdx];
+      const steps = useMemo(() => euclideanSteps(a, b), [a, b]);
+      const squares = useMemo(() => buildSquares(a, b, steps), [a, b, steps]);
+      const totalSquares = useMemo(() => steps.reduce((s, st) => s + st.q, 0), [steps]);
+
+      const applyInputs = useCallback(() => {
+        const na = parseInt(inputA), nb = parseInt(inputB);
+        if (na > 0 && nb > 0 && na > nb && na <= 500) { setA(na); setB(nb); }
+      }, [inputA, inputB]);
+
+      const padding = 40;
+      const maxW = 580, maxH = 400;
+      const scale = Math.min(maxW / a, maxH / b);
+      const svgW = a * scale + padding * 2;
+      const svgH = b * scale + padding * 2;
+
+      const spiralArcs = useMemo(() => {
+        if (!showSpiral) return [];
+        const arcs = [];
+        let x = 0, y = 0, horizontal = true, w = a, h = b;
+        for (const step of steps) {
+          for (let i = 0; i < step.q; i++) {
+            const side = horizontal ? h : w;
+            const sx = x * scale + padding, sy = y * scale + padding, ss = side * scale;
+            const orient = arcs.length % 4;
+            let arcStart, arcEnd;
+            if (orient === 0) { arcStart = {x:sx+ss,y:sy}; arcEnd = {x:sx,y:sy+ss}; }
+            else if (orient === 1) { arcStart = {x:sx+ss,y:sy+ss}; arcEnd = {x:sx,y:sy}; }
+            else if (orient === 2) { arcStart = {x:sx,y:sy+ss}; arcEnd = {x:sx+ss,y:sy}; }
+            else { arcStart = {x:sx,y:sy}; arcEnd = {x:sx+ss,y:sy+ss}; }
+            arcs.push({ d: `M ${arcStart.x} ${arcStart.y} A ${ss} ${ss} 0 0 1 ${arcEnd.x} ${arcEnd.y}`, size: ss });
+            if (horizontal) x += side; else y += side;
+          }
+          if (horizontal) w = w - step.q * h; else h = h - step.q * w;
+          horizontal = !horizontal;
+        }
+        return arcs;
+      }, [a, b, steps, scale, showSpiral]);
+
+      const phi = (1 + Math.sqrt(5)) / 2;
+
+      return (
+        <div>
+          <a className="back-link" href="../../">← Back to Projects</a>
+          <div style={{marginBottom:28}}>
+            <h1>Geometry of the Euclidean Algorithm</h1>
+            <p className="subtitle">
+              Pack squares into an {a}×{b} rectangle — each step of Repeated Reciprocal Subtraction removes the largest possible squares
+            </p>
+          </div>
+
+          <div className="presets">
+            {PRESETS.map(p => (
+              <button key={p.label}
+                className={`preset-btn ${a===p.a && b===p.b ? 'active' : ''}`}
+                onClick={() => { setA(p.a); setB(p.b); setInputA(String(p.a)); setInputB(String(p.b)); }}>
+                {p.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="input-row" style={{marginTop:12}}>
+            <span className="label">Custom:</span>
+            <input className="num-input" value={inputA}
+              onChange={e => setInputA(e.target.value)}
+              onKeyDown={e => e.key==='Enter' && applyInputs()} placeholder="a" />
+            <span className="sep">×</span>
+            <input className="num-input" value={inputB}
+              onChange={e => setInputB(e.target.value)}
+              onKeyDown={e => e.key==='Enter' && applyInputs()} placeholder="b" />
+            <button className="go-btn" onClick={applyInputs}>Go</button>
+
+            <div className="toggle-area">
+              <label><input type="checkbox" checked={showLabels} onChange={() => setShowLabels(!showLabels)} /> Labels</label>
+              <label><input type="checkbox" checked={showSpiral} onChange={() => setShowSpiral(!showSpiral)} /> Spiral</label>
+              <button className="palette-btn" onClick={() => setPaletteIdx((paletteIdx+1)%PALETTES.length)}>Palette</button>
+            </div>
+          </div>
+
+          <div className="viz-container">
+            <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`}>
+              <rect x={padding-1} y={padding-1} width={a*scale+2} height={b*scale+2}
+                fill="none" stroke="#444" strokeWidth={1.5} />
+              {squares.map((sq, i) => {
+                const sx = sq.x*scale+padding, sy = sq.y*scale+padding, ss = sq.size*scale;
+                const isHovered = hoveredStep === sq.quotientGroup;
+                const opacity = hoveredStep===null ? 0.75 : isHovered ? 1 : 0.25;
+                return (
+                  <g key={i} onMouseEnter={() => setHoveredStep(sq.quotientGroup)}
+                    onMouseLeave={() => setHoveredStep(null)} style={{cursor:'pointer'}}>
+                    <rect x={sx} y={sy} width={ss} height={ss}
+                      fill={palette[sq.colorIdx%palette.length]} fillOpacity={opacity}
+                      stroke={isHovered?'#fff':'#0a0a0f'} strokeWidth={isHovered?2:1} />
+                    {showLabels && ss > 28 && (
+                      <text x={sx+ss/2} y={sy+ss/2} textAnchor="middle" dominantBaseline="central"
+                        fill={isHovered?'#fff':'rgba(255,255,255,0.6)'}
+                        fontSize={Math.min(14,ss*0.3)} fontFamily="inherit" fontWeight={600}>
+                        {sq.size}
+                      </text>
+                    )}
+                  </g>
+                );
+              })}
+              {spiralArcs.map((arc, i) => (
+                <path key={i} d={arc.d} fill="none" stroke="rgba(233,196,106,0.5)"
+                  strokeWidth={Math.max(1,Math.min(2.5,arc.size*0.015))} strokeLinecap="round" />
+              ))}
+              <text x={padding+a*scale/2} y={padding-12} textAnchor="middle"
+                fill="#888" fontSize={12} fontFamily="inherit">{a}</text>
+              <text x={padding-16} y={padding+b*scale/2} textAnchor="middle"
+                fill="#888" fontSize={12} fontFamily="inherit"
+                transform={`rotate(-90,${padding-16},${padding+b*scale/2})`}>{b}</text>
+            </svg>
+          </div>
+
+          <div className="info-grid">
+            <div className="info-panel">
+              <h3>Division Steps</h3>
+              {steps.map((s, i) => (
+                <div key={i} className={`step-row ${hoveredStep===i?'highlighted':''}`}
+                  onMouseEnter={() => setHoveredStep(i)} onMouseLeave={() => setHoveredStep(null)}>
+                  <span className="color-dot" style={{background:palette[i%palette.length]}} />
+                  <span>
+                    <span className="step-label">Step {i+1}:</span>{' '}
+                    {s.a} ÷ {s.b} = <span className="step-q">{s.q}</span>{' '}
+                    <span className="step-r">R{s.r}</span>
+                    <span className="step-note">({s.q} square{s.q>1?'s':''} of {s.b}×{s.b})</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="info-panel">
+              <h3>Summary</h3>
+              <div className="summary-line"><span className="summary-label">Rectangle:</span> {a} × {b}</div>
+              <div className="summary-line"><span className="summary-label">Ratio a/b:</span> {(a/b).toFixed(6)}</div>
+              <div className="summary-line"><span className="summary-label">φ =</span> {phi.toFixed(6)}</div>
+              <div className="summary-line"><span className="summary-label">Division steps:</span> <span className="summary-val-green">{steps.length}</span></div>
+              <div className="summary-line"><span className="summary-label">Total squares:</span> <span className="summary-val-orange">{totalSquares}</span></div>
+              <div className="summary-line"><span className="summary-label">GCD:</span> {steps[steps.length-1]?.b || a}</div>
+              <div className="summary-line"><span className="summary-label">Quotients:</span> [{steps.map(s=>s.q).join(', ')}]</div>
+              <div className="hint">
+                Each color = one division step.<br/>
+                The quotient tells you how many squares fit.<br/>
+                Hover a step to highlight its squares.
+              </div>
+              {Math.abs(a/b - phi) < 0.05 && (
+                <div className="phi-note">Ratio ≈ φ — this approaches the golden spiral!</div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+  </script>
+</body>
+</html>

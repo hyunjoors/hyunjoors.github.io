@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects — Hyun Joo Shin</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: #0a0a0f;
+      color: #e8e6e1;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 48px 24px;
+    }
+    .container { max-width: 720px; margin: 0 auto; }
+    h1 {
+      font-size: 32px; font-weight: 700; letter-spacing: -1px;
+      background: linear-gradient(135deg, #e9c46a, #e76f51);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .tagline { font-size: 14px; color: #888; margin-bottom: 48px; }
+    .projects-grid { display: grid; gap: 16px; }
+    .project-card {
+      display: block;
+      background: #12121a;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 24px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .project-card:hover {
+      border-color: #e9c46a;
+      transform: translateY(-2px);
+    }
+    .project-title {
+      font-size: 16px; font-weight: 700; color: #e8e6e1;
+      margin-bottom: 8px;
+    }
+    .project-desc { font-size: 12px; color: #888; line-height: 1.6; }
+    .project-tags { margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag {
+      font-size: 10px; padding: 3px 8px;
+      background: rgba(42,157,143,0.15); color: #2a9d8f;
+      border-radius: 3px;
+    }
+    footer {
+      margin-top: 64px; padding-top: 24px;
+      border-top: 1px solid #1a1a24;
+      font-size: 11px; color: #555;
+    }
+    footer a { color: #2a9d8f; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Projects</h1>
+    <p class="tagline">Interactive explorations in math, data, and code</p>
+
+    <div class="projects-grid">
+      <!-- === ADD NEW PROJECT CARDS HERE === -->
+
+      <a class="project-card" href="projects/rrs/">
+        <div class="project-title">Geometry of the Euclidean Algorithm</div>
+        <div class="project-desc">
+          Visualize Repeated Reciprocal Subtraction as square packing inside rectangles.
+          Explore Fibonacci connections, the golden spiral, and continued fractions interactively.
+        </div>
+        <div class="project-tags">
+          <span class="tag">number theory</span>
+          <span class="tag">interactive</span>
+          <span class="tag">visualization</span>
+          <span class="tag">React</span>
+        </div>
+      </a>
+
+      <!-- TEMPLATE: Copy this block for each new project
+      <a class="project-card" href="projects/YOUR-PROJECT-FOLDER/">
+        <div class="project-title">Project Title</div>
+        <div class="project-desc">Short description of the project.</div>
+        <div class="project-tags">
+          <span class="tag">tag1</span>
+          <span class="tag">tag2</span>
+        </div>
+      </a>
+      -->
+
+    </div>
+
+    <footer>
+      <a href="https://github.com/hyunjoors">GitHub</a> · Hyun Joo Shin
+    </footer>
+  </div>
+</body>
+</html>
