@@ -346,6 +346,7 @@ function TabSqrt() {
   const [guidedStep, setGuidedStep] = useState(0);
 
   const cf = useMemo(() => sqrtCF(r, 20), [r]);
+  const sqrtApprox = useMemo(() => cf.convergents.slice(1, 7), [cf]);
   const isqrt = Math.floor(Math.sqrt(r));
   const isPerfect = isqrt * isqrt === r;
 
@@ -520,6 +521,23 @@ function TabSqrt() {
               </div>
             </div>
           )}
+
+          <div style={styles.sqrtApproxSection}>
+            <h3 style={{ ...styles.cardTitle, marginBottom: 8 }}>Rectangle Approximations of √{r}</h3>
+            <p style={styles.sqrtApproxIntro}>
+              Each convergent gives a rational rectangle that gets closer to the true shape of √{r}.
+              As the recipe grows, the rectangle art becomes a better approximation.
+            </p>
+            <div style={styles.sqrtApproxGrid}>
+              {sqrtApprox.map((c, i) => (
+                <div key={i} style={styles.compareCard}>
+                  <RectViz a={c.p} b={c.q}
+                    label={`${c.p}/${c.q} ≈ ${(c.p / c.q).toFixed(4)}`}
+                    compact />
+                </div>
+              ))}
+            </div>
+          </div>
         </>
       )}
     </div>
@@ -857,14 +875,6 @@ function TabGCF() {
 }
 
 function TabArt() {
-  const [mode, setMode] = useState("compare");
-  const [sqrtN, setSqrtN] = useState(2);
-
-  const sqrtApprox = useMemo(() => {
-    const cf = sqrtCF(sqrtN, 10);
-    return cf.convergents.slice(1, 7);
-  }, [sqrtN]);
-
   const comparePairs = [
     { a: 55, b: 34, label: "55/34 (Fibonacci)" },
     { a: 17, b: 12, label: "17/12 (≈ √2)" },
@@ -878,52 +888,18 @@ function TabArt() {
         <h2 style={styles.sectionTitle}>🎨 Rectangle Art</h2>
         <p style={styles.sectionDesc}>
           Every RSS calculation is also a picture. The live single-rectangle explorer now lives in{" "}
-          <b>RSS Machine</b>; this tab focuses on comparing families of square-packings and square-root approximations.
+          <b>RSS Machine</b>, and square-root approximations now live in <b>√ Explorer</b>.
+          This tab focuses on comparing different finished square-packings side by side.
         </p>
       </div>
 
-      <div style={styles.modeToggle}>
-        <button style={{ ...styles.modeBtn, ...(mode === "compare" ? styles.modeBtnActive : {}) }}
-          onClick={() => setMode("compare")}>📊 Side-by-Side</button>
-        <button style={{ ...styles.modeBtn, ...(mode === "sqrt" ? styles.modeBtnActive : {}) }}
-          onClick={() => setMode("sqrt")}>📐 √ Approximations</button>
+      <div style={styles.compareGrid}>
+        {comparePairs.map((p, i) => (
+          <div key={i} style={styles.compareCard}>
+            <RectViz a={p.a} b={p.b} label={p.label} compact />
+          </div>
+        ))}
       </div>
-
-      {mode === "compare" && (
-        <div style={styles.compareGrid}>
-          {comparePairs.map((p, i) => (
-            <div key={i} style={styles.compareCard}>
-              <RectViz a={p.a} b={p.b} label={p.label} compact />
-            </div>
-          ))}
-        </div>
-      )}
-
-      {mode === "sqrt" && (
-        <div>
-          <div style={{ ...styles.controlRow, justifyContent: "center" }}>
-            <span style={styles.inputLabel}>Approximations of:</span>
-            {[2, 3, 5, 7].map(n => (
-              <button key={n} onClick={() => setSqrtN(n)}
-                style={{ ...styles.presetBtn, ...(sqrtN === n ? styles.presetActive : {}) }}>
-                √{n}
-              </button>
-            ))}
-          </div>
-          <p style={{ textAlign: "center", color: COLORS.textLight, fontSize: 13, margin: "8px 0 16px" }}>
-            As the approximation gets better (more terms in the recipe), the rectangle looks more and more like a true √{sqrtN} rectangle!
-          </p>
-          <div style={styles.sqrtApproxGrid}>
-            {sqrtApprox.map((c, i) => (
-              <div key={i} style={styles.compareCard}>
-                <RectViz a={c.p} b={c.q}
-                  label={`${c.p}/${c.q} ≈ ${(c.p / c.q).toFixed(4)}`}
-                  compact />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -1379,6 +1355,20 @@ const styles = {
   },
   convergentRow: { display: "flex", gap: 10, alignItems: "center" },
   convergentFrac: { fontWeight: 800, color: COLORS.primary, minWidth: 60 },
+  sqrtApproxSection: {
+    marginTop: 20,
+    padding: 18,
+    background: "linear-gradient(135deg, #FFF8E1, #FFF0E5)",
+    borderRadius: 16,
+    border: `1px solid ${COLORS.border}`,
+  },
+  sqrtApproxIntro: {
+    fontSize: 13,
+    lineHeight: 1.7,
+    color: COLORS.textLight,
+    margin: "0 0 14px",
+    textAlign: "center",
+  },
 
   // Tab 5: Art
   vizCenter: { display: "flex", justifyContent: "center" },
