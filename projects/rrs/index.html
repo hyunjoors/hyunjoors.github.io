@@ -639,6 +639,10 @@ function TabGCF() {
   const gcfValue = useMemo(() => gcd(a, b), [a, b]);
   const smallestStep = steps[steps.length - 1];
 
+  useEffect(() => {
+    if (traditionalStage < 3 && panel !== 0) setPanel(0);
+  }, [traditionalStage, panel]);
+
   const apply = useCallback(() => {
     const na = parseInt(inputA), nb = parseInt(inputB);
     if (na > 1 && nb > 0 && na >= nb && na <= 500) {
@@ -710,12 +714,12 @@ function TabGCF() {
           onClick={() => traditionalStage >= 3 && setPanel(1)}
           disabled={traditionalStage < 3}
         >
-          Slide to RRS →
+          {traditionalStage < 3 ? "Finish steps to unlock →" : "Slide to RRS →"}
         </button>
       </div>
 
       <div style={styles.gcfCarousel}>
-        <div style={{ ...styles.gcfTrack, transform: `translateX(-${panel * 50}%)` }}>
+        <div style={{ ...styles.gcfTrack, transform: `translateX(-${panel * 100}%)` }}>
           <div style={styles.gcfPanel}>
             <div style={styles.gcfPanelCard}>
               <div style={styles.gcfPanelHeader}>
@@ -1164,6 +1168,7 @@ const styles = {
     color: COLORS.textLight,
     cursor: "not-allowed",
     boxShadow: "none",
+    opacity: 0.75,
   },
   gcfCarousel: {
     overflow: "hidden",
@@ -1171,11 +1176,10 @@ const styles = {
   },
   gcfTrack: {
     display: "flex",
-    width: "200%",
     transition: "transform 0.45s ease",
   },
   gcfPanel: {
-    width: "50%",
+    flex: "0 0 100%",
     padding: "2px",
   },
   gcfPanelCard: {
