@@ -127,6 +127,7 @@ function TabRSS() {
     if (currentStep >= steps.length - 1) setAutoPlay(false);
   }, [autoPlay, currentStep, steps.length]);
 
+  const visibleSteps = currentStep === -1 ? steps : steps.slice(0, currentStep + 1);
   const presets = [
     { a: 55, b: 34, label: "55 & 34" }, { a: 17, b: 12, label: "17 & 12" },
     { a: 30, b: 11, label: "30 & 11" }, { a: 76, b: 47, label: "76 & 47" },
@@ -172,17 +173,32 @@ function TabRSS() {
         {currentStep >= steps.length - 1 && <span style={styles.doneTag}>✨ Done! GCD found!</span>}
       </div>
 
+      <div style={styles.rssVizCard}>
+        <div style={styles.rssVizHeader}>
+          <div>
+            <h3 style={styles.cardTitle}>Rectangle Picture</h3>
+            <p style={styles.rssVizHint}>
+              The same RSS recipe also packs squares into an {a} × {b} rectangle.
+              Step colors match the division steps above.
+            </p>
+          </div>
+          <div style={styles.rssVizStat}>
+            {currentStep === -1 ? "Showing full recipe" : `Showing through Step ${currentStep + 1}`}
+          </div>
+        </div>
+        <div style={styles.vizCenter}>
+          <RectViz a={a} b={b} visibleGroup={currentStep} activeGroup={currentStep >= 0 ? currentStep : null} showControls={false} />
+        </div>
+      </div>
+
       <div style={styles.stepsGrid}>
         <div style={styles.stepsCard}>
           <h3 style={styles.cardTitle}>Division Steps</h3>
-          {steps.map((s, i) => {
-            const visible = currentStep === -1 || i <= currentStep;
+          {visibleSteps.map((s, i) => {
             return (
               <div key={i} style={{
                 ...styles.stepRow,
-                opacity: visible ? 1 : 0.2,
-                background: visible && i === currentStep ? "#FFF0E5" : "transparent",
-                transform: visible ? "translateX(0)" : "translateX(-10px)",
+                background: i === currentStep ? "#FFF0E5" : "transparent",
                 transition: "all 0.4s ease",
               }}>
                 <span style={{ ...styles.stepDot, background: SQUARE_COLORS[i % 8] }} />
@@ -217,24 +233,6 @@ function TabRSS() {
           {Math.abs(a / b - Math.sqrt(2)) < 0.05 && (
             <div style={styles.funFact}>📐 This ratio is close to √2 ≈ 1.4142!</div>
           )}
-        </div>
-      </div>
-
-      <div style={styles.rssVizCard}>
-        <div style={styles.rssVizHeader}>
-          <div>
-            <h3 style={styles.cardTitle}>Rectangle Picture</h3>
-            <p style={styles.rssVizHint}>
-              The same RSS recipe also packs squares into an {a} × {b} rectangle.
-              Step colors match the division steps above.
-            </p>
-          </div>
-          <div style={styles.rssVizStat}>
-            {currentStep === -1 ? "Showing full recipe" : `Showing through Step ${currentStep + 1}`}
-          </div>
-        </div>
-        <div style={styles.vizCenter}>
-          <RectViz a={a} b={b} visibleGroup={currentStep} activeGroup={currentStep >= 0 ? currentStep : null} showControls={false} />
         </div>
       </div>
     </div>
@@ -571,9 +569,9 @@ function RectViz({ a, b, label, compact = false, visibleGroup = null, activeGrou
                 style={{ transition: "all 0.3s ease" }} />
               {ss > (compact ? 22 : 28) && visible && (
                 <text x={sx + ss / 2} y={sy + ss / 2} textAnchor="middle" dominantBaseline="central"
-                  fill={COLORS.text} fontSize={Math.min(compact ? 11 : 14, ss * 0.3)}
+                  fill={COLORS.text} fontSize={Math.min(compact ? 9 : 12, ss * 0.16)}
                   fontFamily="inherit" fontWeight={700} style={{ opacity: isFocused ? 1 : 0.7 }}>
-                  {sq.size}
+                  {`${sq.size} x ${sq.size}`}
                 </text>
               )}
             </g>
