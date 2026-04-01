@@ -85,6 +85,37 @@ function factorsOf(n) {
   return factors;
 }
 
+function backwardBuild(smallestSize, counts) {
+  const stages = [];
+  const sizeTrail = [smallestSize];
+  let previousSize = 0;
+  let currentSize = smallestSize;
+
+  counts.forEach((count, idx) => {
+    const nextSize = count * currentSize + previousSize;
+    stages.push({
+      idx,
+      count,
+      squareSize: currentSize,
+      previousSize,
+      nextSize,
+      landsAtRectangle: idx === counts.length - 1,
+    });
+    previousSize = currentSize;
+    currentSize = nextSize;
+    sizeTrail.push(nextSize);
+  });
+
+  return {
+    stages,
+    sizeTrail,
+    finalWidth: currentSize,
+    finalHeight: previousSize,
+    forwardSequence: [...counts].reverse(),
+    reverseSequence: counts,
+  };
+}
+
 /* ─────────────── THEME ─────────────── */
 const COLORS = {
   bg: "#FFF8F0",
@@ -104,8 +135,8 @@ const COLORS = {
 
 const SQUARE_COLORS = ["#FF6B35", "#4ECDC4", "#FFE66D", "#A06CD5", "#FF6B9D", "#45B7D1", "#96CEB4", "#F7DC6F"];
 
-const TAB_ICONS = ["🔢", "🧩", "🗺️", "🔍", "🎨"];
-const TAB_NAMES = ["RSS Machine", "GCF", "Number Map", "√ Explorer", "Rectangle Art"];
+const TAB_ICONS = ["🔢", "🔁", "🧩", "🗺️", "🔍", "🎨"];
+const TAB_NAMES = ["RSS Machine", "Backward RRS", "GCF", "Number Map", "√ Explorer", "Rectangle Art"];
 
 /* ─────────────── TAB 1: RSS MACHINE ─────────────── */
 function TabRSS() {
@@ -642,6 +673,219 @@ function RectViz({ a, b, label, compact = false, visibleGroup = null, activeGrou
   );
 }
 
+function TabBackwardRRS() {
+  const [smallestSize, setSmallestSize] = useState(2);
+  const [counts, setCounts] = useState([2, 2, 2, 1]);
+
+  const build = useMemo(() => backwardBuild(smallestSize, counts), [smallestSize, counts]);
+  const stageMax = 4;
+  const stagePresets = [
+    { label: "Sketch Example", smallest: 2, counts: [2, 2, 2, 1] },
+    { label: "Fibonacci Build", smallest: 1, counts: [1, 1, 1, 1, 1] },
+    { label: "√2 Style", smallest: 1, counts: [2, 2, 2, 2] },
+  ];
+
+  const setCountAt = useCallback((idx, value) => {
+    setCounts(prev => prev.map((count, i) => i === idx ? value : count));
+  }, []);
+
+  const loadPreset = useCallback((preset) => {
+    setSmallestSize(preset.smallest);
+    setCounts(preset.counts);
+  }, []);
+
+  const addStage = useCallback(() => {
+    setCounts(prev => prev.length >= 6 ? prev : [...prev, 1]);
+  }, []);
+
+  const removeStage = useCallback(() => {
+    setCounts(prev => prev.length <= 1 ? prev : prev.slice(0, -1));
+  }, []);
+
+  return (
+    <div>
+      <div style={styles.sectionIntro}>
+        <h2 style={styles.sectionTitle}>🔁 Backward RRS</h2>
+        <p style={styles.sectionDesc}>
+          Start from the smallest square, choose how many same-size squares to use at each step,
+          and grow backward into a finished rectangle. Your reverse choices become a forward RRS sequence.
+        </p>
+      </div>
+
+      <div style={styles.backwardPresetRow}>
+        {stagePresets.map(preset => (
+          <button key={preset.label}
+            onClick={() => loadPreset(preset)}
+            style={{
+              ...styles.presetBtn,
+              ...(smallestSize === preset.smallest && counts.join(",") === preset.counts.join(",") ? styles.presetActive : {}),
+            }}>
+            {preset.label}
+          </button>
+        ))}
+      </div>
+
+      <div style={styles.backwardIntroCard}>
+        <div style={styles.backwardSizeControl}>
+          <div>
+            <div style={styles.backwardLabel}>Start With The Smallest Square</div>
+            <div style={styles.backwardBigNumber}>{smallestSize} × {smallestSize}</div>
+          </div>
+          <div style={styles.backwardInputStack}>
+            <input
+              type="range"
+              min="1"
+              max="12"
+              value={smallestSize}
+              onChange={e => setSmallestSize(parseInt(e.target.value))}
+              style={styles.backwardRange}
+            />
+            <input
+              type="number"
+              min="1"
+              max="12"
+              value={smallestSize}
+              onChange={e => {
+                const next = parseInt(e.target.value);
+                if (!Number.isNaN(next) && next >= 1 && next <= 12) setSmallestSize(next);
+              }}
+              style={styles.numInput}
+            />
+          </div>
+        </div>
+
+        <div style={styles.backwardTrail}>
+          <span style={styles.backwardTrailLabel}>Size Ladder</span>
+          <div style={styles.backwardTrailWrap}>
+            {build.sizeTrail.slice(0, -1).map((size, i) => (
+              <React.Fragment key={`trail-${i}`}>
+                <span style={styles.backwardTrailChip}>{size} × {size}</span>
+                <span style={styles.backwardTrailArrow}>→</span>
+              </React.Fragment>
+            ))}
+            <span style={{ ...styles.backwardTrailChip, ...styles.backwardTrailChipFinal }}>
+              {build.finalWidth} × {build.finalHeight}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div style={styles.backwardShell} data-grid2>
+        <div>
+          <div style={styles.backwardBuilderHeader}>
+            <div>
+              <h3 style={styles.cardTitle}>Drag The Reverse Build</h3>
+              <p style={styles.backwardHelp}>
+                Each slider chooses how many squares of the current size you want to place.
+                That creates the next size automatically.
+              </p>
+            </div>
+            <div style={styles.backwardBuilderActions}>
+              <button style={styles.smallBtn} onClick={addStage} disabled={counts.length >= 6}>+ Add Stage</button>
+              <button style={styles.smallBtn} onClick={removeStage} disabled={counts.length <= 1}>− Remove Stage</button>
+            </div>
+          </div>
+
+          <div style={styles.backwardStageGrid} data-grid2>
+            {build.stages.map((stage, i) => (
+              <div key={`stage-${i}`} style={styles.backwardStageCard}>
+                <div style={styles.backwardStageTop}>
+                  <div>
+                    <div style={styles.backwardStageKicker}>Stage {i + 1}</div>
+                    <div style={{ ...styles.backwardStageSize, color: SQUARE_COLORS[i % 8] }}>
+                      {stage.squareSize} × {stage.squareSize}
+                    </div>
+                  </div>
+                  <div style={{ ...styles.backwardCountBubble, background: SQUARE_COLORS[i % 8] }}>
+                    {stage.count}
+                  </div>
+                </div>
+
+                <div style={styles.backwardSliderText}>
+                  Use <b>{stage.count}</b> square{stage.count > 1 ? "s" : ""} of size {stage.squareSize}
+                </div>
+                <input
+                  type="range"
+                  min="1"
+                  max={stageMax}
+                  step="1"
+                  value={stage.count}
+                  onChange={e => setCountAt(i, parseInt(e.target.value))}
+                  style={styles.backwardRange}
+                />
+                <div style={styles.backwardMarks}>
+                  {[1, 2, 3, 4].map(mark => (
+                    <span key={mark} style={{
+                      ...styles.backwardMark,
+                      ...(mark === stage.count ? styles.backwardMarkActive : {}),
+                    }}>
+                      {mark}
+                    </span>
+                  ))}
+                </div>
+
+                <div style={styles.backwardOutcome}>
+                  {stage.landsAtRectangle ? (
+                    <>This final choice lands at <b>{build.finalWidth} × {build.finalHeight}</b>.</>
+                  ) : (
+                    <>This creates the next square size: <b>{stage.nextSize} × {stage.nextSize}</b>.</>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={styles.backwardStoryCard}>
+            <h3 style={styles.cardTitle}>What Your Build Means</h3>
+            <div style={styles.backwardStoryList}>
+              <div style={styles.backwardStoryItem}>
+                Start with <b>{counts[0]}</b> square{counts[0] > 1 ? "s" : ""} of size <b>{smallestSize} × {smallestSize}</b>.
+              </div>
+              {build.stages.slice(0, -1).map((stage, i) => (
+                <div key={`story-${i}`} style={styles.backwardStoryItem}>
+                  Then choose <b>{build.stages[i + 1].count}</b> square{build.stages[i + 1].count > 1 ? "s" : ""} of size <b>{stage.nextSize} × {stage.nextSize}</b>.
+                </div>
+              ))}
+              <div style={styles.backwardStoryItem}>
+                Stop after the last stage, and you land at <b>{build.finalWidth} × {build.finalHeight}</b>.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style={styles.backwardResultCard}>
+          <h3 style={styles.cardTitle}>Resulting Forward RRS</h3>
+          <div style={styles.backwardFormula}>
+            Reverse choices: <b>[{build.reverseSequence.join(", ")}]</b>
+          </div>
+          <div style={styles.backwardFormula}>
+            Forward RRS sequence: <b>[{build.forwardSequence.join(", ")}]</b>
+          </div>
+          <div style={styles.backwardFormula}>
+            Final rectangle: <b>{build.finalWidth} × {build.finalHeight}</b>
+          </div>
+
+          <div style={styles.quotientRow}>
+            {build.forwardSequence.map((q, i) => (
+              <span key={`forward-${i}`} style={{ ...styles.quotientBubble, background: SQUARE_COLORS[i % 8] }}>
+                {q}
+              </span>
+            ))}
+          </div>
+
+          <div style={styles.backwardPreviewWrap}>
+            <RectViz a={build.finalWidth} b={build.finalHeight} showControls={false} />
+          </div>
+
+          <div style={styles.gcfProofBox}>
+            Your default sketch example recreates <b>34 × 24</b> with forward sequence <b>[1, 2, 2, 2]</b>.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TabGCF() {
   const [a, setA] = useState(36);
   const [b, setB] = useState(24);
@@ -907,7 +1151,7 @@ function TabArt() {
 /* ─────────────── MAIN APP ─────────────── */
 function NumberSandbox() {
   const [tab, setTab] = useState(0);
-  const tabs = [TabRSS, TabGCF, TabMap, TabSqrt, TabArt];
+  const tabs = [TabRSS, TabBackwardRRS, TabGCF, TabMap, TabSqrt, TabArt];
   const ActiveTab = tabs[tab];
 
   return (
@@ -1106,7 +1350,230 @@ const styles = {
     border: `1px solid ${COLORS.border}`,
   },
 
-  // Tab 2: GCF
+  // Tab 2: Backward RRS
+  backwardPresetRow: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 8,
+    justifyContent: "center",
+    marginBottom: 16,
+  },
+  backwardIntroCard: {
+    background: "linear-gradient(135deg, #FFF8E1, #FFF0E5)",
+    borderRadius: 16,
+    padding: 20,
+    border: `1px solid ${COLORS.border}`,
+    marginBottom: 16,
+  },
+  backwardSizeControl: {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: 16,
+    alignItems: "center",
+    flexWrap: "wrap",
+    marginBottom: 16,
+  },
+  backwardLabel: {
+    fontSize: 12,
+    fontWeight: 800,
+    color: COLORS.textLight,
+    textTransform: "uppercase",
+    letterSpacing: "0.06em",
+    marginBottom: 4,
+  },
+  backwardBigNumber: {
+    fontSize: 28,
+    fontWeight: 900,
+    color: COLORS.primary,
+  },
+  backwardInputStack: {
+    display: "flex",
+    gap: 10,
+    alignItems: "center",
+  },
+  backwardRange: {
+    width: 220,
+    accentColor: COLORS.primary,
+    cursor: "pointer",
+  },
+  backwardTrail: {
+    background: "#fff",
+    borderRadius: 14,
+    border: `1px solid ${COLORS.border}`,
+    padding: 14,
+  },
+  backwardTrailLabel: {
+    display: "block",
+    fontSize: 12,
+    fontWeight: 800,
+    color: COLORS.textLight,
+    marginBottom: 8,
+  },
+  backwardTrailWrap: {
+    display: "flex",
+    gap: 8,
+    flexWrap: "wrap",
+    alignItems: "center",
+  },
+  backwardTrailChip: {
+    padding: "6px 12px",
+    borderRadius: 999,
+    background: COLORS.tabBg,
+    border: `1px solid ${COLORS.border}`,
+    fontSize: 12,
+    fontWeight: 800,
+    color: COLORS.text,
+  },
+  backwardTrailChipFinal: {
+    background: COLORS.primary,
+    color: "#fff",
+    borderColor: COLORS.primary,
+  },
+  backwardTrailArrow: {
+    color: COLORS.textLight,
+    fontWeight: 800,
+  },
+  backwardShell: {
+    display: "grid",
+    gridTemplateColumns: "1.1fr 0.9fr",
+    gap: 16,
+    alignItems: "start",
+  },
+  backwardBuilderHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: 12,
+    alignItems: "center",
+    flexWrap: "wrap",
+    marginBottom: 12,
+  },
+  backwardHelp: {
+    fontSize: 13,
+    color: COLORS.textLight,
+    lineHeight: 1.6,
+    maxWidth: 520,
+  },
+  backwardBuilderActions: {
+    display: "flex",
+    gap: 8,
+    flexWrap: "wrap",
+  },
+  backwardStageGrid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: 12,
+    marginBottom: 16,
+  },
+  backwardStageCard: {
+    background: "#fff",
+    borderRadius: 16,
+    padding: 16,
+    border: `1px solid ${COLORS.border}`,
+    boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+  },
+  backwardStageTop: {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: 12,
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  backwardStageKicker: {
+    fontSize: 11,
+    fontWeight: 800,
+    color: COLORS.textLight,
+    textTransform: "uppercase",
+    letterSpacing: "0.06em",
+    marginBottom: 4,
+  },
+  backwardStageSize: {
+    fontSize: 20,
+    fontWeight: 900,
+  },
+  backwardCountBubble: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#fff",
+    fontWeight: 900,
+    fontSize: 16,
+  },
+  backwardSliderText: {
+    fontSize: 13,
+    lineHeight: 1.6,
+    color: COLORS.text,
+    marginBottom: 8,
+  },
+  backwardMarks: {
+    display: "grid",
+    gridTemplateColumns: "repeat(4, 1fr)",
+    gap: 6,
+    marginTop: 8,
+    marginBottom: 10,
+  },
+  backwardMark: {
+    padding: "4px 0",
+    textAlign: "center",
+    borderRadius: 999,
+    fontSize: 11,
+    fontWeight: 800,
+    color: COLORS.textLight,
+    background: COLORS.tabBg,
+    border: `1px solid ${COLORS.border}`,
+  },
+  backwardMarkActive: {
+    background: COLORS.secondary,
+    color: "#fff",
+    borderColor: COLORS.secondary,
+  },
+  backwardOutcome: {
+    fontSize: 13,
+    lineHeight: 1.6,
+    color: COLORS.text,
+    background: "#FFF8E1",
+    borderRadius: 12,
+    padding: "10px 12px",
+  },
+  backwardStoryCard: {
+    background: "linear-gradient(135deg, #FFF8E1, #FFF0E5)",
+    borderRadius: 16,
+    padding: 18,
+    border: `1px solid ${COLORS.border}`,
+  },
+  backwardStoryList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+  },
+  backwardStoryItem: {
+    background: "#fff",
+    borderRadius: 12,
+    border: `1px solid ${COLORS.border}`,
+    padding: "10px 12px",
+    fontSize: 13,
+    lineHeight: 1.6,
+  },
+  backwardResultCard: {
+    background: "linear-gradient(135deg, #FFF8E1, #FFF5EE)",
+    borderRadius: 18,
+    border: `1px solid ${COLORS.border}`,
+    padding: 20,
+  },
+  backwardFormula: {
+    fontSize: 13,
+    lineHeight: 1.8,
+    color: COLORS.text,
+    marginBottom: 4,
+  },
+  backwardPreviewWrap: {
+    marginTop: 14,
+    marginBottom: 14,
+  },
+
+  // Tab 3: GCF
   gcfStageRow: {
     display: "flex",
     justifyContent: "space-between",
@@ -1269,7 +1736,7 @@ const styles = {
     lineHeight: 1.6,
   },
 
-  // Tab 3: Map
+  // Tab 4: Map
   mapContainer: { maxWidth: 640, margin: "0 auto" },
   mapScale: { display: "flex", alignItems: "center", gap: 8, marginBottom: 20 },
   mapScaleLabel: { fontSize: 11, fontWeight: 700, color: COLORS.textLight },
@@ -1296,7 +1763,7 @@ const styles = {
     border: `2px solid ${COLORS.accent}`, fontSize: 14,
   },
 
-  // Tab 4: Sqrt
+  // Tab 5: Sqrt
   sqrtControls: { marginBottom: 16, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" },
   perfectSquareMsg: {
     textAlign: "center", padding: 24, fontSize: 16, fontWeight: 700,
@@ -1370,7 +1837,7 @@ const styles = {
     textAlign: "center",
   },
 
-  // Tab 5: Art
+  // Tab 6: Art
   vizCenter: { display: "flex", justifyContent: "center" },
   vizLabel: { fontSize: 13, fontWeight: 800, color: COLORS.primary, marginBottom: 6 },
   compareGrid: {
