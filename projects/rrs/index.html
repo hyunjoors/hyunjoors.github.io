@@ -675,7 +675,7 @@ function RectViz({ a, b, label, compact = false, visibleGroup = null, activeGrou
 
 function TabBackwardRRS() {
   const [smallestSize, setSmallestSize] = useState(2);
-  const [counts, setCounts] = useState([2, 2, 2, 1]);
+  const [counts, setCounts] = useState([2]);
 
   const build = useMemo(() => backwardBuild(smallestSize, counts), [smallestSize, counts]);
   const stageMax = 4;
@@ -781,8 +781,8 @@ function TabBackwardRRS() {
               </p>
             </div>
             <div style={styles.backwardBuilderActions}>
-              <button style={styles.smallBtn} onClick={addStage} disabled={counts.length >= 6}>+ Add Stage</button>
-              <button style={styles.smallBtn} onClick={removeStage} disabled={counts.length <= 1}>− Remove Stage</button>
+              <button style={styles.smallBtn} onClick={addStage} disabled={counts.length >= 6}>Add a stage</button>
+              <button style={styles.smallBtn} onClick={removeStage} disabled={counts.length <= 1}>Remove last stage</button>
             </div>
           </div>
 
@@ -878,7 +878,8 @@ function TabBackwardRRS() {
           </div>
 
           <div style={styles.gcfProofBox}>
-            Your default sketch example recreates <b>34 × 24</b> with forward sequence <b>[1, 2, 2, 2]</b>.
+            This build lands on <b>{build.finalWidth} × {build.finalHeight}</b> with forward sequence{" "}
+            <b>[{build.forwardSequence.join(", ")}]</b>.
           </div>
         </div>
       </div>
