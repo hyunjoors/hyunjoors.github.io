@@ -100,6 +100,15 @@ function factorsOf(n) {
   return factors;
 }
 
+// Continued-fraction style recipe formatting:
+// [q0; q1,q2,...] (semicolon after the first quotient, commas after that).
+function formatRRSRecipe(quotients) {
+  const qs = Array.isArray(quotients) ? quotients.filter(q => Number.isFinite(q)) : [];
+  if (qs.length === 0) return "[]";
+  if (qs.length === 1) return `[${qs[0]}]`;
+  return `[${qs[0]}; ${qs.slice(1).join(",")}]`;
+}
+
 function backwardBuild(smallestSize, counts) {
   const stages = [];
   const sizeTrail = [smallestSize];
@@ -251,8 +260,8 @@ function TabIntro({ emoji, title, speech, hint }) {
 }
 
 /* ─────────────── RSS TUTORIAL ─────────────── */
-function RSSTutorial({ onPickPair, onStartPlay, onComplete, onPlayReveal }) {
-  const [step, setStep] = useState(0);
+function RSSTutorial({ initialStep = 0, divisionDone = false, onTryAgain, onPickPair, onStartPlay, onComplete, onPlayReveal }) {
+  const [step, setStep] = useState(initialStep);
   const [done, setDone] = useState(false);
   const [typed, setTyped] = useState(false);
   const [customA, setCustomA] = useState("");
@@ -264,12 +273,27 @@ function RSSTutorial({ onPickPair, onStartPlay, onComplete, onPlayReveal }) {
     if (done && onComplete) onComplete();
   }, [done, onComplete]);
 
+  // If the student replays the division while we're on the reflection step,
+  // reset typing so the button doesn't appear early.
+  useEffect(() => {
+    if (step === 4 && !divisionDone) setTyped(false);
+  }, [step, divisionDone]);
+
   if (done) {
     return (
       <div style={styles.tutorialDone}>
         <TeacherBubble text={`Great job! Now explore on your own — try any numbers you like! 🎉`} />
-        <button style={styles.smallBtn} onClick={() => { setStep(0); setDone(false); setTyped(false); setChosenPair(null); }}>
-          ↺ Replay tutorial
+        <button style={styles.smallBtn} onClick={() => {
+          if (onTryAgain) return onTryAgain();
+          setStep(1);
+          setDone(false);
+          setTyped(false);
+          setChosenPair(null);
+          setCustomA("");
+          setCustomB("");
+          setGuess(null);
+        }}>
+          ↺ Try again
         </button>
       </div>
     );
@@ -379,10 +403,11 @@ function RSSTutorial({ onPickPair, onStartPlay, onComplete, onPlayReveal }) {
 
   // Step 4: Reflect
   if (step === 4) {
+    if (!divisionDone) return null; // wait until the division animation has fully finished
     return (
       <div style={styles.tutorialCard}>
         <TeacherBubble
-          text="See all those division steps? Each one is a chunk of the RSS recipe. The last remainder of 0 means we found the GCD!"
+          text="See all those division steps? Each one is a chunk of the RSS recipe. When the remainder becomes 0, the division is finished!"
           onDone={() => setTyped(true)}
         />
         {typed && (
@@ -409,6 +434,8 @@ function TabRSS() {
   const [showPlayView, setShowPlayView] = useState(false);
   const [predictionGuess, setPredictionGuess] = useState(null);
   const [showPrediction, setShowPrediction] = useState(false);
+  const [tutorialKey, setTutorialKey] = useState(0);
+  const [tutorialStartStep, setTutorialStartStep] = useState(0);
   // Q&A state (appears after animation finishes)
   const [stepAnswer, setStepAnswer] = useState("");
   const [stepCorrect, setStepCorrect] = useState(null);
@@ -438,6 +465,23 @@ function TabRSS() {
   const steps = useMemo(() => euclideanSteps(a, b), [a, b]);
   const totalSquares = useMemo(() => steps.reduce((s, st) => s + st.q, 0), [steps]);
 
+  const resetToPick = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setA(55); setB(34);
+    setInputA("55"); setInputB("34");
+    setCurrentStep(-1);
+    setAutoPlay(false);
+    setTutorialComplete(false);
+    setShowPlayView(false);
+    setPredictionGuess(null);
+    setShowPrediction(false);
+    setStepAnswer(""); setStepCorrect(null);
+    setSqAnswer(""); setSqCorrect(null);
+    setShowSeqIntro(false);
+    setTutorialStartStep(1);
+    setTutorialKey(k => k + 1); // remount tutorial so it returns to the number-pick page
+  }, []);
+
   const apply = useCallback(() => {
     const na = parseInt(inputA), nb = parseInt(inputB);
     if (na > 1 && nb > 0 && na > nb && na <= 500) {
@@ -463,6 +507,10 @@ function TabRSS() {
   return (
     <div>
       <RSSTutorial
+        key={tutorialKey}
+        initialStep={tutorialStartStep}
+        divisionDone={currentStep >= steps.length - 1 && currentStep !== -1}
+        onTryAgain={resetToPick}
         onPickPair={(pa, pb) => {
           setA(pa); setB(pb);
           setInputA(String(pa)); setInputB(String(pb));
@@ -500,6 +548,7 @@ function TabRSS() {
                 setSqAnswer(""); setSqCorrect(null);
                 setShowSeqIntro(false);
               }}>↺ Replay</button>
+              <button style={styles.smallBtn} onClick={resetToPick}>↩ Try again</button>
             </div>
           </div>
 
@@ -582,13 +631,13 @@ function TabRSS() {
                           <span key={i} style={{ ...styles.quotientBubble, background: SQUARE_COLORS[i % 8] }}>{s.q}</span>
                         ))}
                       </div>
-                      <div style={styles.seqFormula}>
-                        {a}/{b} = [{steps.map(s => s.q).join(", ")}]
-                      </div>
+                    <div style={styles.seqFormula}>
+                        {a}/{b} = {formatRRSRecipe(steps.map(s => s.q))}
                     </div>
-                    {!tutorialComplete && (
-                      <button style={{ ...styles.bigBtn, marginTop: 12 }} onClick={() => setTutorialComplete(true)}>
-                        Got it! Let's try more ✓
+                  </div>
+                  {!tutorialComplete && (
+                    <button style={{ ...styles.bigBtn, marginTop: 12 }} onClick={() => setTutorialComplete(true)}>
+                      Got it! Let's try more ✓
                       </button>
                     )}
                   </div>
@@ -657,10 +706,11 @@ function TabRSS() {
         <button style={styles.playBtn} onClick={() => { setCurrentStep(0); setAutoPlay(true); setShowPrediction(false); }}>
           ▶ Play Step-by-Step
         </button>
+        <button style={styles.playBtn} onClick={resetToPick}>Try again</button>
         {currentStep >= 0 && currentStep < steps.length - 1 && !autoPlay && (
           <button style={styles.playBtn} onClick={() => setCurrentStep(s => s + 1)}>Next Step →</button>
         )}
-        {currentStep >= steps.length - 1 && <span style={styles.doneTag}>✨ Done! GCD found!</span>}
+        {currentStep >= steps.length - 1 && <span style={styles.doneTag}>✨ Done! remainder 0</span>}
       </div>
 
       <div style={styles.summaryCard}>
@@ -673,10 +723,9 @@ function TabRSS() {
             borderRadius: 8, fontSize: 16, fontWeight: 800,
             fontFamily: "monospace", marginLeft: 8,
           }}>
-            {a}/{b} = [{steps.map(s => s.q).join(", ")}]
+            {a}/{b} = {formatRRSRecipe(steps.map(s => s.q))}
           </code>
         </div>
-        <div style={styles.resultRow}><span style={styles.resultLabel}>GCD:</span> <b style={{ color: COLORS.purple, fontSize: 20 }}>{steps[steps.length - 1]?.b || a}</b></div>
         <div style={styles.resultRow}><span style={styles.resultLabel}>Ratio a/b:</span> <b>{(a / b).toFixed(4)}</b></div>
         {Math.abs(a / b - (1 + Math.sqrt(5)) / 2) < 0.05 && (
           <div style={styles.funFact}>🌀 This ratio is close to the Golden Ratio (φ ≈ 1.6180)!</div>
@@ -708,8 +757,8 @@ function TabMap() {
       color: "#45B7D1",
       example: "55 ÷ 34 → 34 ÷ 21 → ... → 2 ÷ 1 = 2 R0",
       desc: "Multiple steps, but always finishes!",
-      pattern: "A finite list: [1, 1, 1, 1, 1, 1, 1, 2]",
-      rss: "[1, 1, 1, 1, 1, 1, 1, 2]",
+      pattern: "A finite list: [1; 1,1,1,1,1,1,1,2]",
+      rss: "[1; 1,1,1,1,1,1,1,2]",
     },
     {
       title: "Square Roots (Irrational)",
@@ -718,7 +767,7 @@ function TabMap() {
       example: "√2 → 1, then 2, 2, 2, 2, 2, ... forever",
       desc: "Never finishes, but repeats a pattern!",
       pattern: "Repeating: [1; (2)] — the 2 goes on forever",
-      rss: "[1; 2, 2, 2, 2, ...]",
+      rss: "[1; 2,2,2,2,...]",
     },
     {
       title: "Special Numbers (e, π)",
@@ -727,7 +776,7 @@ function TabMap() {
       example: "π → 3, 7, 15, 1, 292, 1, ...",
       desc: "Never finishes AND no repeating pattern!",
       pattern: "Unpredictable: [3; 7, 15, 1, 292, 1, 1, ...]",
-      rss: "[3; 7, 15, 1, 292, ...]",
+      rss: "[3; 7,15,1,292,...]",
     },
   ];
 
@@ -1084,7 +1133,7 @@ function RectViz({ a, b, label, compact = false, visibleGroup = null, activeGrou
           transform={`rotate(-90,${padding - 10},${padding + b * scale / 2})`}>{b}</text>
       </svg>
       <div style={{ fontSize: 11, color: COLORS.textLight, marginTop: 4 }}>
-        [{steps.map(s => s.q).join(", ")}] — {steps.length} steps, {steps.reduce((s, st) => s + st.q, 0)} squares
+        {formatRRSRecipe(steps.map(s => s.q))} — {steps.length} steps, {steps.reduce((s, st) => s + st.q, 0)} squares
       </div>
     </div>
   );
@@ -1279,7 +1328,7 @@ function TabBackwardRRS() {
             Reverse choices: <b>[{build.reverseSequence.join(", ")}]</b>
           </div>
           <div style={styles.backwardFormula}>
-            Forward RRS sequence: <b>[{build.forwardSequence.join(", ")}]</b>
+            Forward RRS sequence: <b>{formatRRSRecipe(build.forwardSequence)}</b>
           </div>
           <div style={styles.backwardFormula}>
             Final rectangle: <b>{build.finalWidth} × {build.finalHeight}</b>
@@ -1299,7 +1348,7 @@ function TabBackwardRRS() {
 
           <div style={styles.gcfProofBox}>
             This build lands on <b>{build.finalWidth} × {build.finalHeight}</b> with forward sequence{" "}
-            <b>[{build.forwardSequence.join(", ")}]</b>.
+            <b>{formatRRSRecipe(build.forwardSequence)}</b>.
           </div>
         </div>
       </div>
