@@ -1858,141 +1858,120 @@ function StoryTree({ visited, onPickBranch }) {
         Click any leaf — you can come back for more!
       </p>
 
-      <svg width="100%" viewBox="0 0 600 360" style={{ maxWidth: 620, marginTop: 12 }}>
+      <svg width="100%" viewBox="0 0 600 360" style={{ maxWidth: 640, marginTop: 12 }}>
         <defs>
-          <linearGradient id="helixGlow" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.75" />
-            <stop offset="55%" stopColor="#FFEFD6" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.65" />
-          </linearGradient>
           <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
             <feDropShadow dx="0" dy="4" stdDeviation="5" floodColor="#000" floodOpacity="0.14" />
           </filter>
           <filter id="nodeGlow" x="-40%" y="-40%" width="180%" height="180%">
-            <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#fff" floodOpacity="0.5" />
+            <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#fff" floodOpacity="0.45" />
           </filter>
+          <linearGradient id="bark" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#6E3F22" />
+            <stop offset="50%" stopColor="#8B5A3C" />
+            <stop offset="100%" stopColor="#5A341D" />
+          </linearGradient>
         </defs>
 
         {(() => {
-          const centerX = 300;
-          const yTop = 70;
-          const yBottom = 292;
-          const amplitude = 16;
-          const gap = 34;
-          const period = 92;
-          const step = 8;
+          const root = { x: 300, y: 314 };
+          const trunkTop = { x: 300, y: 250 };
+          const n1 = { x: 300, y: 210 };
+          const n2L = { x: 260, y: 170 };
+          const n2R = { x: 340, y: 170 };
+          const n3LL = { x: 220, y: 135 };
+          const n3LR = { x: 285, y: 135 };
+          const n3RL = { x: 315, y: 135 };
+          const n3RR = { x: 380, y: 135 };
 
-          const phase = (y) => ((y - yTop) / period) * Math.PI * 2;
-          const leftX = (y) => centerX - gap / 2 + amplitude * Math.sin(phase(y));
-          const rightX = (y) => centerX + gap / 2 - amplitude * Math.sin(phase(y));
+          const leafSlots = [
+            { x: 145, y: 110 }, // 0
+            { x: 215, y: 92 },  // 1
+            { x: 270, y: 108 }, // 2
+            { x: 330, y: 108 }, // 3
+            { x: 385, y: 92 },  // 4
+            { x: 455, y: 110 }, // 5
+          ];
 
-          const buildPath = (xFn) => {
-            let d = `M ${xFn(yTop).toFixed(2)} ${yTop}`;
-            for (let y = yTop + step; y <= yBottom; y += step) {
-              d += ` L ${xFn(y).toFixed(2)} ${y}`;
-            }
-            return d;
+          const connectors = [
+            { a: root, b: trunkTop, w: 16 },
+            { a: trunkTop, b: n1, w: 12 },
+            { a: n1, b: n2L, w: 9 },
+            { a: n1, b: n2R, w: 9 },
+            { a: n2L, b: n3LL, w: 7 },
+            { a: n2L, b: n3LR, w: 7 },
+            { a: n2R, b: n3RL, w: 7 },
+            { a: n2R, b: n3RR, w: 7 },
+          ];
+
+          const leafParents = [n3LL, n3LL, n3LR, n3RL, n3RR, n3RR];
+
+          const curve = (a, b, bend = 0.35) => {
+            const dx = b.x - a.x;
+            const cx1 = a.x + dx * bend;
+            const cy1 = a.y;
+            const cx2 = b.x - dx * bend;
+            const cy2 = b.y;
+            return `M ${a.x} ${a.y} C ${cx1} ${cy1} ${cx2} ${cy2} ${b.x} ${b.y}`;
           };
 
-          const rungYs = [];
-          for (let y = yTop + 14; y <= yBottom - 10; y += 22) rungYs.push(y);
+          const internalNodes = [n1, n2L, n2R, n3LL, n3LR, n3RL, n3RR];
 
-          const leafLeftX = 118;
-          const leafRightX = 482;
-          const labelW = 150;
-          const labelH = 32;
+          const labelW = 132;
+          const labelH = 28;
           const labelPad = 10;
-
-          const minY = yTop + 22;
-          const maxY = yBottom - 38;
-          const branchYs = branches.map((_, i) => {
-            if (branches.length === 1) return (minY + maxY) / 2;
-            return minY + (i * (maxY - minY)) / (branches.length - 1);
-          });
 
           return (
             <>
-              {/* Soft stage glow behind helix */}
-              <path d={`M ${centerX - 90} ${yTop - 10} Q ${centerX} ${(yTop + yBottom) / 2} ${centerX - 90} ${yBottom + 26}`}
-                fill="none" stroke="url(#helixGlow)" strokeWidth="24" strokeLinecap="round" opacity="0.7" />
-              <path d={`M ${centerX + 90} ${yTop - 10} Q ${centerX} ${(yTop + yBottom) / 2} ${centerX + 90} ${yBottom + 26}`}
-                fill="none" stroke="url(#helixGlow)" strokeWidth="24" strokeLinecap="round" opacity="0.7" />
+              {/* Trunk */}
+              <path d={curve(root, trunkTop, 0.05)} fill="none" stroke="url(#bark)" strokeWidth="18" strokeLinecap="round" />
+              <path d={curve(trunkTop, n1, 0.05)} fill="none" stroke="url(#bark)" strokeWidth="14" strokeLinecap="round" />
 
-              {/* Helix backbones */}
-              <path d={buildPath(leftX)} fill="none" stroke="#7B4A2A" strokeWidth="8" strokeLinecap="round" opacity="0.95" />
-              <path d={buildPath(rightX)} fill="none" stroke="#8B5A3C" strokeWidth="8" strokeLinecap="round" opacity="0.95" />
+              {/* Branch connectors */}
+              {connectors.slice(2).map((c, i) => (
+                <path key={`c-${i}`} d={curve(c.a, c.b, 0.22)} fill="none" stroke="url(#bark)"
+                  strokeWidth={c.w} strokeLinecap="round" opacity="0.96" />
+              ))}
 
-              {/* Helix rungs */}
-              {rungYs.map((y, i) => {
-                const xl = leftX(y);
-                const xr = rightX(y);
-                const bright = i % 2 === 0;
-                return (
-                  <line key={`rung-${i}`}
-                    x1={xl} y1={y} x2={xr} y2={y}
-                    stroke={bright ? "#D9B08C" : "#C28B62"}
-                    strokeWidth={bright ? 4 : 3}
-                    strokeLinecap="round"
-                    opacity={0.95}
-                  />
-                );
-              })}
+              {/* Internal nodes */}
+              {internalNodes.map((p, i) => (
+                <circle key={`n-${i}`} cx={p.x} cy={p.y} r="6" fill="#fff" opacity="0.9" stroke="#8B5A3C" strokeWidth="3" />
+              ))}
 
               {/* Root badge */}
               <g filter="url(#softShadow)">
-                <rect x={centerX - 34} y={yBottom + 22} width="68" height="34" rx="17" fill="#7B4A2A" />
-                <text x={centerX} y={yBottom + 45} textAnchor="middle" fill="#fff" fontSize="14" fontWeight="900">RSS</text>
+                <rect x={root.x - 34} y={root.y + 16} width="68" height="34" rx="17" fill="#7B4A2A" />
+                <text x={root.x} y={root.y + 39} textAnchor="middle" fill="#fff" fontSize="14" fontWeight="900">RSS</text>
               </g>
 
-              {/* Curved phylo branches + leaves */}
+              {/* Leaves */}
               {branches.map((b, i) => {
-                const side = i % 2 === 0 ? "left" : "right";
-                const y = branchYs[i];
-                const attachX = side === "left" ? leftX(y) : rightX(y);
-                const leafX = side === "left" ? leafLeftX : leafRightX;
+                const leaf = leafSlots[i] || { x: 300, y: 90 };
+                const parent = leafParents[i] || n1;
                 const isVisited = visited.has(b.id);
 
-                const midX = (attachX + leafX) / 2;
-                const c1x = side === "left" ? Math.min(midX, attachX - 30) : Math.max(midX, attachX + 30);
-                const c2x = side === "left" ? Math.max(midX, leafX + 50) : Math.min(midX, leafX - 50);
-
-                const branchStroke = isVisited ? "#9A7A62" : "#7B4A2A";
                 const nodeStroke = isVisited ? COLORS.secondary : "#fff";
                 const nodeOpacity = isVisited ? 0.55 : 1;
+                const branchStroke = isVisited ? "#9A7A62" : "#7B4A2A";
 
-                const circleR = 26;
-                // Keep labels inside the viewport by placing them toward the helix (inward).
-                const labelX = side === "left" ? (leafX + circleR + 8) : (leafX - circleR - 8 - labelW);
-                const labelY = y - labelH / 2;
-                const labelTextX = side === "left" ? (labelX + labelPad) : (labelX + labelW - labelPad);
-                const labelAnchor = side === "left" ? "start" : "end";
+                const labelX = leaf.x < 300 ? Math.min(leaf.x + 30, 600 - labelW - 8) : Math.max(leaf.x - 30 - labelW, 8);
+                // Nudge labels around the center to reduce collisions.
+                const labelY = leaf.y - labelH / 2 + ((i === 2) ? 14 : (i === 3) ? -14 : 0);
+                const labelTextX = leaf.x < 300 ? (labelX + labelPad) : (labelX + labelW - labelPad);
+                const labelAnchor = leaf.x < 300 ? "start" : "end";
 
                 return (
                   <g key={b.id} onClick={() => onPickBranch(b.id)} style={{ cursor: "pointer" }}>
-                    <path
-                      d={`M ${attachX.toFixed(2)} ${y.toFixed(2)} C ${c1x.toFixed(2)} ${y.toFixed(2)} ${c2x.toFixed(2)} ${y.toFixed(2)} ${leafX} ${y}`}
-                      fill="none"
-                      stroke={branchStroke}
-                      strokeWidth={5}
-                      strokeLinecap="round"
-                      opacity={0.9}
-                    />
-                    <circle cx={leafX} cy={y} r={circleR}
-                      fill={b.color}
-                      opacity={nodeOpacity}
-                      stroke={nodeStroke}
-                      strokeWidth={4}
-                      filter="url(#nodeGlow)"
-                    />
-                    <text x={leafX} y={y + 7} textAnchor="middle" fontSize="22">{b.emoji}</text>
+                    <circle cx={leaf.x} cy={leaf.y} r="40" fill="transparent" />
+                    <path d={curve(parent, leaf, 0.28)} fill="none" stroke={branchStroke} strokeWidth="6" strokeLinecap="round" opacity="0.95" />
+                    <circle cx={leaf.x} cy={leaf.y} r="26" fill={b.color} opacity={nodeOpacity}
+                      stroke={nodeStroke} strokeWidth="4" filter="url(#nodeGlow)" />
+                    <text x={leaf.x} y={leaf.y + 7} textAnchor="middle" fontSize="22">{b.emoji}</text>
 
                     <g filter="url(#softShadow)" opacity={nodeOpacity}>
                       <rect x={labelX} y={labelY} width={labelW} height={labelH} rx={labelH / 2}
-                        fill="#fff"
-                        stroke={b.color}
-                        strokeWidth={2}
-                      />
-                      <text x={labelTextX} y={y + 5} textAnchor={labelAnchor}
+                        fill="#fff" stroke={b.color} strokeWidth={2} />
+                      <text x={labelTextX} y={leaf.y + 5} textAnchor={labelAnchor}
                         fill={COLORS.text} fontSize="12" fontWeight="900">
                         {b.name}
                       </text>
@@ -2000,8 +1979,9 @@ function StoryTree({ visited, onPickBranch }) {
 
                     {isVisited && (
                       <g>
-                        <circle cx={leafX + (side === "left" ? -18 : 18)} cy={y - 18} r="10" fill="#fff" opacity="0.95" />
-                        <text x={leafX + (side === "left" ? -18 : 18)} y={y - 14} textAnchor="middle" fontSize="14" fontWeight="900" fill={COLORS.secondary}>✓</text>
+                        <circle cx={leaf.x + (leaf.x < 300 ? -18 : 18)} cy={leaf.y - 18} r="10" fill="#fff" opacity="0.95" />
+                        <text x={leaf.x + (leaf.x < 300 ? -18 : 18)} y={leaf.y - 14} textAnchor="middle"
+                          fontSize="14" fontWeight="900" fill={COLORS.secondary}>✓</text>
                       </g>
                     )}
                   </g>
