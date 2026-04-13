@@ -135,8 +135,8 @@ const COLORS = {
 
 const SQUARE_COLORS = ["#FF6B35", "#4ECDC4", "#FFE66D", "#A06CD5", "#FF6B9D", "#45B7D1", "#96CEB4", "#F7DC6F"];
 
-const TAB_ICONS = ["🔢", "🔁", "🧩", "🗺️", "🔍", "🎨"];
-const TAB_NAMES = ["RSS Machine", "Backward RRS", "GCF", "Number Map", "√ Explorer", "Rectangle Art"];
+const TAB_ICONS = ["🔢", "🔁", "🧩", "🗺️", "🔍", "🎨", "🥧"];
+const TAB_NAMES = ["RSS Machine", "Backward RRS", "GCF", "Number Map", "√ Explorer", "Rectangle Art", "Pi Explorer"];
 
 /* ─────────────── TAB 1: RSS MACHINE ─────────────── */
 function TabRSS() {
@@ -1150,17 +1150,358 @@ function TabArt() {
 }
 
 /* ─────────────── MAIN APP ─────────────── */
+/* ─────────────── TAB 7: PI EXPLORER ─────────────── */
+function TabPi() {
+  // π's continued fraction: [3; 7, 15, 1, 292, 1, 1, 1, 2, 1, ...]
+  const piCF = [3, 7, 15, 1, 292];
+  const [revealed, setRevealed] = useState(1); // columns revealed
+  const [showQp, setShowQp] = useState(false);
+
+  const PI = Math.PI;
+
+  // Build Euler's table: for each column, generate all semiconvergents
+  const columns = useMemo(() => {
+    const cols = [];
+    // convergents: p_{-1}/q_{-1} = 1/0, p_0/q_0 = a_0/1
+    let pPrev = 1, qPrev = 0, pCurr = piCF[0], qCurr = 1;
+    cols.push({ header: piCF[0], entries: [{ p: pCurr, q: qCurr, principal: true }] });
+
+    for (let k = 1; k < piCF.length; k++) {
+      const ak = piCF[k];
+      const entries = [];
+      // semiconvergents: (i * pCurr + pPrev) / (i * qCurr + qPrev) for i = 1..ak
+      for (let i = 1; i <= Math.min(ak, 15); i++) {
+        entries.push({
+          p: i * pCurr + pPrev,
+          q: i * qCurr + qPrev,
+          principal: i === ak,
+        });
+      }
+      if (ak > 15) entries.push({ ellipsis: true, total: ak });
+      cols.push({ header: ak, entries });
+      // advance
+      const pNext = ak * pCurr + pPrev;
+      const qNext = ak * qCurr + qPrev;
+      pPrev = pCurr; qPrev = qCurr;
+      pCurr = pNext; qCurr = qNext;
+    }
+    return cols;
+  }, []);
+
+  return (
+    <div>
+      <div style={styles.sectionIntro}>
+        <h2 style={styles.sectionTitle}>🥧 Pi Explorer</h2>
+        <p style={styles.sectionDesc}>
+          Euler built a table to find the best fractions that approximate π.
+          Each column has <b>semiconvergents</b> (good guesses) that build up to a <b>principal convergent</b> (the best one so far)!
+        </p>
+        <p style={{ ...styles.sectionDesc, fontSize: 13, marginTop: 8 }}>
+          π = [{piCF.join("; ").replace(";", ";")}...] — each column header is one term in π's RSS recipe.
+        </p>
+      </div>
+
+      <div style={styles.controlRow}>
+        <span style={styles.inputLabel}>Reveal columns:</span>
+        {piCF.map((_, i) => (
+          <button key={i} onClick={() => setRevealed(i + 1)}
+            style={{ ...styles.presetBtn, ...(revealed === i + 1 ? styles.presetActive : {}) }}>
+            {i + 1}
+          </button>
+        ))}
+        <button style={{ ...styles.modeBtn, marginLeft: "auto" }}
+          onClick={() => setShowQp(!showQp)}>
+          {showQp ? "Show p/q" : "Show |qπ − p|"}
+        </button>
+      </div>
+
+      <div style={styles.piTableWrap}>
+        <div style={styles.piTable}>
+          {columns.slice(0, revealed).map((col, ci) => (
+            <div key={ci} style={styles.piCol}>
+              <div style={styles.piColHeader}>{col.header}</div>
+              <div style={styles.piColBody}>
+                {col.entries.map((e, ei) => {
+                  if (e.ellipsis) return (
+                    <div key={ei} style={{ ...styles.piCell, fontStyle: "italic", color: COLORS.textLight }}>
+                      ... ({e.total} total)
+                    </div>
+                  );
+                  const qpVal = Math.abs(e.q * PI - e.p);
+                  const decVal = e.p / e.q;
+                  const overUnder = decVal > PI ? "↑" : "↓";
+                  return (
+                    <div key={ei} style={{
+                      ...styles.piCell,
+                      ...(e.principal ? styles.piCellPrincipal : {}),
+                    }}>
+                      <div style={styles.piFrac}>
+                        <div style={styles.piNum}>{e.p}</div>
+                        <div style={styles.piDen}>{e.q}</div>
+                      </div>
+                      <div style={styles.piMeta}>
+                        {showQp ? qpVal.toFixed(4) : decVal.toFixed(4)}{" "}
+                        <span style={{ color: decVal > PI ? COLORS.pink : COLORS.secondary }}>{overUnder}</span>
+                      </div>
+                      {e.principal && <div style={styles.piPrincipalTag}>★ principal</div>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={styles.insightBox}>
+        <h3 style={{ margin: "0 0 8px", color: COLORS.primary }}>💡 Things to Notice</h3>
+        <div style={{ fontSize: 13, lineHeight: 1.7 }}>
+          <p style={{ margin: "4px 0" }}>
+            <b>⬆️⬇️ Alternating:</b> Principal convergents flip between over and under π (3/1 is under, 22/7 is over, 333/106 is under, 355/113 is over...).
+          </p>
+          <p style={{ margin: "4px 0" }}>
+            <b>★ Principal vs semi:</b> The principal convergent in each column is the first fraction where <code>|qπ − p|</code> beats ALL previous principal convergents. Click "Show |qπ − p|" to see!
+          </p>
+          <p style={{ margin: "4px 0" }}>
+            <b>🎯 Famous ones:</b> 22/7 (Archimedes' approximation), 355/113 (Zu Chongzhi, 480 CE — accurate to 6 decimals!).
+          </p>
+          <p style={{ margin: "4px 0" }}>
+            <b>🤯 The 292 mystery:</b> Column 5 has <b>292</b> entries because π's continued fraction has a HUGE term there. That's why 355/113 is so unusually accurate — the next correction is tiny!
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────── STORY WELCOME ─────────────── */
+function StoryWelcome({ onStart }) {
+  return (
+    <div style={styles.storyScreen}>
+      <div style={{ fontSize: 64, marginBottom: 16 }}>🏖️</div>
+      <h1 style={styles.storyTitle}>Welcome to Number Sandbox</h1>
+      <p style={styles.storyBigText}>Ready to get sand all over your brain?</p>
+      <div style={{ display: "flex", gap: 12, marginTop: 24, flexWrap: "wrap", justifyContent: "center" }}>
+        <button style={styles.bigBtn} onClick={onStart}>Yes!</button>
+        <button style={{ ...styles.bigBtn, background: COLORS.secondary }} onClick={onStart}>and more Yes!</button>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────── STORY: NUMBER Q ─────────────── */
+function StoryNumberQ({ onContinue, onSkip }) {
+  const [text, setText] = useState("");
+
+  const detect = (input) => {
+    const found = { whole: false, fraction: false, decimal: false, negative: false, irrational: false };
+    if (/\b\d+\b/.test(input)) found.whole = true;
+    if (/\d+\/\d+/.test(input) || /fraction/i.test(input)) found.fraction = true;
+    if (/\d+\.\d+|decimal/i.test(input)) found.decimal = true;
+    if (/-\d+|negative/i.test(input)) found.negative = true;
+    if (/√|sqrt|pi|π|irrational|∞|infinity|e\b/i.test(input)) found.irrational = true;
+    return found;
+  };
+
+  const handleShare = () => {
+    onContinue(detect(text), text);
+  };
+
+  return (
+    <div style={styles.storyScreen}>
+      <div style={{ fontSize: 48, marginBottom: 12 }}>🤔</div>
+      <h2 style={styles.storyTitle}>What do you think is a number?</h2>
+      <p style={{ ...styles.storyBigText, fontSize: 16 }}>
+        Type any numbers or ideas that come to mind!
+      </p>
+      <textarea
+        style={styles.storyTextarea}
+        value={text}
+        onChange={e => setText(e.target.value)}
+        placeholder="e.g. 1, 2, 3... or 1/2, √2, π, anything!"
+        rows={3}
+      />
+      <div style={{ display: "flex", gap: 10, marginTop: 16, flexWrap: "wrap", justifyContent: "center" }}>
+        <button style={styles.bigBtn} onClick={handleShare} disabled={!text.trim()}>Share!</button>
+        <button style={styles.skipBtn} onClick={onSkip}>Skip →</button>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────── STORY: REACTION ─────────────── */
+function StoryReaction({ detected, userText, onContinue }) {
+  const mentioned = [];
+  if (detected.whole) mentioned.push("whole numbers");
+  if (detected.fraction) mentioned.push("fractions");
+  if (detected.decimal) mentioned.push("decimals");
+  if (detected.negative) mentioned.push("negative numbers");
+  if (detected.irrational) mentioned.push("irrational numbers like √2 or π");
+
+  const missing = [];
+  if (!detected.whole) missing.push({ name: "whole numbers", example: "like 1, 7, 42" });
+  if (!detected.fraction && !detected.decimal) missing.push({ name: "fractions", example: "like 1/2 or 3/4" });
+  if (!detected.irrational) missing.push({ name: "IRRATIONAL numbers", example: "like √2 or π — they go on forever!" });
+
+  return (
+    <div style={styles.storyScreen}>
+      <div style={{ fontSize: 48, marginBottom: 12 }}>🤖</div>
+      <h2 style={styles.storyTitle}>Oh, nice!</h2>
+      {mentioned.length > 0 && (
+        <p style={styles.storyText}>
+          I see you mentioned <b style={{ color: COLORS.primary }}>{mentioned.join(", ")}</b>. Cool!
+        </p>
+      )}
+      {missing.length > 0 && (
+        <div style={styles.storyCard}>
+          <p style={{ margin: "0 0 8px", fontWeight: 700 }}>Have you met these too?</p>
+          {missing.slice(0, 2).map((m, i) => (
+            <p key={i} style={{ margin: "4px 0", fontSize: 14 }}>
+              ✨ <b style={{ color: COLORS.purple }}>{m.name}</b> {m.example}
+            </p>
+          ))}
+        </div>
+      )}
+      <p style={{ ...styles.storyText, marginTop: 16 }}>
+        Now, let me show you a <b>brand new way</b> to express numbers...
+      </p>
+      <button style={styles.bigBtn} onClick={onContinue}>Show me! →</button>
+    </div>
+  );
+}
+
+/* ─────────────── STORY: RSS INTRO ─────────────── */
+function StoryRSSIntro({ onContinue }) {
+  return (
+    <div style={styles.storyScreen}>
+      <div style={{ fontSize: 48, marginBottom: 12 }}>🔢</div>
+      <h2 style={styles.storyTitle}>Meet RSS!</h2>
+      <p style={styles.storyText}>
+        <b>RSS</b> = <b>R</b>epeated <b>R</b>eciprocal <b>S</b>ubtraction.
+      </p>
+      <p style={styles.storyText}>
+        It's a way to break ANY two numbers into a special recipe of division steps.
+        Let's try it on <b style={{ color: COLORS.primary }}>55 and 34</b>!
+      </p>
+      <button style={styles.bigBtn} onClick={onContinue}>Try the RSS Machine →</button>
+    </div>
+  );
+}
+
+/* ─────────────── STORY: RSS TREE BRANCHES ─────────────── */
+function StoryTree({ visited, onPickBranch }) {
+  const branches = [
+    { id: 1, name: "Backward RSS", emoji: "🔁", color: "#4ECDC4", desc: "Build rectangles from RSS recipes" },
+    { id: 4, name: "√ Explorer", emoji: "🔍", color: "#A06CD5", desc: "Find RSS for square roots" },
+    { id: 6, name: "Pi Explorer", emoji: "🥧", color: "#FF6B9D", desc: "Euler's table of π approximations" },
+    { id: 2, name: "GCF", emoji: "🧩", color: "#FFE66D", desc: "Find greatest common factors" },
+    { id: 3, name: "Number Map", emoji: "🗺️", color: "#45B7D1", desc: "Classify all types of numbers" },
+    { id: 5, name: "Rectangle Art", emoji: "🎨", color: "#F7DC6F", desc: "Make art with RSS squares" },
+  ];
+
+  return (
+    <div style={styles.storyScreen}>
+      <div style={{ fontSize: 48, marginBottom: 8 }}>🌳</div>
+      <h2 style={styles.storyTitle}>The RSS Tree</h2>
+      <p style={styles.storyText}>
+        Now that you know RSS, which branch do you want to explore? <br/>
+        Click any leaf — you can come back for more!
+      </p>
+
+      <svg width="100%" viewBox="0 0 600 360" style={{ maxWidth: 600, marginTop: 12 }}>
+        {/* Trunk */}
+        <rect x="280" y="260" width="40" height="100" fill="#8B5A3C" rx="4" />
+        <text x="300" y="340" textAnchor="middle" fill="#fff" fontSize="14" fontWeight="800">RSS</text>
+
+        {/* Branches as lines */}
+        {branches.map((b, i) => {
+          const angle = (i / (branches.length - 1)) * 140 - 70;
+          const rad = (angle * Math.PI) / 180;
+          const x = 300 + Math.sin(rad) * 220;
+          const y = 260 - Math.cos(rad) * 180;
+          const isVisited = visited.has(b.id);
+          return (
+            <g key={b.id} onClick={() => onPickBranch(b.id)} style={{ cursor: "pointer" }}>
+              <line x1="300" y1="260" x2={x} y2={y} stroke="#8B5A3C" strokeWidth="6" strokeLinecap="round" />
+              <circle cx={x} cy={y} r="42" fill={b.color} opacity={isVisited ? 0.5 : 1}
+                stroke={isVisited ? COLORS.secondary : "#fff"} strokeWidth="4" />
+              <text x={x} y={y - 4} textAnchor="middle" fontSize="22">{b.emoji}</text>
+              <text x={x} y={y + 14} textAnchor="middle" fill="#fff" fontSize="10" fontWeight="800">
+                {b.name}
+              </text>
+              {isVisited && <text x={x + 30} y={y - 28} fontSize="16">✓</text>}
+            </g>
+          );
+        })}
+      </svg>
+
+      <p style={{ ...styles.storyText, fontSize: 13, color: COLORS.textLight, marginTop: 8 }}>
+        {visited.size === 0 ? "Pick any branch to start!" :
+         visited.size === branches.length ? "🎉 You explored every branch!" :
+         `You've visited ${visited.size} of ${branches.length} branches.`}
+      </p>
+    </div>
+  );
+}
+
+/* ─────────────── MAIN APP ─────────────── */
 function NumberSandbox() {
+  const [mode, setMode] = useState("story");
+  const [storyStep, setStoryStep] = useState("welcome");
+  const [detected, setDetected] = useState({});
+  const [userText, setUserText] = useState("");
   const [tab, setTab] = useState(0);
-  const tabs = [TabRSS, TabBackwardRRS, TabGCF, TabMap, TabSqrt, TabArt];
+  const [visitedBranches, setVisitedBranches] = useState(new Set());
+
+  const tabs = [TabRSS, TabBackwardRRS, TabGCF, TabMap, TabSqrt, TabArt, TabPi];
   const ActiveTab = tabs[tab];
+
+  const restartStory = () => {
+    setMode("story");
+    setStoryStep("welcome");
+    setVisitedBranches(new Set());
+    setDetected({});
+    setUserText("");
+  };
+
+  const handlePickBranch = (branchId) => {
+    setTab(branchId);
+    setVisitedBranches(prev => new Set([...prev, branchId]));
+    setMode("branch");
+  };
+
+  const returnToTree = () => {
+    setMode("story");
+    setStoryStep("tree");
+  };
+
+  const renderStory = () => {
+    if (storyStep === "welcome") return <StoryWelcome onStart={() => setStoryStep("numberQ")} />;
+    if (storyStep === "numberQ") return <StoryNumberQ
+      onContinue={(d, t) => { setDetected(d); setUserText(t); setStoryStep("reaction"); }}
+      onSkip={() => setStoryStep("rssIntro")} />;
+    if (storyStep === "reaction") return <StoryReaction detected={detected} userText={userText}
+      onContinue={() => setStoryStep("rssIntro")} />;
+    if (storyStep === "rssIntro") return <StoryRSSIntro onContinue={() => setStoryStep("rssMachine")} />;
+    if (storyStep === "rssMachine") return (
+      <div>
+        <div style={styles.storyBanner}>
+          📖 <b>Story Mode:</b> Try out the RSS Machine below, then continue when ready.
+          <button style={styles.skipBtn} onClick={() => setStoryStep("tree")}>I'm ready →</button>
+        </div>
+        <TabRSS />
+      </div>
+    );
+    if (storyStep === "tree") return <StoryTree visited={visitedBranches} onPickBranch={handlePickBranch} />;
+    return null;
+  };
 
   return (
     <div style={styles.app}>
       <div style={styles.container}>
         <header style={styles.header}>
           <h1 style={styles.title}>
-            <span style={styles.titleEmoji}>🧮</span>
+            <span style={styles.titleEmoji}>🏖️</span>
             Number Sandbox
           </h1>
           <p style={styles.headerDesc}>
@@ -1168,23 +1509,49 @@ function NumberSandbox() {
           </p>
         </header>
 
-        <nav style={styles.tabBar}>
-          {TAB_NAMES.map((name, i) => (
-            <button key={i} onClick={() => setTab(i)}
-              style={{ ...styles.tab, ...(tab === i ? styles.tabActive : {}) }}>
-              <span style={styles.tabIcon}>{TAB_ICONS[i]}</span>
-              <span style={styles.tabLabel}>{name}</span>
-            </button>
-          ))}
-        </nav>
+        {/* Mode toggle + restart */}
+        <div style={styles.topBar}>
+          <div style={styles.modePills}>
+            <button style={{ ...styles.modePill, ...(mode === "story" ? styles.modePillActive : {}) }}
+              onClick={() => setMode("story")}>📖 Story Mode</button>
+            <button style={{ ...styles.modePill, ...(mode === "explore" ? styles.modePillActive : {}) }}
+              onClick={() => setMode("explore")}>🔧 Free Explore</button>
+          </div>
+          {mode === "story" && (
+            <button style={styles.restartBtn} onClick={restartStory}>↺ Restart Story</button>
+          )}
+        </div>
 
-        <main style={styles.main}>
-          <ActiveTab />
-        </main>
+        {mode === "story" && (
+          <main style={styles.main}>{renderStory()}</main>
+        )}
 
-        <footer style={styles.footer}>
-          Made with math & curiosity ✨
-        </footer>
+        {mode === "branch" && (
+          <>
+            <div style={styles.storyBanner}>
+              🌳 Exploring branch: <b>{TAB_NAMES[tab]}</b>
+              <button style={styles.skipBtn} onClick={returnToTree}>← Back to Tree</button>
+            </div>
+            <main style={styles.main}><ActiveTab /></main>
+          </>
+        )}
+
+        {mode === "explore" && (
+          <>
+            <nav style={styles.tabBar}>
+              {TAB_NAMES.map((name, i) => (
+                <button key={i} onClick={() => setTab(i)}
+                  style={{ ...styles.tab, ...(tab === i ? styles.tabActive : {}) }}>
+                  <span style={styles.tabIcon}>{TAB_ICONS[i]}</span>
+                  <span style={styles.tabLabel}>{name}</span>
+                </button>
+              ))}
+            </nav>
+            <main style={styles.main}><ActiveTab /></main>
+          </>
+        )}
+
+        <footer style={styles.footer}>Made with math & curiosity ✨</footer>
       </div>
     </div>
   );
@@ -1855,6 +2222,125 @@ const styles = {
   footer: {
     textAlign: "center", marginTop: 24, padding: 16,
     fontSize: 13, color: COLORS.textLight, fontWeight: 600,
+  },
+
+  // Story mode
+  topBar: {
+    display: "flex", justifyContent: "space-between", alignItems: "center",
+    marginBottom: 16, gap: 12, flexWrap: "wrap",
+  },
+  modePills: {
+    display: "flex", gap: 6, background: COLORS.card,
+    borderRadius: 999, padding: 4, boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+  },
+  modePill: {
+    padding: "8px 16px", fontSize: 12, fontWeight: 700,
+    background: "transparent", color: COLORS.textLight,
+    border: "none", borderRadius: 999, cursor: "pointer",
+    fontFamily: "inherit", transition: "all 0.2s",
+  },
+  modePillActive: {
+    background: COLORS.primary, color: "#fff",
+    boxShadow: "0 2px 8px rgba(255,107,53,0.3)",
+  },
+  restartBtn: {
+    padding: "6px 14px", fontSize: 12, fontWeight: 700,
+    background: COLORS.card, color: COLORS.textLight,
+    border: `2px solid ${COLORS.border}`, borderRadius: 999,
+    cursor: "pointer", fontFamily: "inherit",
+  },
+  storyScreen: {
+    textAlign: "center", padding: "32px 20px", maxWidth: 600, margin: "0 auto",
+  },
+  storyTitle: {
+    fontSize: 30, fontWeight: 900, color: COLORS.primary,
+    margin: "0 0 12px", textShadow: "2px 2px 0 #FFE66D",
+  },
+  storyBigText: {
+    fontSize: 20, fontWeight: 700, color: COLORS.text,
+    lineHeight: 1.5, margin: "8px 0",
+  },
+  storyText: {
+    fontSize: 16, fontWeight: 600, color: COLORS.text,
+    lineHeight: 1.7, margin: "12px 0",
+  },
+  storyCard: {
+    background: `${COLORS.accent}30`, borderRadius: 14, padding: 16,
+    margin: "16px 0", border: `2px solid ${COLORS.accent}`,
+    textAlign: "left",
+  },
+  storyTextarea: {
+    width: "100%", maxWidth: 500, padding: 14, fontSize: 15,
+    fontFamily: "inherit", borderRadius: 12, marginTop: 12,
+    border: `2px solid ${COLORS.border}`, background: COLORS.tabBg,
+    resize: "vertical", color: COLORS.text,
+  },
+  bigBtn: {
+    padding: "14px 28px", fontSize: 16, fontWeight: 800,
+    background: COLORS.primary, color: "#fff",
+    border: "none", borderRadius: 999, cursor: "pointer",
+    fontFamily: "inherit", boxShadow: "0 4px 12px rgba(255,107,53,0.35)",
+    transition: "transform 0.15s",
+  },
+  skipBtn: {
+    padding: "10px 18px", fontSize: 13, fontWeight: 700,
+    background: "transparent", color: COLORS.textLight,
+    border: `2px solid ${COLORS.border}`, borderRadius: 999,
+    cursor: "pointer", fontFamily: "inherit",
+  },
+  storyBanner: {
+    display: "flex", alignItems: "center", gap: 12,
+    padding: "12px 18px", background: `${COLORS.accent}25`,
+    border: `2px solid ${COLORS.accent}`, borderRadius: 14,
+    marginBottom: 12, fontSize: 13, fontWeight: 600,
+    flexWrap: "wrap", justifyContent: "space-between",
+  },
+
+  // Pi Explorer
+  piTableWrap: {
+    overflowX: "auto", background: COLORS.tabBg,
+    borderRadius: 14, padding: 16, border: `1px solid ${COLORS.border}`,
+    marginBottom: 16,
+  },
+  piTable: {
+    display: "flex", gap: 12, alignItems: "flex-start", minWidth: "min-content",
+  },
+  piCol: {
+    display: "flex", flexDirection: "column", alignItems: "center",
+    minWidth: 100,
+  },
+  piColHeader: {
+    fontSize: 22, fontWeight: 900, color: "#fff",
+    background: COLORS.primary, width: 50, height: 50,
+    display: "flex", alignItems: "center", justifyContent: "center",
+    borderRadius: "50%", marginBottom: 10,
+    boxShadow: "0 3px 8px rgba(255,107,53,0.35)",
+  },
+  piColBody: { display: "flex", flexDirection: "column", gap: 6, width: "100%" },
+  piCell: {
+    background: "#fff", borderRadius: 10, padding: "8px 12px",
+    border: `1px solid ${COLORS.border}`,
+    display: "flex", flexDirection: "column", alignItems: "center",
+    transition: "all 0.2s",
+  },
+  piCellPrincipal: {
+    background: `${COLORS.accent}40`,
+    border: `2px solid ${COLORS.primary}`,
+    boxShadow: "0 2px 8px rgba(255,107,53,0.2)",
+  },
+  piFrac: {
+    display: "flex", flexDirection: "column", alignItems: "center",
+    fontWeight: 800, fontSize: 14,
+  },
+  piNum: { borderBottom: `2px solid ${COLORS.text}`, padding: "0 8px", color: COLORS.text },
+  piDen: { padding: "0 8px", color: COLORS.text },
+  piMeta: {
+    fontSize: 10, color: COLORS.textLight, marginTop: 4,
+    fontFamily: "monospace", fontWeight: 700,
+  },
+  piPrincipalTag: {
+    fontSize: 9, fontWeight: 800, color: COLORS.primary,
+    marginTop: 3, textTransform: "uppercase", letterSpacing: "0.5px",
   },
 };
 
