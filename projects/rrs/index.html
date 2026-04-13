@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Number Sandbox — Explore RSS, Continued Fractions & Rectangle Art</title>
+  <title>Number Sandbox — Explore RSS, Continued Fractions & Rectangle Gallery</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -150,8 +150,8 @@ const COLORS = {
 
 const SQUARE_COLORS = ["#FF6B35", "#4ECDC4", "#FFE66D", "#A06CD5", "#FF6B9D", "#45B7D1", "#96CEB4", "#F7DC6F"];
 
-const TAB_ICONS = ["🔢", "🔁", "🧩", "🗺️", "🔍", "🎨", "🥧"];
-const TAB_NAMES = ["RSS Machine", "Backward RRS", "GCF", "Number Map", "√ Explorer", "Rectangle Art", "Pi Explorer"];
+const TAB_ICONS = ["🔢", "🔁", "🧩", "🔍", "🥧", "🗺️", "🎨"];
+const TAB_NAMES = ["RSS Machine", "Backward RRS", "GCF", "√ Explorer", "Pi Explorer", "Number Map", "Rectangle Gallery"];
 
 /* STORY_TREE_BG_START */
 // Story Tree photo (embedded) so GitHub Pages can stay self-contained.
@@ -1123,11 +1123,11 @@ function TabBackwardRRS() {
     <div>
       <TabIntro
         emoji="🔁"
-        title="Backward RSS"
+        title="Backward RRS"
         speech={[
-          "What if we do RSS... backwards?",
+          "What if we do RRS... backwards?",
           "Instead of starting with two big numbers and breaking them apart, let's start with the smallest square and BUILD UP into a rectangle!",
-          "Pick how many same-size squares to stack at each step. Each choice is one term of an RSS recipe — just in reverse!",
+          "Pick how many same-size squares to stack at each step. Each choice is one term of an RRS recipe — just in reverse!",
         ]}
         hint="Try different stage counts and see what rectangle shapes you can build."
       />
@@ -1554,7 +1554,7 @@ function TabArt() {
     <div>
       <TabIntro
         emoji="🎨"
-        title="Rectangle Art"
+        title="Rectangle Gallery"
         speech={[
           "Every RSS calculation is secretly ALSO a picture!",
           "When we pack squares into a rectangle, different number pairs create totally different patterns.",
@@ -1883,35 +1883,35 @@ function StoryRSSIntro({ onContinue }) {
   );
 }
 
-/* ─────────────── STORY: RSS TREE BRANCHES ─────────────── */
+/* ─────────────── STORY: RRS TREE BRANCHES ─────────────── */
 function StoryTree({ visited, onPickBranch }) {
   const [hoveredId, setHoveredId] = useState(null);
   const branches = [
-    { id: 1, name: "Backward RSS", emoji: "🔁", color: "#4ECDC4", desc: "Build rectangles from RSS recipes" },
-    { id: 4, name: "√ Explorer", emoji: "🔍", color: "#A06CD5", desc: "Find RSS for square roots" },
-    { id: 6, name: "Pi Explorer", emoji: "🥧", color: "#FF6B9D", desc: "Euler's table of π approximations" },
+    { id: 1, name: "Backward RRS", emoji: "🔁", color: "#4ECDC4", desc: "Build rectangles from RRS recipes" },
     { id: 2, name: "GCF", emoji: "🧩", color: "#FFE66D", desc: "Find greatest common factors" },
-    { id: 3, name: "Number Map", emoji: "🗺️", color: "#45B7D1", desc: "Classify all types of numbers" },
-    { id: 5, name: "Rectangle Art", emoji: "🎨", color: "#F7DC6F", desc: "Make art with RSS squares" },
+    { id: 3, name: "√ Explorer", emoji: "🔍", color: "#A06CD5", desc: "Find RRS for square roots" },
+    { id: 4, name: "Pi Explorer", emoji: "🥧", color: "#FF6B9D", desc: "Euler's table of π approximations" },
+    { id: 5, name: "Number Map", emoji: "🗺️", color: "#45B7D1", desc: "Classify all types of numbers" },
+    { id: 6, name: "Rectangle Gallery", emoji: "🎨", color: "#F7DC6F", desc: "Make art with RRS squares" },
   ];
 
   return (
     <div style={styles.storyScreen}>
       <div style={{ fontSize: 48, marginBottom: 8 }}>🌳</div>
-      <h2 style={styles.storyTitle}>The RSS Tree</h2>
+      <h2 style={styles.storyTitle}>The RRS Tree</h2>
       <p style={styles.storyText}>
-        Now that you know RSS, which branch do you want to explore? <br/>
+        Now that you know RRS, which branch do you want to explore? <br/>
         Click any leaf — you can come back for more!
       </p>
 
       {(() => {
         const leafSpots = [
-          { cx: 0.20, cy: 0.29, w: 0.25, h: 0.18 }, // upper-left canopy
-          { cx: 0.43, cy: 0.20, w: 0.23, h: 0.18 }, // top mid-left canopy
-          { cx: 0.58, cy: 0.20, w: 0.23, h: 0.18 }, // top mid-right canopy
-          { cx: 0.80, cy: 0.29, w: 0.25, h: 0.18 }, // upper-right canopy
-          { cx: 0.19, cy: 0.52, w: 0.25, h: 0.18 }, // lower-left canopy
-          { cx: 0.80, cy: 0.55, w: 0.25, h: 0.18 }, // lower-right canopy
+          { cx: 0.20, cy: 0.29, w: 0.25, h: 0.18 }, // Backward RRS (upper-left canopy)
+          { cx: 0.80, cy: 0.29, w: 0.25, h: 0.18 }, // GCF (upper-right canopy)
+          { cx: 0.43, cy: 0.20, w: 0.23, h: 0.18 }, // √ Explorer (top mid-left canopy)
+          { cx: 0.58, cy: 0.20, w: 0.23, h: 0.18 }, // Pi Explorer (top mid-right canopy)
+          { cx: 0.19, cy: 0.52, w: 0.25, h: 0.18 }, // Number Map (lower-left canopy)
+          { cx: 0.80, cy: 0.55, w: 0.25, h: 0.18 }, // Rectangle Gallery (lower-right canopy)
         ];
 
         return (
@@ -1976,7 +1976,7 @@ function NumberSandbox() {
   const [tab, setTab] = useState(0);
   const [visitedBranches, setVisitedBranches] = useState(new Set());
 
-  const tabs = [TabRSS, TabBackwardRRS, TabGCF, TabMap, TabSqrt, TabArt, TabPi];
+  const tabs = [TabRSS, TabBackwardRRS, TabGCF, TabSqrt, TabPi, TabMap, TabArt];
   const ActiveTab = tabs[tab];
 
   const restartStory = () => {
