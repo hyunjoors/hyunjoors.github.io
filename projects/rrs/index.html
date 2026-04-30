@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Number Sandbox — Explore RSS, Continued Fractions & Rectangle Gallery</title>
+  <title>Number Sandbox — Explore RRS, Continued Fractions & Rectangle Gallery</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -160,7 +160,7 @@ const COLORS = {
 const SQUARE_COLORS = ["#FF6B35", "#4ECDC4", "#FFE66D", "#A06CD5", "#FF6B9D", "#45B7D1", "#96CEB4", "#F7DC6F"];
 
 const TAB_ICONS = ["🔢", "🔁", "🧩", "🔍", "🥧", "🗺️", "🎨"];
-const TAB_NAMES = ["RSS Machine", "Backward RRS", "GCF", "√ Explorer", "Pi Explorer", "Number Map", "Rectangle Gallery"];
+const TAB_NAMES = ["RRS Machine", "Backward RRS", "GCF", "√ Explorer", "Pi Explorer", "Number Map", "Rectangle Gallery"];
 
 /* STORY_TREE_BG_START */
 // Story Tree photo (embedded) so GitHub Pages can stay self-contained.
@@ -259,8 +259,8 @@ function TabIntro({ emoji, title, speech, hint }) {
   );
 }
 
-/* ─────────────── RSS TUTORIAL ─────────────── */
-function RSSTutorial({ initialStep = 0, divisionDone = false, onTryAgain, onPickPair, onStartPractice, onComplete, onPlayReveal }) {
+/* ─────────────── RRS TUTORIAL ─────────────── */
+function RRSTutorial({ initialStep = 0, divisionDone = false, onTryAgain, onPickPair, onStartDemo, onStartPractice, onComplete, onPlayReveal }) {
   const [step, setStep] = useState(initialStep);
   const [done, setDone] = useState(false);
   const [typed, setTyped] = useState(false);
@@ -276,7 +276,7 @@ function RSSTutorial({ initialStep = 0, divisionDone = false, onTryAgain, onPick
   // If the student replays the division while we're on the reflection step,
   // reset typing so the button doesn't appear early.
   useEffect(() => {
-    if (step === 4 && !divisionDone) setTyped(false);
+    if ((step === 4 || step === 6) && !divisionDone) setTyped(false);
   }, [step, divisionDone]);
 
   if (done) {
@@ -374,26 +374,26 @@ function RSSTutorial({ initialStep = 0, divisionDone = false, onTryAgain, onPick
     );
   }
 
-  // Step 2 (prediction) removed — not appropriate before students know what RSS is.
+  // Step 2 (prediction) removed — not appropriate before students know what RRS is.
   // The prediction prompt now lives in the post-tutorial "new pair" flow.
 
-  // Step 3: Student practice
+  // Step 3: Professor demo first
   if (step === 3) {
     return (
       <div style={{ ...styles.tutorialCard, ...styles.tutorialHighlight }}>
         <TeacherBubble
-          text={`Nice, ${chosenPair}! This time, YOU will do the division. Fill in each step: a ÷ b = q remainder r. When you're correct, the rectangle picture will update!`}
+          text={`Nice, ${chosenPair}! First, watch me do one full RRS example. We'll walk through the division steps together, and then it'll be your turn.`}
           onDone={() => setTyped(true)}
         />
         {typed && (
           <div style={styles.tutorialActions}>
             <button style={{ ...styles.bigBtn, animation: "pulse 1.5s infinite" }} onClick={() => {
               if (onPlayReveal) onPlayReveal(); // reveal practice UI
-              if (onStartPractice) onStartPractice();
-              setStep(4); // reflection waits until divisionDone becomes true
+              if (onStartDemo) onStartDemo();
+              setStep(4); // wait for the professor demo to finish
               setTyped(false);
             }}>
-              ▶ Start practice!
+              ▶ Watch the tutorial first!
             </button>
           </div>
         )}
@@ -401,13 +401,57 @@ function RSSTutorial({ initialStep = 0, divisionDone = false, onTryAgain, onPick
     );
   }
 
-  // Step 4: Reflect
+  // Step 4: Reflect after professor demo
   if (step === 4) {
-    if (!divisionDone) return null; // wait until the division animation has fully finished
+    if (!divisionDone) return null; // wait until the demo has fully finished
     return (
       <div style={styles.tutorialCard}>
         <TeacherBubble
-          text="See all those division steps? Each one is a chunk of the RSS recipe. When the remainder becomes 0, the division is finished!"
+          text="See all those division steps? Each one is a chunk of the RRS recipe. When the remainder becomes 0, the division is finished. Now you know the pattern!"
+          onDone={() => setTyped(true)}
+        />
+        {typed && (
+          <div style={styles.tutorialActions}>
+            <button style={styles.bigBtn} onClick={() => { setStep(5); setTyped(false); }}>
+              My turn! →
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Step 5: Student practice intro
+  if (step === 5) {
+    return (
+      <div style={{ ...styles.tutorialCard, ...styles.tutorialHighlight }}>
+        <TeacherBubble
+          text={`Now it's your turn! Fill in each division step yourself: a ÷ b = q remainder r. Each correct answer will reveal the next rectangle change.`}
+          onDone={() => setTyped(true)}
+        />
+        {typed && (
+          <div style={styles.tutorialActions}>
+            <button style={{ ...styles.bigBtn, animation: "pulse 1.5s infinite" }} onClick={() => {
+              if (onPlayReveal) onPlayReveal();
+              if (onStartPractice) onStartPractice();
+              setStep(6);
+              setTyped(false);
+            }}>
+              ▶ Start your practice!
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Step 6: Reflect after student practice
+  if (step === 6) {
+    if (!divisionDone) return null; // wait until the student practice is done
+    return (
+      <div style={styles.tutorialCard}>
+        <TeacherBubble
+          text="Beautiful work! You solved each division step yourself and watched the rectangle grow step by step. Now you're ready to explore on your own!"
           onDone={() => setTyped(true)}
         />
         {typed && (
@@ -422,8 +466,8 @@ function RSSTutorial({ initialStep = 0, divisionDone = false, onTryAgain, onPick
   return null;
 }
 
-/* ─────────────── TAB 1: RSS MACHINE ─────────────── */
-function TabRSS() {
+/* ─────────────── TAB 1: RRS MACHINE ─────────────── */
+function TabRRS() {
   const [a, setA] = useState(55);
   const [b, setB] = useState(34);
   const [inputA, setInputA] = useState("55");
@@ -500,6 +544,19 @@ function TabRSS() {
     setTutorialKey(k => k + 1); // remount tutorial so it returns to the number-pick page
   }, []);
 
+  const startDemo = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setPracticeMode(false);
+    setPracticeIdx(0);
+    setPracticeReveal(-2);
+    setPracticeQ(""); setPracticeR(""); setPracticeChecked(null);
+    setCurrentStep(0);
+    setAutoPlay(true);
+    setStepAnswer(""); setStepCorrect(null);
+    setSqAnswer(""); setSqCorrect(null);
+    setShowSeqIntro(false);
+  }, []);
+
   const startPractice = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
     setAutoPlay(false);
@@ -559,7 +616,7 @@ function TabRSS() {
 
   return (
     <div>
-      <RSSTutorial
+      <RRSTutorial
         key={tutorialKey}
         initialStep={tutorialStartStep}
         divisionDone={divisionDone}
@@ -573,6 +630,7 @@ function TabRSS() {
           setPracticeReveal(-2);
           setPracticeQ(""); setPracticeR(""); setPracticeChecked(null);
         }}
+        onStartDemo={startDemo}
         onStartPractice={startPractice}
         onPlayReveal={() => setShowPlayView(true)}
         onComplete={() => {
@@ -745,11 +803,11 @@ function TabRSS() {
                   </div>
                 )}
 
-                {/* Step 3: Define RSS sequence */}
+                {/* Step 3: Define RRS sequence */}
                 {sqCorrect && !showSeqIntro && (
                   <div style={styles.qaQuestion}>
                     <button style={styles.bigBtn} onClick={() => setShowSeqIntro(true)}>
-                      Next: What's an RSS sequence? →
+                      Next: What's an RRS sequence? →
                     </button>
                   </div>
                 )}
@@ -757,7 +815,7 @@ function TabRSS() {
                   <div style={styles.seqReveal}>
                     <div style={styles.qaTeacher}>
                       <span style={{ fontSize: 20 }}>🧑‍🏫</span>
-                      <span>Now let's define the <b>RSS sequence</b>!</span>
+                      <span>Now let's define the <b>RRS sequence</b>!</span>
                     </div>
                     <div style={styles.seqBox}>
                       <div style={{ fontSize: 13, color: COLORS.textLight, marginBottom: 6 }}>
@@ -853,7 +911,7 @@ function TabRSS() {
       <div style={styles.summaryCard}>
         <h3 style={styles.cardTitle}>Quick Recap</h3>
         <div style={styles.resultRow}>
-          <span style={styles.resultLabel}>RSS sequence:</span>
+          <span style={styles.resultLabel}>RRS sequence:</span>
           <code style={{
             display: "inline-block", padding: "4px 12px",
             background: `${COLORS.purple}15`, color: COLORS.purple,
@@ -923,8 +981,8 @@ function TabMap() {
         emoji="🗺️"
         title="The Number Map"
         speech={[
-          "Wait, wait. Do we see some relationship between numbers we know and RSS sequences?",
-          "Let me show you something amazing: every TYPE of number (whole, fraction, square root, π...) leaves a different kind of RSS fingerprint!",
+          "Wait, wait. Do we see some relationship between numbers we know and RRS sequences?",
+          "Let me show you something amazing: every TYPE of number (whole, fraction, square root, π...) leaves a different kind of RRS fingerprint!",
           "Some recipes end. Some loop forever. Some have NO pattern at all. Let's map them out!",
         ]}
       />
@@ -950,7 +1008,7 @@ function TabMap() {
               <div style={styles.mapExampleText}>{cat.example}</div>
             </div>
             <div style={styles.mapPattern}>
-              <div style={styles.mapPatternLabel}>RSS Recipe:</div>
+              <div style={styles.mapPatternLabel}>RRS Recipe:</div>
               <code style={{ ...styles.mapPatternCode, background: `${cat.color}20`, color: cat.color }}>{cat.rss}</code>
             </div>
           </div>
@@ -959,7 +1017,7 @@ function TabMap() {
         <div style={styles.insightBox}>
           <h3 style={{ margin: "0 0 8px", color: COLORS.primary }}>💡 The Big Insight</h3>
           <p style={{ margin: 0, lineHeight: 1.6 }}>
-            <b>Rational numbers</b> have RSS recipes that <b>end</b>. {" "}
+            <b>Rational numbers</b> have RRS recipes that <b>end</b>. {" "}
             <b>Irrational numbers</b> have recipes that go <b>forever</b>. {" "}
             Among the forever-recipes, square roots have a <b>repeating pattern</b>, {" "}
             while numbers like π have <b>no pattern at all</b>!
@@ -985,7 +1043,7 @@ function TabSqrt() {
     { title: "Start with √2", content: `We know √2 is between 1 and 2 (since 1² = 1 and 2² = 4).\nSo the integer part is 1. Write: √2 = 1 + (√2 − 1)` },
     { title: "Flip the fractional part", content: `Take the leftover (√2 − 1) and flip it:\n1/(√2 − 1)\n\nMultiply top and bottom by (√2 + 1):\n= (√2 + 1) / ((√2)² − 1²)\n= (√2 + 1) / (2 − 1)\n= √2 + 1` },
     { title: "Find integer part again", content: `√2 + 1 ≈ 2.414...\nInteger part = 2. Leftover = √2 + 1 − 2 = √2 − 1\n\n...wait, that's the SAME leftover as Step 1!` },
-    { title: "It repeats forever!", content: `Since we got √2 − 1 again, the process loops:\n\n√2 = 1 + 1/(2 + 1/(2 + 1/(2 + ...)))\n\nRSS Recipe: [1; 2, 2, 2, 2, ...]\nThe 2 repeats forever! ♾️` },
+    { title: "It repeats forever!", content: `Since we got √2 − 1 again, the process loops:\n\n√2 = 1 + 1/(2 + 1/(2 + 1/(2 + ...)))\n\nRRS Recipe: [1; 2, 2, 2, 2, ...]\nThe 2 repeats forever! ♾️` },
   ];
 
   const guidedSteps17 = [
@@ -1005,8 +1063,8 @@ function TabSqrt() {
         emoji="🔍"
         title="The √ Explorer"
         speech={[
-          "What do you think about square roots? Do you think we can rewrite √2 in an RSS sequence?",
-          "Here's the puzzle: √2 isn't a fraction, so how can RSS even work on it?",
+          "What do you think about square roots? Do you think we can rewrite √2 in an RRS sequence?",
+          "Here's the puzzle: √2 isn't a fraction, so how can RRS even work on it?",
           "Euler figured out a beautiful trick — rationalize the denominator! Let me show you.",
         ]}
         hint="Try the Guided Walkthrough for √2 or √17 first, then explore other square roots on your own!"
@@ -1114,7 +1172,7 @@ function TabSqrt() {
               <div style={styles.explorerCard}>
                 <h3 style={styles.cardTitle}>Results</h3>
                 <div style={styles.cfResult}>
-                  <div style={styles.cfLabel}>RSS Recipe:</div>
+                  <div style={styles.cfLabel}>RRS Recipe:</div>
                   <code style={styles.cfCode}>
                     [{cf.a0}; ({cf.period.join(", ")})]
                   </code>
@@ -1542,10 +1600,10 @@ function TabGCF() {
         title="Finding GCF"
         speech={[
           "How do we find a Greatest Common Factor? You probably know the factor-list way — list all factors and find the biggest match.",
-          "But wait... can we do this through RSS also?",
-          "Spoiler: YES! The GCF is hiding inside every RSS rectangle — it's the side length of the SMALLEST square. Let's see it!",
+          "But wait... can we do this through RRS also?",
+          "Spoiler: YES! The GCF is hiding inside every RRS rectangle — it's the side length of the SMALLEST square. Let's see it!",
         ]}
-        hint="Try the side-by-side view to compare the old way (factor lists) with the RSS way."
+        hint="Try the side-by-side view to compare the old way (factor lists) with the RRS way."
       />
 
       <div style={styles.controlRow}>
@@ -1744,11 +1802,11 @@ function TabArt() {
         emoji="🎨"
         title="Rectangle Gallery"
         speech={[
-          "Every RSS calculation is secretly ALSO a picture!",
+          "Every RRS calculation is secretly ALSO a picture!",
           "When we pack squares into a rectangle, different number pairs create totally different patterns.",
           "Some spiral like a nautilus shell. Some look stripey. Let's compare them side by side and find your favorite!",
         ]}
-        hint="Hover over each rectangle to see its RSS recipe. Can you tell which one is a Fibonacci pair?"
+        hint="Hover over each rectangle to see its RRS recipe. Can you tell which one is a Fibonacci pair?"
       />
 
       <div style={styles.compareGrid}>
@@ -1810,7 +1868,7 @@ function TabPi() {
           Each column has <b>semiconvergents</b> (good guesses) that build up to a <b>principal convergent</b> (the best one so far)!
         </p>
         <p style={{ ...styles.sectionDesc, fontSize: 13, marginTop: 8 }}>
-          π = [{piCF.join("; ").replace(";", ";")}...] — each column header is one term in π's RSS recipe.
+          π = [{piCF.join("; ").replace(";", ";")}...] — each column header is one term in π's RRS recipe.
         </p>
       </div>
 
@@ -2053,20 +2111,20 @@ function StoryReaction({ detected, userText, onContinue }) {
   );
 }
 
-/* ─────────────── STORY: RSS INTRO ─────────────── */
-function StoryRSSIntro({ onContinue }) {
+/* ─────────────── STORY: RRS INTRO ─────────────── */
+function StoryRRSIntro({ onContinue }) {
   return (
     <div style={styles.storyScreen}>
       <div style={{ fontSize: 48, marginBottom: 12 }}>🔢</div>
-      <h2 style={styles.storyTitle}>Meet RSS!</h2>
+      <h2 style={styles.storyTitle}>Meet RRS!</h2>
       <p style={styles.storyText}>
-        <b>RSS</b> = <b>R</b>epeated <b>R</b>eciprocal <b>S</b>ubtraction.
+        <b>RRS</b> = <b>R</b>epeated <b>R</b>eciprocal <b>S</b>ubtraction.
       </p>
       <p style={styles.storyText}>
         It's a way to break ANY two numbers into a special recipe of division steps.
         Let's try it on <b style={{ color: COLORS.primary }}>55 and 34</b>!
       </p>
-      <button style={styles.bigBtn} onClick={onContinue}>Try the RSS Machine →</button>
+      <button style={styles.bigBtn} onClick={onContinue}>Try the RRS Machine →</button>
     </div>
   );
 }
@@ -2164,7 +2222,7 @@ function NumberSandbox() {
   const [tab, setTab] = useState(0);
   const [visitedBranches, setVisitedBranches] = useState(new Set());
 
-  const tabs = [TabRSS, TabBackwardRRS, TabGCF, TabSqrt, TabPi, TabMap, TabArt];
+  const tabs = [TabRRS, TabBackwardRRS, TabGCF, TabSqrt, TabPi, TabMap, TabArt];
   const ActiveTab = tabs[tab];
 
   const restartStory = () => {
@@ -2193,14 +2251,14 @@ function NumberSandbox() {
       onSkip={() => setStoryStep("rssIntro")} />;
     if (storyStep === "reaction") return <StoryReaction detected={detected} userText={userText}
       onContinue={() => setStoryStep("rssIntro")} />;
-    if (storyStep === "rssIntro") return <StoryRSSIntro onContinue={() => setStoryStep("rssMachine")} />;
+    if (storyStep === "rssIntro") return <StoryRRSIntro onContinue={() => setStoryStep("rssMachine")} />;
     if (storyStep === "rssMachine") return (
       <div>
         <div style={styles.storyBanner}>
-          📖 <b>Story Mode:</b> Try out the RSS Machine below, then continue when ready.
+          📖 <b>Story Mode:</b> Try out the RRS Machine below, then continue when ready.
           <button style={styles.skipBtn} onClick={() => setStoryStep("tree")}>I'm ready →</button>
         </div>
-        <TabRSS />
+        <TabRRS />
       </div>
     );
     if (storyStep === "tree") return <StoryTree visited={visitedBranches} onPickBranch={handlePickBranch} />;
