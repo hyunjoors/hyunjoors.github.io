@@ -260,7 +260,7 @@ function TabIntro({ emoji, title, speech, hint }) {
 }
 
 /* ─────────────── RRS TUTORIAL ─────────────── */
-function RRSTutorial({ initialStep = 0, divisionDone = false, onTryAgain, onPickPair, onStartDemo, onStartPractice, onComplete, onPlayReveal }) {
+function RRSTutorial({ initialStep = 0, divisionDone = false, onTryAgain, onPickPair, onChooseDifferentPair, onStartDemo, onStartPractice, onComplete, onPlayReveal }) {
   const [step, setStep] = useState(initialStep);
   const [done, setDone] = useState(false);
   const [typed, setTyped] = useState(false);
@@ -439,6 +439,16 @@ function RRSTutorial({ initialStep = 0, divisionDone = false, onTryAgain, onPick
             }}>
               ▶ Start your practice!
             </button>
+            <button style={styles.skipBtn} onClick={() => {
+              if (onChooseDifferentPair) onChooseDifferentPair();
+              else {
+                setChosenPair(null);
+                setTyped(false);
+                setStep(1);
+              }
+            }}>
+              Pick different numbers
+            </button>
           </div>
         )}
       </div>
@@ -557,6 +567,22 @@ function TabRRS() {
     setShowSeqIntro(false);
   }, []);
 
+  const reopenTutorialPairPicker = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setCurrentStep(-1);
+    setAutoPlay(false);
+    setShowPlayView(false);
+    setPracticeMode(false);
+    setPracticeIdx(0);
+    setPracticeReveal(-2);
+    setPracticeQ(""); setPracticeR(""); setPracticeChecked(null);
+    setStepAnswer(""); setStepCorrect(null);
+    setSqAnswer(""); setSqCorrect(null);
+    setShowSeqIntro(false);
+    setTutorialStartStep(1);
+    setTutorialKey(k => k + 1);
+  }, []);
+
   const startPractice = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
     setAutoPlay(false);
@@ -630,6 +656,7 @@ function TabRRS() {
           setPracticeReveal(-2);
           setPracticeQ(""); setPracticeR(""); setPracticeChecked(null);
         }}
+        onChooseDifferentPair={reopenTutorialPairPicker}
         onStartDemo={startDemo}
         onStartPractice={startPractice}
         onPlayReveal={() => setShowPlayView(true)}
@@ -745,6 +772,12 @@ function TabRRS() {
                     )}
                     {practiceChecked === false && <div style={styles.qaWrong}>Not quite. Try again.</div>}
                     <div style={{ marginTop: 10, display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                      <button
+                        style={styles.smallBtn}
+                        onClick={reopenTutorialPairPicker}
+                      >
+                        Pick different numbers
+                      </button>
                       <button
                         style={{ ...styles.playBtn, opacity: practiceChecked === true ? 1 : 0.5, cursor: practiceChecked === true ? "pointer" : "not-allowed" }}
                         onClick={practiceNext}
