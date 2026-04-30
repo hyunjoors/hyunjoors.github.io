@@ -260,7 +260,7 @@ function TabIntro({ emoji, title, speech, hint }) {
 }
 
 /* ─────────────── RSS TUTORIAL ─────────────── */
-function RSSTutorial({ initialStep = 0, divisionDone = false, onTryAgain, onPickPair, onStartPlay, onComplete, onPlayReveal }) {
+function RSSTutorial({ initialStep = 0, divisionDone = false, onTryAgain, onPickPair, onStartPractice, onComplete, onPlayReveal }) {
   const [step, setStep] = useState(initialStep);
   const [done, setDone] = useState(false);
   const [typed, setTyped] = useState(false);
@@ -377,23 +377,23 @@ function RSSTutorial({ initialStep = 0, divisionDone = false, onTryAgain, onPick
   // Step 2 (prediction) removed — not appropriate before students know what RSS is.
   // The prediction prompt now lives in the post-tutorial "new pair" flow.
 
-  // Step 3: Watch it run
+  // Step 3: Student practice
   if (step === 3) {
     return (
       <div style={{ ...styles.tutorialCard, ...styles.tutorialHighlight }}>
         <TeacherBubble
-          text={`Nice, ${chosenPair}! Now watch carefully — when I press Play, we'll divide, take the remainder, divide again... until there's nothing left!`}
+          text={`Nice, ${chosenPair}! This time, YOU will do the division. Fill in each step: a ÷ b = q remainder r. When you're correct, the rectangle picture will update!`}
           onDone={() => setTyped(true)}
         />
         {typed && (
           <div style={styles.tutorialActions}>
             <button style={{ ...styles.bigBtn, animation: "pulse 1.5s infinite" }} onClick={() => {
-              if (onPlayReveal) onPlayReveal();  // reveal ONLY picture + steps
-              setTimeout(() => onStartPlay(), 300);  // pause briefly so student sees UI appear, then start play
-              setStep(4);
+              if (onPlayReveal) onPlayReveal(); // reveal practice UI
+              if (onStartPractice) onStartPractice();
+              setStep(4); // reflection waits until divisionDone becomes true
               setTyped(false);
             }}>
-              ▶ Press Play!
+              ▶ Start practice!
             </button>
           </div>
         )}
@@ -436,6 +436,12 @@ function TabRSS() {
   const [showPrediction, setShowPrediction] = useState(false);
   const [tutorialKey, setTutorialKey] = useState(0);
   const [tutorialStartStep, setTutorialStartStep] = useState(0);
+  const [practiceMode, setPracticeMode] = useState(false);
+  const [practiceIdx, setPracticeIdx] = useState(0);
+  const [practiceReveal, setPracticeReveal] = useState(-2); // -2 means show no squares yet
+  const [practiceQ, setPracticeQ] = useState("");
+  const [practiceR, setPracticeR] = useState("");
+  const [practiceChecked, setPracticeChecked] = useState(null); // null | true | false
   // Q&A state (appears after animation finishes)
   const [stepAnswer, setStepAnswer] = useState("");
   const [stepCorrect, setStepCorrect] = useState(null);
@@ -449,6 +455,10 @@ function TabRSS() {
     setStepAnswer(""); setStepCorrect(null);
     setSqAnswer(""); setSqCorrect(null);
     setShowSeqIntro(false);
+    setPracticeMode(false);
+    setPracticeIdx(0);
+    setPracticeReveal(-2);
+    setPracticeQ(""); setPracticeR(""); setPracticeChecked(null);
   }, [a, b]);
 
   // Helper: when student picks a NEW pair after tutorial, ask for prediction
@@ -456,6 +466,10 @@ function TabRSS() {
     setA(newA); setB(newB);
     setInputA(String(newA)); setInputB(String(newB));
     setCurrentStep(-1); setAutoPlay(false);
+    setPracticeMode(false);
+    setPracticeIdx(0);
+    setPracticeReveal(-2);
+    setPracticeQ(""); setPracticeR(""); setPracticeChecked(null);
     if (tutorialComplete) {
       setPredictionGuess(null);
       setShowPrediction(true);
@@ -478,9 +492,44 @@ function TabRSS() {
     setStepAnswer(""); setStepCorrect(null);
     setSqAnswer(""); setSqCorrect(null);
     setShowSeqIntro(false);
+    setPracticeMode(false);
+    setPracticeIdx(0);
+    setPracticeReveal(-2);
+    setPracticeQ(""); setPracticeR(""); setPracticeChecked(null);
     setTutorialStartStep(1);
     setTutorialKey(k => k + 1); // remount tutorial so it returns to the number-pick page
   }, []);
+
+  const startPractice = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setAutoPlay(false);
+    setPracticeMode(true);
+    setPracticeIdx(0);
+    setPracticeReveal(-2);
+    setPracticeQ(""); setPracticeR(""); setPracticeChecked(null);
+    setCurrentStep(-1);
+  }, []);
+
+  const practiceDone = useMemo(() => practiceMode && practiceReveal >= steps.length - 1, [practiceMode, practiceReveal, steps.length]);
+  const divisionDone = useMemo(() => practiceMode ? practiceDone : (currentStep >= steps.length - 1 && currentStep !== -1), [practiceMode, practiceDone, currentStep, steps.length]);
+  const vizStep = practiceMode ? practiceReveal : currentStep;
+
+  const practiceCheck = useCallback(() => {
+    const step = steps[practiceIdx];
+    if (!step) return;
+    const q = parseInt(practiceQ, 10);
+    const r = parseInt(practiceR, 10);
+    const ok = Number.isFinite(q) && Number.isFinite(r) && q === step.q && r === step.r;
+    setPracticeChecked(ok);
+    if (ok) setPracticeReveal(practiceIdx);
+  }, [steps, practiceIdx, practiceQ, practiceR]);
+
+  const practiceNext = useCallback(() => {
+    if (practiceChecked !== true) return;
+    if (practiceIdx >= steps.length - 1) return;
+    setPracticeIdx(i => Math.min(steps.length - 1, i + 1));
+    setPracticeQ(""); setPracticeR(""); setPracticeChecked(null);
+  }, [practiceChecked, practiceIdx, steps.length]);
 
   const apply = useCallback(() => {
     const na = parseInt(inputA), nb = parseInt(inputB);
@@ -490,14 +539,18 @@ function TabRSS() {
   }, [inputA, inputB, tutorialComplete]);
 
   useEffect(() => {
+    if (practiceMode) return;
     if (autoPlay && currentStep < steps.length - 1) {
       timerRef.current = setTimeout(() => setCurrentStep(s => s + 1), 1800);
       return () => clearTimeout(timerRef.current);
     }
     if (currentStep >= steps.length - 1) setAutoPlay(false);
-  }, [autoPlay, currentStep, steps.length]);
+  }, [practiceMode, autoPlay, currentStep, steps.length]);
 
-  const visibleSteps = currentStep === -1 ? steps : steps.slice(0, currentStep + 1);
+  const visibleSteps = useMemo(() => {
+    if (practiceMode) return steps.slice(0, Math.min(steps.length, practiceIdx + 1));
+    return currentStep === -1 ? steps : steps.slice(0, currentStep + 1);
+  }, [practiceMode, steps, currentStep, practiceIdx]);
   const presets = [
     { a: 55, b: 34, label: "55 & 34" }, { a: 17, b: 12, label: "17 & 12" },
     { a: 30, b: 11, label: "30 & 11" }, { a: 76, b: 47, label: "76 & 47" },
@@ -509,16 +562,27 @@ function TabRSS() {
       <RSSTutorial
         key={tutorialKey}
         initialStep={tutorialStartStep}
-        divisionDone={currentStep >= steps.length - 1 && currentStep !== -1}
+        divisionDone={divisionDone}
         onTryAgain={resetToPick}
         onPickPair={(pa, pb) => {
           setA(pa); setB(pb);
           setInputA(String(pa)); setInputB(String(pb));
           setCurrentStep(-1); setAutoPlay(false);
+          setPracticeMode(false);
+          setPracticeIdx(0);
+          setPracticeReveal(-2);
+          setPracticeQ(""); setPracticeR(""); setPracticeChecked(null);
         }}
-        onStartPlay={() => { setCurrentStep(0); setAutoPlay(true); }}
+        onStartPractice={startPractice}
         onPlayReveal={() => setShowPlayView(true)}
-        onComplete={() => { setTutorialComplete(true); setShowPlayView(true); }}
+        onComplete={() => {
+          setTutorialComplete(true);
+          setShowPlayView(true);
+          setPracticeMode(false);
+          setPracticeIdx(0);
+          setPracticeReveal(-2);
+          setPracticeQ(""); setPracticeR(""); setPracticeChecked(null);
+        }}
       />
 
       {/* TIER 1: Visible during Press Play demo (3-column layout) */}
@@ -530,23 +594,35 @@ function TabRSS() {
             {visibleSteps.map((s, i) => (
               <div key={i} style={{
                 ...styles.stepRow,
-                background: i === currentStep ? "#FFF0E5" : "transparent",
+                background: i === (practiceMode ? practiceIdx : currentStep) ? "#FFF0E5" : "transparent",
                 transition: "all 0.8s ease",
               }}>
                 <span style={{ ...styles.stepDot, background: SQUARE_COLORS[i % 8] }} />
                 <span style={styles.stepText}>
                   <b style={{ color: COLORS.primary }}>Step {i + 1}:</b>{" "}
-                  {s.a} ÷ {s.b} = <span style={{ color: COLORS.primary, fontWeight: 800, fontSize: 18 }}>{s.q}</span>{" "}
-                  R <span style={{ color: COLORS.purple, fontWeight: 700 }}>{s.r}</span>
+                  {s.a} ÷ {s.b} ={" "}
+                  <span style={{ color: COLORS.primary, fontWeight: 800, fontSize: 18 }}>
+                    {practiceMode && i > practiceReveal ? "?" : s.q}
+                  </span>{" "}
+                  R{" "}
+                  <span style={{ color: COLORS.purple, fontWeight: 700 }}>
+                    {practiceMode && i > practiceReveal ? "?" : s.r}
+                  </span>
                 </span>
               </div>
             ))}
             <div style={{ marginTop: 12, display: "flex", gap: 6, flexWrap: "wrap" }}>
               <button style={styles.smallBtn} onClick={() => {
-                setCurrentStep(0); setAutoPlay(true);
-                setStepAnswer(""); setStepCorrect(null);
-                setSqAnswer(""); setSqCorrect(null);
-                setShowSeqIntro(false);
+                if (practiceMode) {
+                  setPracticeIdx(0);
+                  setPracticeReveal(-2);
+                  setPracticeQ(""); setPracticeR(""); setPracticeChecked(null);
+                } else {
+                  setCurrentStep(0); setAutoPlay(true);
+                  setStepAnswer(""); setStepCorrect(null);
+                  setSqAnswer(""); setSqCorrect(null);
+                  setShowSeqIntro(false);
+                }
               }}>↺ Replay</button>
               <button style={styles.smallBtn} onClick={resetToPick}>↩ Try again</button>
             </div>
@@ -557,18 +633,79 @@ function TabRSS() {
             <div style={styles.rssVizHeader}>
               <h3 style={styles.cardTitle}>Rectangle Picture</h3>
               <div style={styles.rssVizStat}>
-                {currentStep === -1 ? "Full recipe" : `Step ${currentStep + 1}`}
+                {practiceMode ? (practiceDone ? "Finished" : `Working on Step ${practiceIdx + 1}`) : (currentStep === -1 ? "Full recipe" : `Step ${currentStep + 1}`)}
               </div>
             </div>
             <div style={styles.vizCenter}>
-              <RectViz a={a} b={b} visibleGroup={currentStep} activeGroup={currentStep >= 0 ? currentStep : null} showControls={false} />
+              <RectViz
+                a={a}
+                b={b}
+                visibleGroup={vizStep}
+                activeGroup={practiceMode ? (practiceReveal >= 0 ? practiceReveal : null) : (currentStep >= 0 ? currentStep : null)}
+                showControls={false}
+                hideFooter={!tutorialComplete}
+              />
             </div>
           </div>
 
           {/* RIGHT: Q&A panel */}
           <div style={styles.qaCard}>
             <h3 style={styles.cardTitle}>Your Turn!</h3>
-            {currentStep >= steps.length - 1 ? (
+            {practiceMode ? (
+              <>
+                {!practiceDone ? (
+                  <div style={styles.qaQuestion}>
+                    <div style={styles.qaTeacher}>
+                      <span style={{ fontSize: 20 }}>🧑‍🏫</span>
+                      <span>
+                        Fill in Step <b>{practiceIdx + 1}</b>:{" "}
+                        <b>{steps[practiceIdx]?.a}</b> ÷ <b>{steps[practiceIdx]?.b}</b> = q R r
+                      </span>
+                    </div>
+                    <div style={styles.qaInputRow}>
+                      <input
+                        style={styles.numInput}
+                        value={practiceQ}
+                        onChange={e => { setPracticeQ(e.target.value); setPracticeChecked(null); }}
+                        onKeyDown={e => e.key === "Enter" && practiceCheck()}
+                        placeholder="q"
+                      />
+                      <span style={{ color: COLORS.textLight, fontWeight: 800 }}>R</span>
+                      <input
+                        style={styles.numInput}
+                        value={practiceR}
+                        onChange={e => { setPracticeR(e.target.value); setPracticeChecked(null); }}
+                        onKeyDown={e => e.key === "Enter" && practiceCheck()}
+                        placeholder="r"
+                      />
+                      <button style={styles.goBtn} onClick={practiceCheck}>Check</button>
+                    </div>
+                    {practiceChecked === true && (
+                      <div style={styles.qaCorrect}>
+                        ✨ Correct! The rectangle updated. {practiceIdx < steps.length - 1 ? "Click Next Step." : "You reached remainder 0!"}
+                      </div>
+                    )}
+                    {practiceChecked === false && <div style={styles.qaWrong}>Not quite. Try again.</div>}
+                    <div style={{ marginTop: 10, display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                      <button
+                        style={{ ...styles.playBtn, opacity: practiceChecked === true ? 1 : 0.5, cursor: practiceChecked === true ? "pointer" : "not-allowed" }}
+                        onClick={practiceNext}
+                        disabled={practiceChecked !== true || practiceIdx >= steps.length - 1}
+                      >
+                        Next Step →
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={styles.qaWaiting}>
+                    <span style={{ fontSize: 32 }}>🎉</span>
+                    <p style={{ fontSize: 13, color: COLORS.textLight, marginTop: 8 }}>
+                      Division finished. Look for the teacher message above.
+                    </p>
+                  </div>
+                )}
+              </>
+            ) : (currentStep >= steps.length - 1 ? (
               <>
                 {/* Question 1: Number of steps */}
                 <div style={styles.qaQuestion}>
@@ -650,7 +787,7 @@ function TabRSS() {
                   Watch the animation... questions appear when it finishes!
                 </p>
               </div>
-            )}
+            ))}
           </div>
         </div>
       )}
@@ -1042,7 +1179,7 @@ function TabSqrt() {
 }
 
 /* ─────────────── TAB 4: RECTANGLE ART ─────────────── */
-function RectViz({ a, b, label, compact = false, visibleGroup = null, activeGroup = null, showControls = !compact }) {
+function RectViz({ a, b, label, compact = false, visibleGroup = null, activeGroup = null, showControls = !compact, hideFooter = false }) {
   const steps = useMemo(() => euclideanSteps(a, b), [a, b]);
   const squares = useMemo(() => buildSquares(a, b, steps), [a, b, steps]);
   const [hoveredGroup, setHoveredGroup] = useState(null);
@@ -1132,9 +1269,11 @@ function RectViz({ a, b, label, compact = false, visibleGroup = null, activeGrou
           fill={COLORS.textLight} fontSize={compact ? 10 : 12} fontFamily="inherit" fontWeight={600}
           transform={`rotate(-90,${padding - 10},${padding + b * scale / 2})`}>{b}</text>
       </svg>
-      <div style={{ fontSize: 11, color: COLORS.textLight, marginTop: 4 }}>
-        {formatRRSRecipe(steps.map(s => s.q))} — {steps.length} steps, {steps.reduce((s, st) => s + st.q, 0)} squares
-      </div>
+      {!hideFooter && (
+        <div style={{ fontSize: 11, color: COLORS.textLight, marginTop: 4 }}>
+          {formatRRSRecipe(steps.map(s => s.q))} — {steps.length} steps, {steps.reduce((s, st) => s + st.q, 0)} squares
+        </div>
+      )}
     </div>
   );
 }
