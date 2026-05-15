@@ -26,9 +26,9 @@ const POSTERS = [
 ];
 
 const RESEARCH_AREAS = [
-  { title: 'AI-assisted Learning Technology', icon: '→', desc: 'Designing AI tools for CS and Mathematics education that support rather than replace learning interactions. My work centers on how AI can make student thinking visible to teachers in real-time.' },
-  { title: 'Adaptive Learning for Neurodivergent Students', icon: '→', desc: 'Mathematics teaching and learning for students with autism, ADHD, and dyscalculia. I design multi-modal representations that meet diverse cognitive needs.' },
-  { title: 'Academic Integrity in the AI Era', icon: '→', desc: 'Copyright awareness and integrity practices with generative AI in education. Exploring how we teach responsible AI use alongside disciplinary knowledge.' },
+  { title: 'AI-Supported Embodied and Collaborative Mathematics Sensemaking', icon: '→', desc: 'Designing AI-supported learning environments that foster students’ mathematical reasoning through embodied interaction, peer collaboration, and multimodal learning experiences.' },
+  { title: 'Teacher Orchestration and Learning Analytics', icon: '→', desc: 'Investigating how learning analytics and AI can support teachers in noticing, interpreting, and responding to students’ thinking in real time.' },
+  { title: 'Neurodivergent Learners in STEM Education', icon: '→', desc: 'Exploring inclusive learning technologies and adaptive supports for neurodivergent learners, including students with ADHD, autism, and dyscalculia, in STEM learning contexts.' },
 ];
 
 // /* ── Timeline Item ── */
