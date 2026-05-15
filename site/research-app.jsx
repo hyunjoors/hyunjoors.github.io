@@ -3,26 +3,26 @@
    ══════════════════════════════ */
 
 const PUBLICATIONS = [
-  { id: 1, year: 2026, title: 'Designing AI as Facilitator: A Framework for Collaborative Mathematics Learning', authors: 'Shin, R., Kim, J., & Park, S.', venue: 'AERA Annual Meeting 2026', type: 'conference', tags: ['AI', 'Mathematics', 'Collaboration'] },
-  { id: 2, year: 2026, title: 'Learning Analytics for Neurodivergent Student Support in K-12 Mathematics', authors: 'Shin, R. & Lee, H.', venue: 'LAK 2026', type: 'conference', tags: ['Learning Analytics', 'Neurodivergent', 'K-12'] },
-  { id: 3, year: 2025, title: 'AI and Equity in STEM Education: Workshop Proceedings', authors: 'Shin, R., Garcia, M., & Chen, W.', venue: 'ICLS 2025 Workshop', type: 'workshop', tags: ['AI', 'Equity', 'STEM'] },
-  { id: 4, year: 2025, title: 'Making Mathematical Reasoning Visible Through AI-Supported Representations', authors: 'Shin, R.', venue: 'Journal of Educational Technology & Society', type: 'journal', tags: ['AI', 'Mathematics', 'Representation'] },
-  { id: 5, year: 2024, title: 'Academic Integrity in the Age of Generative AI: A Systematic Review', authors: 'Shin, R. & Davis, K.', venue: 'Computers & Education', type: 'journal', tags: ['Academic Integrity', 'Generative AI'] },
-  { id: 6, year: 2024, title: 'Adaptive Learning Environments for Students with Dyscalculia', authors: 'Shin, R., Park, S., & Kim, J.', venue: 'CHI 2024 Late-Breaking Work', type: 'conference', tags: ['Adaptive Learning', 'Dyscalculia', 'HCI'] },
-  { id: 7, year: 2023, title: 'Teacher Orchestration Tools for AI-Augmented Classrooms', authors: 'Shin, R. & Martinez, L.', venue: 'CSCL 2023', type: 'conference', tags: ['Orchestration', 'AI', 'Classroom'] },
+  // { id: 1, year: 2026, title: 'Designing AI as Facilitator: A Framework for Collaborative Mathematics Learning', authors: 'Shin, R., Kim, J., & Park, S.', venue: 'AERA Annual Meeting 2026', type: 'conference', tags: ['AI', 'Mathematics', 'Collaboration'] },
+  // { id: 2, year: 2026, title: 'Learning Analytics for Neurodivergent Student Support in K-12 Mathematics', authors: 'Shin, R. & Lee, H.', venue: 'LAK 2026', type: 'conference', tags: ['Learning Analytics', 'Neurodivergent', 'K-12'] },
+  // { id: 3, year: 2025, title: 'AI and Equity in STEM Education: Workshop Proceedings', authors: 'Shin, R., Garcia, M., & Chen, W.', venue: 'ICLS 2025 Workshop', type: 'workshop', tags: ['AI', 'Equity', 'STEM'] },
+  // { id: 4, year: 2025, title: 'Making Mathematical Reasoning Visible Through AI-Supported Representations', authors: 'Shin, R.', venue: 'Journal of Educational Technology & Society', type: 'journal', tags: ['AI', 'Mathematics', 'Representation'] },
+  // { id: 5, year: 2024, title: 'Academic Integrity in the Age of Generative AI: A Systematic Review', authors: 'Shin, R. & Davis, K.', venue: 'Computers & Education', type: 'journal', tags: ['Academic Integrity', 'Generative AI'] },
+  // { id: 6, year: 2024, title: 'Adaptive Learning Environments for Students with Dyscalculia', authors: 'Shin, R., Park, S., & Kim, J.', venue: 'CHI 2024 Late-Breaking Work', type: 'conference', tags: ['Adaptive Learning', 'Dyscalculia', 'HCI'] },
+  // { id: 7, year: 2023, title: 'Teacher Orchestration Tools for AI-Augmented Classrooms', authors: 'Shin, R. & Martinez, L.', venue: 'CSCL 2023', type: 'conference', tags: ['Orchestration', 'AI', 'Classroom'] },
 ];
 
 const DEMOS = [
-  { title: 'MathReason Live Demo', desc: 'Interactive walkthrough of the MathReason platform showing real-time collaborative problem-solving with AI facilitation scaffolds.', venue: 'AERA 2026', link: '#' },
-  { title: 'TeacherScope Dashboard', desc: 'Live demonstration of how teachers use the TeacherScope dashboard to monitor and orchestrate student mathematical reasoning.', venue: 'LAK 2026', link: '#' },
-  { title: 'EquiMath Multi-Modal Interface', desc: 'Prototype demo of adaptive math representations for neurodivergent learners — visual, spatial, and narrative modes.', venue: 'CHI 2024', link: '#' },
+  { title: 'Number Sandbox', desc: 'Explore how rectangles become recipes, and how recipes reveal different kinds of numbers', venue: 'AERA 2026', link: 'projects/rrs/index.html' },
+  { title: 'EVE', desc: 'An AI platform that helps students externalize mathematical reasoning through collaborative problem-solving. MathReason prompts students to articulate their thinking step-by-step, while giving teachers a real-time view into how students approach problems.', venue: '', link: 'https://regal.umd.edu/evelyn' },
+  // { title: 'EquiMath Multi-Modal Interface', desc: 'Prototype demo of adaptive math representations for neurodivergent learners — visual, spatial, and narrative modes.', venue: 'CHI 2024', link: '#' },
 ];
 
 const POSTERS = [
-  { title: 'AI-Facilitated Collaborative Learning in K-12 Math Classrooms', venue: 'AERA 2026', year: 2026, thumbnail: null },
-  { title: 'Designing for Neurodivergent Learners: A Multi-Modal Approach', venue: 'ICLS 2025', year: 2025, thumbnail: null },
-  { title: 'Visualizing Student Reasoning Patterns with Learning Analytics', venue: 'LAK 2025', year: 2025, thumbnail: null },
-  { title: 'Generative AI and Academic Integrity: Student Perspectives', venue: 'CSCL 2024', year: 2024, thumbnail: null },
+  { title: 'AI-Facilitated Collaborative Learning in K-12 Math Classrooms', venue: 'LAK 2026', year: 2026, thumbnail: null },
+  // { title: 'Designing for Neurodivergent Learners: A Multi-Modal Approach', venue: 'ICLS 2025', year: 2025, thumbnail: null },
+  // { title: 'Visualizing Student Reasoning Patterns with Learning Analytics', venue: 'LAK 2025', year: 2025, thumbnail: null },
+  // { title: 'Generative AI and Academic Integrity: Student Perspectives', venue: 'CSCL 2024', year: 2024, thumbnail: null },
 ];
 
 const RESEARCH_AREAS = [
