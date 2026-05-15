@@ -12,21 +12,21 @@ const EDUCATION = [
 ];
 
 const NEWS_PREVIEW = [
-  { date: 'May 2026', title: 'Presenting at AERA Annual Meeting', desc: 'Paper on AI-facilitated collaborative mathematics learning' },
-  { date: 'Apr 2026', title: 'Paper accepted at LAK 2026', desc: 'Learning analytics for neurodivergent student support' },
-  { date: 'Jan 2026', title: 'ICLS Workshop Proceedings Published', desc: 'Co-facilitated workshop on AI and equity in STEM' },
+  { date: 'April 2026', title: 'Presenting at LAK 26 Annual Meeting', desc: 'Poster on Capabilities and Limitations of LLM as a Human Collaborator in Computational Thinking Behavior Analysis and Labeling' },
+  // { date: 'Apr 2026', title: 'Paper accepted at LAK 2026', desc: 'Learning analytics for neurodivergent student support' },
+  // { date: 'Jan 2026', title: 'ICLS Workshop Proceedings Published', desc: 'Co-facilitated workshop on AI and equity in STEM' },
 ];
 
-const RESEARCH_PREVIEW = [
-  { title: 'AI-assisted Learning Technology', desc: 'Designing AI tools for CS and Mathematics education that support rather than replace learning interactions' },
+const RESEARCH_INTEREST = [
+  { title: 'AI-assisted Learning Technology', desc: 'Capabilities and Limitations of LLM as a Human Collaborator in Computational Thinking Behavior Analysis and Labeling' },
   { title: 'Adaptive Learning for Neurodivergent Students', desc: 'Mathematics teaching and learning for students with autism, ADHD, and dyscalculia' },
   { title: 'Academic Integrity in the AI Era', desc: 'Copyright awareness and integrity practices with generative AI in education' },
 ];
 
 const PROJECTS_PREVIEW = [
-  { title: 'MathReason', desc: 'AI platform helping students externalize mathematical reasoning through collaborative problem-solving' },
-  { title: 'TeacherScope', desc: 'Real-time dashboard for orchestrating classroom learning by visualizing student thinking' },
-  { title: 'EquiMath', desc: 'Adaptive math curriculum for neurodivergent learners with multi-modal representations' },
+  { title: 'EVE', desc: 'Enactive Virtual Environment with Dynamic Human-AI Learning Partnerships' },
+  // { title: 'TeacherScope', desc: 'Real-time dashboard for orchestrating classroom learning by visualizing student thinking' },
+  // { title: 'EquiMath', desc: 'Adaptive math curriculum for neurodivergent learners with multi-modal representations' },
 ];
 
 const BLOG_PREVIEW = [
@@ -101,7 +101,7 @@ function HomePage() {
       <section className="section-pad">
         <SectionLabel text="Research Interests" />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-          {RESEARCH_PREVIEW.map((r, i) => (
+          {RESEARCH_INTEREST.map((r, i) => (
             <div key={i} style={{ display: 'flex', gap: 24 }}>
               <div style={{ width: 3, minHeight: 40, background: th.accent, flexShrink: 0, marginTop: 6 }}></div>
               <div>
