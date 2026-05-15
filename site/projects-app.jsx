@@ -8,7 +8,7 @@
 const ALL_PROJECTS = [
   {
     title: 'Number Sandbox',
-    tagline: 'Math dust all of you',
+    tagline: 'Math dust all over you',
     type: 'embedded',
     embedPath: 'projects/rrs/index.html',
     desc: 'Explore how rectangles become recipes, and how recipes reveal different kinds of numbers',

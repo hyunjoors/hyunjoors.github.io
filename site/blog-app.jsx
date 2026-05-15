@@ -8,7 +8,7 @@ const BLOG_ALL = [
     tag: 'PhD Life',
     readTime: '8 min',
     excerpt: 'Like a Pokémon',
-    body: "I'm an international Ph.A. student here. One in a Ph.D. program will enter as a Ph.A. student, then evolve to a Ph.D. student following these evolutionary steps (just like Pokémon):\n\nPh.A.: during your coursework stage\nPh.B.: around the time when you finish your coursework\nPh.C.: doctoral candidate stage (probably year 3-4)\nPh.D. : After a successful dissertation defense, you've finally become a Ph.D.\nI hope to capture my progress at least once monthly on things like: progress on my projects, comps (I know it's a bit early to start on it), dissertation ideas, personal reflections, etc.\n\nLet the journey begin 🙂",
+    body: 'I\'m an international Ph.A. student here. One in a Ph.D. program will enter as a Ph.A. student, then evolve to a Ph.D. student following these evolutionary steps (just like Pokémon):\n\nPh.A.: during your coursework stage\nPh.B.: around the time when you finish your coursework\nPh.C.: doctoral candidate stage (probably year 3-4)\nPh.D. : After a successful dissertation defense, you\'ve finally become a Ph.D.\nI hope to capture my progress at least once monthly on things like: progress on my projects, comps (I know it\'s a bit early to start on it), dissertation ideas, personal reflections, etc.\n\nLet the journey begin 🙂',
   },
   // {
   //   id: 'cat-parent-phd',
