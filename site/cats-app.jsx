@@ -5,23 +5,26 @@ const CAT_PROFILES = [
     name: 'Sirius',
     kr: '현금',
     img: 'uploads/LAB06305%20sh%20%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A7%E1%86%BC.jpg',
-    personality: 'The regal one. Sirius has a gaze that could peer into your soul — and judge it. Loves high perches, early morning demands, and the occasional headbutt of approval.',
-    facts: ['Black cat', 'Named after the brightest star', 'Morning alarm clock (6:47am sharp)', 'Expert lap claimer'],
+    personality: 'The regal one. Sirius has a gaze that could peer into your soul — and judge whether you have treats. Loves high perches, early morning demands, and the occasional headbutt of approval.',
+    facts: ['Black mediumhair', 'Playful & Cuddly', 'Expert lap claimer'],
   },
   {
     name: 'Eleanora',
     kr: '현옥',
     img: 'uploads/LAB06477%20sh%20%E1%84%87%E1%85%A1%E1%86%AB%E1%84%8D%E1%85%A9%E1%86%A8.jpg',
     personality: 'The fluffy philosopher. Eleanora spends her days contemplating the dust motes in sunbeams and claiming any warm surface as her territory. Unbothered by deadlines.',
-    facts: ['Grey longhair', 'Named after Eleanor of Aquitaine', 'Professional desk chair thief', 'Sunbeam connoisseur'],
+    facts: ['Grey longhair', 'Soft & Sweet', 'No cat near me', 'Professional desk chair thief', 'Sunbeam connoisseur'],
   },
 ];
 
 const CAT_GALLERY = [
-  { img: 'uploads/LAB06305%20sh%20%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A7%E1%86%BC.jpg', caption: 'Sirius contemplating dinner', cat: 'Sirius' },
-  { img: 'uploads/LAB06477%20sh%20%E1%84%87%E1%85%A1%E1%86%AB%E1%84%8D%E1%85%A9%E1%86%A8.jpg', caption: 'Eleanora in her element', cat: 'Eleanora' },
+  { img: 'uploads/LAB06305%20sh%20%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A7%E1%86%BC.jpg', caption: 'Sirius Profile', cat: 'Sirius' },
+  { img: 'uploads/LAB06477%20sh%20%E1%84%87%E1%85%A1%E1%86%AB%E1%84%8D%E1%85%A9%E1%86%A8.jpg', caption: 'Eleanora Profile', cat: 'Eleanora' },
   { img: 'uploads/%E1%84%92%E1%85%A7%E1%86%AB%E1%84%80%E1%85%B3%E1%86%B71.jpg', caption: 'Sirius up close', cat: 'Sirius' },
-  { img: 'uploads/%E1%84%92%E1%85%A7%E1%86%AB%E1%84%8B%E1%85%A9%E1%86%A81.png', caption: 'Eleanora judging you', cat: 'Eleanora' },
+  { img: 'uploads/%E1%84%92%E1%85%A7%E1%86%AB%E1%84%8B%E1%85%A9%E1%86%A81.png', caption: '👅', cat: 'Eleanora' },
+  { img: 'uploads/geum01.png', caption: 'Sirius the Teddy Bear', cat: 'Sirius' },
+  { img: 'uploads/oak02.png', caption: 'Eleanora in her element', cat: 'Eleanora' },
+
 ];
 
 function CatProfile({ cat, flipped }) {
