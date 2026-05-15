@@ -18,9 +18,9 @@ const NEWS_PREVIEW = [
 ];
 
 const RESEARCH_INTEREST = [
-  { title: 'AI-assisted Learning Technology', desc: 'Capabilities and Limitations of LLM as a Human Collaborator in Computational Thinking Behavior Analysis and Labeling' },
-  { title: 'Adaptive Learning for Neurodivergent Students', desc: 'Mathematics teaching and learning for students with autism, ADHD, and dyscalculia' },
-  { title: 'Academic Integrity in the AI Era', desc: 'Copyright awareness and integrity practices with generative AI in education' },
+  { title: 'AI-Supported Embodied and Collaborative Mathematics Sensemaking', desc: 'Designing AI-supported learning environments that foster students’ mathematical reasoning through embodied interaction, peer collaboration, and multimodal learning experiences.' },
+  { title: 'Teacher Orchestration and Learning Analytics', desc: 'Investigating how learning analytics and AI can support teachers in noticing, interpreting, and responding to students’ thinking in real time.' },
+  { title: 'Neurodivergent Learners in STEM Education', desc: 'Exploring inclusive learning technologies and adaptive supports for neurodivergent learners, including students with ADHD, autism, and dyscalculia, in STEM learning contexts.' },
 ];
 
 const PROJECTS_PREVIEW = [
@@ -30,9 +30,9 @@ const PROJECTS_PREVIEW = [
 ];
 
 const BLOG_PREVIEW = [
-  { title: 'Rethinking AI as a Learning Facilitator', date: 'Apr 2026', tag: 'Research' },
-  { title: 'On Being a Cat Parent During a PhD', date: 'Mar 2026', tag: 'Personal' },
-  { title: 'Notes from AERA 2025', date: 'Jan 2026', tag: 'Conference' },
+  { title: 'Journey of my PhD program', date: 'Sep 2026', tag: 'PhD Life' },
+  // { title: 'On Being a Cat Parent During a PhD', date: 'Mar 2026', tag: 'Personal' },
+  // { title: 'Notes from AERA 2025', date: 'Jan 2026', tag: 'Conference' },
 ];
 
 function HomePage() {
