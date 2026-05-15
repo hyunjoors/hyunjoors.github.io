@@ -47,7 +47,7 @@ function HomePage() {
             PhD Student · University of Maryland
           </p>
           <h1 style={{ fontFamily: th.serif, fontSize: 76, fontWeight: 400, lineHeight: 1.02, marginBottom: 40 }}>
-            Rosalyn<br />Shin
+            Rosalyn Shin
           </h1>
           <div style={{ width: 48, height: 2, background: th.accent, marginBottom: 28 }}></div>
           <p style={{ fontSize: 17, lineHeight: 1.85, maxWidth: 540, color: th.text, opacity: 0.7 }}>
