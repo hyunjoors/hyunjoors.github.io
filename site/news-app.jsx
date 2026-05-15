@@ -1,13 +1,12 @@
 /* ═══════ NEWS PAGE ═══════ */
 
 const ALL_NEWS = [
-  { year: 2026, date: 'May 2026', title: 'Presenting at AERA Annual Meeting', desc: 'Presenting a paper on AI-facilitated collaborative mathematics learning at the American Educational Research Association annual meeting in Washington, D.C.', type: 'Talk' },
-  { year: 2026, date: 'Apr 2026', title: 'Paper Accepted at LAK 2026', desc: 'Our paper on learning analytics for neurodivergent student support has been accepted at the Learning Analytics & Knowledge conference.', type: 'Publication' },
-  { year: 2026, date: 'Mar 2026', title: 'Invited Talk at UMD College of Education', desc: 'Spoke about designing AI tools that center teacher agency and student reasoning in mathematics classrooms.', type: 'Talk' },
-  { year: 2026, date: 'Jan 2026', title: 'ICLS Workshop Proceedings Published', desc: 'Co-facilitated workshop on AI and equity in STEM has been published in the ICLS 2025 companion proceedings.', type: 'Publication' },
-  { year: 2025, date: 'Nov 2025', title: 'Best Paper Nomination at CSCL 2025', desc: 'Our paper on teacher orchestration tools for AI-augmented classrooms received a best paper nomination.', type: 'Award' },
-  { year: 2025, date: 'Aug 2025', title: 'Started PhD at University of Maryland', desc: 'Joined the TLPL program in the College of Education to research AI-supported collaborative learning environments.', type: 'Milestone' },
-  { year: 2025, date: 'May 2025', title: 'Graduated from Johns Hopkins', desc: 'Completed M.Eng. in Computer Science with a focus on NLP and educational technology.', type: 'Milestone' },
+  { year: 2026, date: 'May 2026', title: 'Presenting at AERA Annual Meeting', desc: 'Presenting a paper on Capabilities and Limitations of LLM as a Human Collaborator in Computational Thinking Behavior Analysis and Labeling', type: 'Poster' },
+  // { year: 2026, date: 'Apr 2026', title: 'Paper Accepted at LAK 2026', desc: 'Our paper on learning analytics for neurodivergent student support has been accepted at the Learning Analytics & Knowledge conference.', type: 'Publication' },
+  // { year: 2026, date: 'Mar 2026', title: 'Invited Talk at UMD College of Education', desc: 'Spoke about designing AI tools that center teacher agency and student reasoning in mathematics classrooms.', type: 'Talk' },
+  // { year: 2026, date: 'Jan 2026', title: 'ICLS Workshop Proceedings Published', desc: 'Co-facilitated workshop on AI and equity in STEM has been published in the ICLS 2025 companion proceedings.', type: 'Publication' },
+  // { year: 2025, date: 'Nov 2025', title: 'Best Paper Nomination at CSCL 2025', desc: 'Our paper on teacher orchestration tools for AI-augmented classrooms received a best paper nomination.', type: 'Award' },
+  { year: 2025, date: 'August 2025', title: 'Started PhD at University of Maryland', desc: 'Joined the Teaching and Learning, Policy and Leadership PhD program in the College of Education to research AI-supported collaborative learning environments.', type: 'Milestone' },
 ];
 
 function NewsPage() {
@@ -23,7 +22,7 @@ function NewsPage() {
   }, {});
   const sortedYears = Object.keys(groupedByYear).sort((a, b) => b - a);
 
-  const typeEmoji = { Talk: '🎤', Publication: '📄', Award: '🏆', Milestone: '🎓' };
+  const typeEmoji = { Talk: '🎤', Poster: '🖼️', Publication: '📄', Award: '🏆', Milestone: '🎓' };
 
   return (
     <PageLayout active="News">

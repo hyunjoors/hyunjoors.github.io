@@ -2,13 +2,6 @@
    Features: Academic timeline + Publication filter/search
    ══════════════════════════════ */
 
-// const TIMELINE = [
-//   { year: 'Aug 2025–', role: 'PhD Student', org: 'University of Maryland', dept: 'Teaching & Learning, Policy & Leadership', desc: 'Research on AI-facilitated collaborative math learning for neurodivergent students', current: true },
-//   { year: 'Aug 202–Dec 2022', role: 'M.Eng. Student', org: 'Johns Hopkins University', dept: 'Computer Science', desc: 'Focus on NLP, machine learning, and educational technology applications' },
-//   { year: '2020', role: 'Research Intern', org: 'Purdue Research Computing', dept: '', desc: 'Built data pipelines for large-scale learning analytics' },
-//   { year: '2018–2022', role: 'B.S. Student', org: 'Purdue University', dept: 'Computer Science', desc: 'Undergraduate research in human-computer interaction and adaptive systems' },
-// ];
-
 const PUBLICATIONS = [
   { id: 1, year: 2026, title: 'Designing AI as Facilitator: A Framework for Collaborative Mathematics Learning', authors: 'Shin, R., Kim, J., & Park, S.', venue: 'AERA Annual Meeting 2026', type: 'conference', tags: ['AI', 'Mathematics', 'Collaboration'] },
   { id: 2, year: 2026, title: 'Learning Analytics for Neurodivergent Student Support in K-12 Mathematics', authors: 'Shin, R. & Lee, H.', venue: 'LAK 2026', type: 'conference', tags: ['Learning Analytics', 'Neurodivergent', 'K-12'] },
@@ -144,7 +137,7 @@ function ResearchPage() {
 
       <Divider />
 
-      {/* ── ACADEMIC TIMELINE ── */}
+      {/* ── ACADEMIC TIMELINE ──
       <section className="section-pad">
         <SectionLabel text="Academic Timeline" />
         <div style={{ maxWidth: 700, position: 'relative' }}>
@@ -152,7 +145,7 @@ function ResearchPage() {
             <TimelineItem key={i} item={item} isLast={i === TIMELINE.length - 1} />
           ))}
         </div>
-      </section>
+      </section> */}
 
       <Divider />
 
