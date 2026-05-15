@@ -18,8 +18,6 @@ const CAT_PROFILES = [
 ];
 
 const CAT_GALLERY = [
-  { img: 'uploads/LAB06305%20sh%20%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A7%E1%86%BC.jpg', caption: 'Sirius Profile', cat: 'Sirius' },
-  { img: 'uploads/LAB06477%20sh%20%E1%84%87%E1%85%A1%E1%86%AB%E1%84%8D%E1%85%A9%E1%86%A8.jpg', caption: 'Eleanora Profile', cat: 'Eleanora' },
   { img: 'uploads/%E1%84%92%E1%85%A7%E1%86%AB%E1%84%80%E1%85%B3%E1%86%B71.jpg', caption: 'Sirius up close', cat: 'Sirius' },
   { img: 'uploads/%E1%84%92%E1%85%A7%E1%86%AB%E1%84%8B%E1%85%A9%E1%86%A81.png', caption: '👅', cat: 'Eleanora' },
   { img: 'uploads/geum01.png', caption: 'Sirius the Teddy Bear', cat: 'Sirius' },
