@@ -1,0 +1,127 @@
+/* ═══════ Global Reset & Base ═══════ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: #F0EDE8;
+  font-family: 'DM Sans', sans-serif;
+  color: #2D2A26;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; max-width: 100%; }
+a { text-decoration: none; color: inherit; }
+button { font: inherit; cursor: pointer; border: none; background: none; }
+
+/* ═══════ Paw cursor ═══════ */
+.paw-trail {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  width: 22px;
+  height: 22px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.paw-trail.visible { opacity: 0.35; transition: opacity 0.3s; }
+.paw-trail.fading { opacity: 0; transition: opacity 1.2s ease-out; }
+
+/* ═══════ Page transitions ═══════ */
+.page-wrap {
+  max-width: 1440px;
+  margin: 0 auto;
+  background: #FAF8F5;
+  min-height: 100vh;
+  animation: fadeUp 0.5s ease both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════ Shared section rhythm ═══════ */
+.section-pad { padding: 56px 80px; }
+.divider { margin: 0 80px; height: 1px; background: #D8D2CA; }
+
+/* ═══════ Interactive hover lifts ═══════ */
+.card-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+/* ═══════ Tag pills ═══════ */
+.tag-pill {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 4px;
+  background: #E8EDF4;
+  color: #3D6091;
+}
+.tag-pill.active {
+  background: #3D6091;
+  color: white;
+}
+
+/* ═══════ Publication filter input ═══════ */
+.search-input {
+  width: 100%;
+  padding: 14px 20px 14px 44px;
+  border: 1px solid #D8D2CA;
+  border-radius: 0;
+  font: inherit;
+  font-size: 16px;
+  background: white;
+  color: #1F1D1A;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-input:focus {
+  border-color: #3D6091;
+}
+.search-input::placeholder {
+  color: #B0AAA4;
+}
+
+/* ═══════ Timeline ═══════ */
+.timeline-line {
+  position: absolute;
+  left: 11px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #D8D2CA;
+}
+.timeline-dot {
+  position: absolute;
+  left: 4px;
+  top: 6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #4A6FA5;
+  background: #FAF8F5;
+  z-index: 1;
+}
+.timeline-dot.filled {
+  background: #4A6FA5;
+}
+
+/* ═══════ Blog post card ═══════ */
+.blog-card {
+  border: 1px solid #D8D2CA;
+  padding: 32px;
+  transition: border-color 0.2s;
+}
+.blog-card:hover {
+  border-color: #4A6FA5;
+}
+
+/* ═══════ Scrollbar (optional subtlety) ═══════ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #D8D2CA; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #B0AAA4; }
