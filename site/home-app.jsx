@@ -51,7 +51,9 @@ function HomePage() {
           </h1>
           <div style={{ width: 48, height: 2, background: th.accent, marginBottom: 28 }}></div>
           <p style={{ fontSize: 17, lineHeight: 1.85, maxWidth: 540, color: th.text, opacity: 0.7 }}>
-            I study how AI can be designed not to replace human learning interactions, but to restore and amplify students' reasoning, collaboration, and teacher responsiveness in mathematics classrooms.
+            I am a PhD student in Technology, Learning, and Leadership at the University of Maryland, College Park, advised by <a href="https://education.umd.edu/research-and-impact/labs/regal/people" style={{ color: th.accent, textDecoration: 'underline' }}>Dr. Fengfeng Ke</a> in the <a href="https://education.umd.edu/research-and-impact/labs/regal" style={{ color: th.accent, textDecoration: 'underline' }}>REGAL Lab</a>. My research explores how AI can support mathematical sensemaking without replacing the human and social dimensions of learning. I design AI-supported learning environments that foster students’ reasoning, collaboration, and teacher responsiveness in mathematics classrooms.
+            
+            My current work focuses on embodied and collaborative learning experiences in algebra, integrating conversational AI, multimodal interaction, and teacher-facing learning analytics to support both student learning and instructional orchestration.
           </p>
         </div>
         <div style={{ width: 280, height: 360, overflow: 'hidden', flexShrink: 0, background: '#ddd' }}>

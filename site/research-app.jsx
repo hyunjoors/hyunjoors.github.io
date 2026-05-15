@@ -13,8 +13,8 @@ const PUBLICATIONS = [
 ];
 
 const DEMOS = [
-  { title: 'Number Sandbox', desc: 'Explore how rectangles become recipes, and how recipes reveal different kinds of numbers', venue: 'AERA 2026', link: 'projects/rrs/index.html' },
-  { title: 'EVE', desc: 'An AI platform that helps students externalize mathematical reasoning through collaborative problem-solving. MathReason prompts students to articulate their thinking step-by-step, while giving teachers a real-time view into how students approach problems.', venue: '', link: 'https://regal.umd.edu/evelyn' },
+  { title: 'Number Sandbox', desc: 'Explore how rectangles become recipes, and how recipes reveal different kinds of numbers', venue: 'S26 788Y', link: 'projects/rrs/index.html' },
+  { title: 'EVE', desc: 'An AI platform that helps students externalize mathematical reasoning through collaborative problem-solving. MathReason prompts students to articulate their thinking step-by-step, while giving teachers a real-time view into how students approach problems.', venue: 'REGAL', link: 'https://regal.umd.edu/evelyn' },
   // { title: 'EquiMath Multi-Modal Interface', desc: 'Prototype demo of adaptive math representations for neurodivergent learners — visual, spatial, and narrative modes.', venue: 'CHI 2024', link: '#' },
 ];
 
