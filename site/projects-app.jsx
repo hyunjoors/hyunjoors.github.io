@@ -159,7 +159,7 @@ function ProjectCard({ project, idx, onOpenEmbed }) {
   const actionLabel = {
     embedded: 'Launch →',
     external: 'Visit →',
-    showcase: null,
+    showcase: 'View details →',
   };
 
   return (

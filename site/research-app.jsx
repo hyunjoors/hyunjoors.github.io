@@ -19,7 +19,7 @@ const DEMOS = [
 ];
 
 const POSTERS = [
-  { title: 'AI-Facilitated Collaborative Learning in K-12 Math Classrooms', venue: 'LAK 2026', year: 2026, thumbnail: null },
+  { title: 'AI-Facilitated Collaborative Learning in K-12 Math Classrooms', venue: 'LAK 2026', year: 2026, thumbnail: 'uploads/LAK26_Poster.png' },
   // { title: 'Designing for Neurodivergent Learners: A Multi-Modal Approach', venue: 'ICLS 2025', year: 2025, thumbnail: null },
   // { title: 'Visualizing Student Reasoning Patterns with Learning Analytics', venue: 'LAK 2025', year: 2025, thumbnail: null },
   // { title: 'Generative AI and Academic Integrity: Student Perspectives', venue: 'CSCL 2024', year: 2024, thumbnail: null },
