@@ -2,12 +2,12 @@
    Features: Academic timeline + Publication filter/search
    ══════════════════════════════ */
 
-const TIMELINE = [
-  { year: '2024–', role: 'PhD Student', org: 'University of Maryland', dept: 'Teaching & Learning, Policy & Leadership', desc: 'Research on AI-facilitated collaborative math learning for neurodivergent students', current: true },
-  { year: '2022–2024', role: 'M.Eng. Student', org: 'Johns Hopkins University', dept: 'Computer Science', desc: 'Focus on NLP, machine learning, and educational technology applications' },
-  { year: '2020', role: 'Research Intern', org: 'Purdue Research Computing', dept: '', desc: 'Built data pipelines for large-scale learning analytics' },
-  { year: '2018–2022', role: 'B.S. Student', org: 'Purdue University', dept: 'Computer Science', desc: 'Undergraduate research in human-computer interaction and adaptive systems' },
-];
+// const TIMELINE = [
+//   { year: 'Aug 2025–', role: 'PhD Student', org: 'University of Maryland', dept: 'Teaching & Learning, Policy & Leadership', desc: 'Research on AI-facilitated collaborative math learning for neurodivergent students', current: true },
+//   { year: 'Aug 202–Dec 2022', role: 'M.Eng. Student', org: 'Johns Hopkins University', dept: 'Computer Science', desc: 'Focus on NLP, machine learning, and educational technology applications' },
+//   { year: '2020', role: 'Research Intern', org: 'Purdue Research Computing', dept: '', desc: 'Built data pipelines for large-scale learning analytics' },
+//   { year: '2018–2022', role: 'B.S. Student', org: 'Purdue University', dept: 'Computer Science', desc: 'Undergraduate research in human-computer interaction and adaptive systems' },
+// ];
 
 const PUBLICATIONS = [
   { id: 1, year: 2026, title: 'Designing AI as Facilitator: A Framework for Collaborative Mathematics Learning', authors: 'Shin, R., Kim, J., & Park, S.', venue: 'AERA Annual Meeting 2026', type: 'conference', tags: ['AI', 'Mathematics', 'Collaboration'] },
@@ -38,38 +38,38 @@ const RESEARCH_AREAS = [
   { title: 'Academic Integrity in the AI Era', icon: '→', desc: 'Copyright awareness and integrity practices with generative AI in education. Exploring how we teach responsible AI use alongside disciplinary knowledge.' },
 ];
 
-/* ── Timeline Item ── */
-function TimelineItem({ item, isLast }) {
-  const th = THEME;
-  const [hovered, setHovered] = React.useState(false);
+// /* ── Timeline Item ── */
+// function TimelineItem({ item, isLast }) {
+//   const th = THEME;
+//   const [hovered, setHovered] = React.useState(false);
 
-  return (
-    <div
-      style={{ position: 'relative', paddingLeft: 44, paddingBottom: isLast ? 0 : 48 }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      {!isLast && <div className="timeline-line"></div>}
-      <div className="timeline-dot" style={item.current ? { background: th.accent } : {}}></div>
-      <div style={{
-        padding: '20px 28px',
-        background: hovered ? th.accentWash : 'transparent',
-        border: `1px solid ${hovered ? th.accent + '30' : 'transparent'}`,
-        transition: 'all 0.3s ease',
-        marginLeft: 8,
-      }}>
-        <div style={{ display: 'flex', gap: 16, alignItems: 'baseline', marginBottom: 6 }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: th.accent, fontVariantNumeric: 'tabular-nums' }}>{item.year}</span>
-          {item.current && <span className="tag-pill active" style={{ fontSize: 10 }}>Current</span>}
-        </div>
-        <p style={{ fontFamily: th.serif, fontSize: 26, fontWeight: 500, marginBottom: 4 }}>{item.role}</p>
-        <p style={{ fontSize: 16, marginBottom: 2 }}>{item.org}</p>
-        {item.dept && <p style={{ fontSize: 14, color: th.muted }}>{item.dept}</p>}
-        <p style={{ fontSize: 15, color: th.muted, lineHeight: 1.7, marginTop: 8 }}>{item.desc}</p>
-      </div>
-    </div>
-  );
-}
+//   return (
+//     <div
+//       style={{ position: 'relative', paddingLeft: 44, paddingBottom: isLast ? 0 : 48 }}
+//       onMouseEnter={() => setHovered(true)}
+//       onMouseLeave={() => setHovered(false)}
+//     >
+//       {!isLast && <div className="timeline-line"></div>}
+//       <div className="timeline-dot" style={item.current ? { background: th.accent } : {}}></div>
+//       <div style={{
+//         padding: '20px 28px',
+//         background: hovered ? th.accentWash : 'transparent',
+//         border: `1px solid ${hovered ? th.accent + '30' : 'transparent'}`,
+//         transition: 'all 0.3s ease',
+//         marginLeft: 8,
+//       }}>
+//         <div style={{ display: 'flex', gap: 16, alignItems: 'baseline', marginBottom: 6 }}>
+//           <span style={{ fontSize: 14, fontWeight: 600, color: th.accent, fontVariantNumeric: 'tabular-nums' }}>{item.year}</span>
+//           {item.current && <span className="tag-pill active" style={{ fontSize: 10 }}>Current</span>}
+//         </div>
+//         <p style={{ fontFamily: th.serif, fontSize: 26, fontWeight: 500, marginBottom: 4 }}>{item.role}</p>
+//         <p style={{ fontSize: 16, marginBottom: 2 }}>{item.org}</p>
+//         {item.dept && <p style={{ fontSize: 14, color: th.muted }}>{item.dept}</p>}
+//         <p style={{ fontSize: 15, color: th.muted, lineHeight: 1.7, marginTop: 8 }}>{item.desc}</p>
+//       </div>
+//     </div>
+//   );
+// }
 
 /* ── Publication Item ── */
 function PubItem({ pub }) {
