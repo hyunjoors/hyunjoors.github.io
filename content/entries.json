@@ -45,13 +45,13 @@
       "id": "poster-lak26",
       "type": "presentation",
       "date": "2026-04-01",
-      "title": "AI-Facilitated Collaborative Learning in K-12 Math Classrooms",
+      "title": "Capabilities and Limitations of LLM as a Human Collaborator in Computational Thinking Behavior Analysis and Labeling",
       "keywords": [
         "Poster",
         "AI",
         "Learning Analytics"
       ],
-      "description": "Poster presentation highlighting capabilities and limitations of LLMs as human collaborators in computational thinking behavior analysis and labeling.",
+      "description": "This study investigates the approach of integrating AI in learning analytics to analyze computational thinking (CT) behaviors in adolescents with autism by leveraging and comparing two different LLMs–Google Gemini and VideoLLaMA3. Using a similar prompt design, Gemini achieved limited overall accuracy (44.47%) in replicating human-coded labels, while VideoLlama achieved higher overall accuracy (63.24%). Both LLM-generated annotations struggled with abstract CT constructs like Abstraction and Persistence. In this preliminary result, LLMs demonstrated the potential to expand the horizon in assisting human annotators in behavior analysis. We discuss the potential of local LLMs as effective, privacy-preserving collaborators in behavioral coding.",
       "presType": "Refereed Posters",
       "venue": "LAK 2026",
       "authors": [
