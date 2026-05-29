@@ -44,7 +44,7 @@ function RecentNewsRow({ item, isLast }) {
       <div>
         <p style={{ fontFamily: th.serif, fontSize: 22, fontWeight: 500, marginBottom: 4, lineHeight: 1.35 }}>{item.title}</p>
         {item.description && (
-          <p style={{ fontSize: 14, color: th.muted, lineHeight: 1.7, marginBottom: 6 }}>{item.description}</p>
+          <p style={{ fontSize: 14, color: th.muted, lineHeight: 1.7, marginBottom: 6, whiteSpace: 'pre-wrap' }}>{item.description}</p>
         )}
         {Array.isArray(item.authors) && item.authors.length > 0 && (
           <p style={{ fontSize: 13, color: th.muted, marginBottom: 4 }}>{renderAuthors(item.authors)}</p>

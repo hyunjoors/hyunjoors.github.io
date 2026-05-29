@@ -21,7 +21,7 @@ function PubItem({ pub, isLast }) {
         <p style={{ fontSize: 14, color: th.accent, fontStyle: 'italic' }}>{pub.venue}</p>
       )}
       {pub.description && (
-        <p style={{ fontSize: 14, color: th.muted, lineHeight: 1.7, marginTop: 6 }}>{pub.description}</p>
+        <p style={{ fontSize: 14, color: th.muted, lineHeight: 1.7, marginTop: 6, whiteSpace: 'pre-wrap' }}>{pub.description}</p>
       )}
       <div style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap' }}>
         {(pub.keywords || []).map(k => (

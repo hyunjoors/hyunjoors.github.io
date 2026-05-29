@@ -42,47 +42,6 @@
       "mode": "external"
     },
     {
-      "id": "demo-number-sandbox",
-      "date": "2026-03-12",
-      "title": "Number Sandbox",
-      "keywords": [
-        "Demo",
-        "Algebra"
-      ],
-      "type": "presentation",
-      "presType": "Demo",
-      "description": "Explore how rectangles become recipes, and how recipes reveal different kinds of numbers.\n\nRole: Lead Developer",
-      "venue": "S26 788Y",
-      "authors": [
-        {
-          "name": "Shin, R.",
-          "me": true
-        }
-      ],
-      "attachmentUrl": ""
-    },
-    {
-      "id": "demo-eve",
-      "date": "2026-04-08",
-      "title": "EVE",
-      "keywords": [
-        "Demo",
-        "AI",
-        "Collaborative Learning"
-      ],
-      "type": "presentation",
-      "presType": "Demo",
-      "description": "MathReason prompts students to articulate thinking step-by-step while teachers gain a real-time view of student approaches.\n\nRole: Lead Developer & Researcher",
-      "venue": "REGAL Lab",
-      "authors": [
-        {
-          "name": "Shin, R.",
-          "me": true
-        }
-      ],
-      "attachmentUrl": ""
-    },
-    {
       "id": "poster-lak26",
       "date": "2026-04-01",
       "title": "AI-Facilitated Collaborative Learning in K-12 Math Classrooms",
@@ -135,7 +94,7 @@
       "keywords": [
         "HCIL"
       ],
-      "description": "- Lightening talk on capabilities and limitations of LLM as a human collaborator in computational thinking behavior analysis and labeling.\\n\n- Demo on EVE platform",
+      "description": "- Lightening talk on capabilities and limitations of LLM as a human collaborator in computational thinking behavior analysis and labeling.\n- Demo on EVE platform",
       "url": ""
     }
   ]
