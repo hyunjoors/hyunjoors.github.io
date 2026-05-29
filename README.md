@@ -23,6 +23,22 @@ Personal academic website for Rosalyn Shin.
 │   ├── blog-app.jsx          ← Blog page components
 │   └── cats-app.jsx          ← Cats page components
 │
+├── 📁 content/               ← Canonical content sources (edit here)
+│   ├── entries.json          ← Unified entries: project/demo/poster/publication/news
+│   ├── home.json             ← Homepage curated ID lists
+│   ├── blog/                 ← Markdown blog posts with frontmatter
+│   └── templates/            ← Entry/blog starter templates
+│
+├── 📁 scripts/
+│   ├── build_content.py      ← Validate + generate site/generated/content.bundle.js
+│   └── publish_content.py    ← Build + git dry-run + optional commit/push
+│
+├── 📁 notebooks/
+│   └── content_publish.ipynb ← Form-style workflow (Execute All)
+│
+├── 📁 site/generated/
+│   └── content.bundle.js     ← Generated content bundle consumed by pages
+│
 ├── 📁 uploads/               ← Images & media
 │   ├── RosalynShin2025.JPG   ← Portrait photo
 │   ├── 현금1.jpg              ← Sirius (현금) photo
@@ -45,11 +61,44 @@ Personal academic website for Rosalyn Shin.
 ## Features
 
 - 🐾 Cat paw cursor trail on all pages
-- 📅 Interactive academic timeline
 - 🔍 Publication search & filter (by type, year, keyword)
-- 📂 Three project types: Interactive (iframe embed), External (link), Showcase (images)
-- 📝 Blog with 7 category filters and full reading view
+- 📂 Unified content model for projects/demos/posters/publications/news
+- 📝 Markdown-based blog authoring with generated HTML rendering
 - 🐱 Cat profiles with photo gallery + Instagram link (@geumi_oaki)
+
+## Content Workflow (Form → Generate → Push)
+
+### One-time setup
+
+```bash
+python3 -m pip install --user notebook
+```
+
+### Option A: Notebook workflow (recommended)
+
+1. Start Jupyter from repo root:
+
+```bash
+python3 -m notebook
+```
+
+2. Open `notebooks/content_publish.ipynb`.
+3. Edit form variables (`ENTRIES_FORM`, `HOME_FORM`, `BLOG_FORM`).
+4. Set publish controls:
+   - `TARGET_BRANCH = "main"` (or another branch)
+   - `PUBLISH_CONFIRM = False` for dry-run
+   - `PUBLISH_CONFIRM = True` to commit + push
+5. Run **Execute All**.
+
+### Option B: CLI workflow
+
+```bash
+python3 scripts/build_content.py --check
+python3 scripts/build_content.py
+python3 scripts/publish_content.py --no-push
+# push only when ready:
+python3 scripts/publish_content.py --target-branch main --push-confirm
+```
 
 ## Deployment
 

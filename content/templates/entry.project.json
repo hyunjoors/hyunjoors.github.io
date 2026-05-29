@@ -1,0 +1,20 @@
+{
+  "id": "project-slug",
+  "type": "project",
+  "title": "Project Title",
+  "date": "2026-01-01",
+  "summary": "Short summary used across cards and previews.",
+  "tags": [
+    "Tag1",
+    "Tag2"
+  ],
+  "status": "Live",
+  "action": {
+    "label": "Launch",
+    "url": "projects/my-project/index.html",
+    "target": "embed"
+  },
+  "mode": "embedded",
+  "role": "Lead Developer",
+  "tagline": "One-line project positioning"
+}

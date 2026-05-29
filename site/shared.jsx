@@ -152,8 +152,66 @@ function Divider() {
   return <div className="divider"></div>;
 }
 
+/* ═══════ CONTENT HELPERS ═══════ */
+function getSiteContent() {
+  const fallback = {
+    entriesById: {},
+    worksByDateDesc: [],
+    newsByDateDesc: [],
+    publicationsByDateDesc: [],
+    projectsByDateDesc: [],
+    demosByDateDesc: [],
+    postersByDateDesc: [],
+    blogByDateDesc: [],
+    homeSelections: { selectedWorkIds: [], selectedNewsIds: [], selectedBlogIds: [] },
+  };
+  if (!window.SITE_CONTENT) {
+    console.warn('window.SITE_CONTENT is missing. Did you run scripts/build_content.py?');
+    return fallback;
+  }
+  return { ...fallback, ...window.SITE_CONTENT };
+}
+
+function resolveByIds(ids, lookup) {
+  if (!Array.isArray(ids)) return [];
+  return ids.map(id => lookup[id]).filter(Boolean);
+}
+
+function formatIsoDate(dateString, options) {
+  if (!dateString) return '';
+  const parsed = new Date(`${dateString}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) return dateString;
+  return new Intl.DateTimeFormat('en-US', options || { month: 'long', year: 'numeric' }).format(parsed);
+}
+
+function entryTypeLabel(type) {
+  const labels = {
+    project: 'Project',
+    demo: 'Demo',
+    poster: 'Poster',
+    publication: 'Publication',
+    news: 'News',
+  };
+  return labels[type] || type;
+}
+
+function runEntryAction(entry, onEmbed) {
+  if (!entry || !entry.action) return;
+  const { url, target } = entry.action;
+  if (target === 'embed' && typeof onEmbed === 'function') {
+    onEmbed(entry);
+    return;
+  }
+  if (target === 'same_tab') {
+    window.location.href = url;
+    return;
+  }
+  window.open(url, '_blank', 'noopener');
+}
+
 /* ═══════ EXPORT TO WINDOW ═══════ */
 Object.assign(window, {
   THEME, PawCursor, Nav, Footer, PageLayout, SectionLabel,
   SideHeading, PageHero, Divider,
+  getSiteContent, resolveByIds, formatIsoDate, entryTypeLabel, runEntryAction,
 });

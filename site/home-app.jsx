@@ -11,36 +11,57 @@ const EDUCATION = [
   { degree: 'B.S.', field: 'Computer Science', school: 'Purdue University', status: '' },
 ];
 
-const NEWS_PREVIEW = [
-  { date: 'April 2026', title: 'Presenting at LAK 26 Annual Meeting', desc: 'Poster on Capabilities and Limitations of LLM as a Human Collaborator in Computational Thinking Behavior Analysis and Labeling' },
-  // { date: 'Apr 2026', title: 'Paper accepted at LAK 2026', desc: 'Learning analytics for neurodivergent student support' },
-  // { date: 'Jan 2026', title: 'ICLS Workshop Proceedings Published', desc: 'Co-facilitated workshop on AI and equity in STEM' },
-];
-
 const RESEARCH_INTEREST = [
   { title: 'AI-Supported Embodied and Collaborative Mathematics Sensemaking', desc: 'Designing AI-supported learning environments that foster students’ mathematical reasoning through embodied interaction, peer collaboration, and multimodal learning experiences.' },
   { title: 'Teacher Orchestration and Learning Analytics', desc: 'Investigating how learning analytics and AI can support teachers in noticing, interpreting, and responding to students’ thinking in real time.' },
   { title: 'Neurodivergent Learners in STEM Education', desc: 'Exploring inclusive learning technologies and adaptive supports for neurodivergent learners, including students with ADHD, autism, and dyscalculia, in STEM learning contexts.' },
 ];
 
-const PROJECTS_PREVIEW = [
-  { title: 'EVE', desc: 'Enactive Virtual Environment with Dynamic Human-AI Learning Partnerships' },
-  // { title: 'TeacherScope', desc: 'Real-time dashboard for orchestrating classroom learning by visualizing student thinking' },
-  // { title: 'EquiMath', desc: 'Adaptive math curriculum for neurodivergent learners with multi-modal representations' },
-];
+function HomeWorkCard({ item }) {
+  const th = THEME;
+  const hasImage = item.type === 'poster' && item.thumbnail;
 
-const BLOG_PREVIEW = [
-  { title: 'Journey of my PhD program', date: 'Sep 2026', tag: 'PhD Life' },
-  // { title: 'On Being a Cat Parent During a PhD', date: 'Mar 2026', tag: 'Personal' },
-  // { title: 'Notes from AERA 2025', date: 'Jan 2026', tag: 'Conference' },
-];
+  return (
+    <div className="card-lift" style={{ border: `1px solid ${th.border}`, padding: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginBottom: 14 }}>
+        <span className="tag-pill">{entryTypeLabel(item.type)}</span>
+        <span style={{ fontSize: 12, color: th.muted }}>{item.status || ''}</span>
+      </div>
+      <div style={{ width: '100%', height: 120, background: th.placeholder, marginBottom: 18, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {hasImage ? (
+          <img src={item.thumbnail} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          <span style={{ fontFamily: 'monospace', fontSize: 10, color: th.muted }}>{entryTypeLabel(item.type).toLowerCase()} preview</span>
+        )}
+      </div>
+      <p style={{ fontFamily: th.serif, fontSize: 24, fontWeight: 500, marginBottom: 8 }}>{item.title}</p>
+      <p style={{ fontSize: 14, color: th.muted, lineHeight: 1.75, marginBottom: 14 }}>{item.summary}</p>
+      <button
+        onClick={() => runEntryAction(item)}
+        style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', background: th.accent, color: 'white', fontSize: 13, fontWeight: 500 }}
+      >
+        {item.action?.label || 'Open'} →
+      </button>
+    </div>
+  );
+}
 
 function HomePage() {
   const th = THEME;
+  const content = getSiteContent();
+  const entriesById = content.entriesById || {};
+  const blogById = Object.fromEntries((content.blogByDateDesc || []).map(post => [post.id, post]));
+
+  const selectedWorks = resolveByIds(content.homeSelections.selectedWorkIds, entriesById);
+  const selectedNews = resolveByIds(content.homeSelections.selectedNewsIds, entriesById);
+  const selectedBlogs = resolveByIds(content.homeSelections.selectedBlogIds, blogById);
+
+  const works = selectedWorks.length > 0 ? selectedWorks : (content.worksByDateDesc || []).slice(0, 3);
+  const newsItems = selectedNews.length > 0 ? selectedNews : (content.newsByDateDesc || []).slice(0, 3);
+  const blogItems = selectedBlogs.length > 0 ? selectedBlogs : (content.blogByDateDesc || []).slice(0, 3);
 
   return (
     <PageLayout active="About">
-      {/* ── HERO ── */}
       <section style={{ padding: '96px 80px 72px', display: 'flex', gap: 80 }}>
         <div style={{ flex: 1 }}>
           <p style={{ fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', color: th.muted, marginBottom: 28, fontWeight: 500 }}>
@@ -52,7 +73,6 @@ function HomePage() {
           <div style={{ width: 48, height: 2, background: th.accent, marginBottom: 28 }}></div>
           <p style={{ fontSize: 17, lineHeight: 1.85, maxWidth: 540, color: th.text, opacity: 0.7 }}>
             I am a PhD student in Technology, Learning, and Leadership at the University of Maryland, College Park, advised by <a href="https://education.umd.edu/research-and-impact/labs/regal/people" style={{ color: th.accent, textDecoration: 'underline' }}>Dr. Fengfeng Ke</a> in the <a href="https://education.umd.edu/research-and-impact/labs/regal" style={{ color: th.accent, textDecoration: 'underline' }}>REGAL Lab</a>. My research explores how AI can support mathematical sensemaking without replacing the human and social dimensions of learning. I design AI-supported learning environments that foster students’ reasoning, collaboration, and teacher responsiveness in mathematics classrooms.
-            
             My current work focuses on embodied and collaborative learning experiences in algebra, integrating conversational AI, multimodal interaction, and teacher-facing learning analytics to support both student learning and instructional orchestration.
           </p>
         </div>
@@ -63,7 +83,6 @@ function HomePage() {
 
       <Divider />
 
-      {/* ── EDUCATION ── */}
       <section className="section-pad">
         <SectionLabel text="Education" />
         <div style={{ display: 'flex', gap: 0 }}>
@@ -80,16 +99,15 @@ function HomePage() {
 
       <Divider />
 
-      {/* ── NEWS (editorial 2-col from C) ── */}
       <section style={{ padding: '56px 80px', display: 'grid', gridTemplateColumns: '200px 1fr', gap: 56 }}>
         <SideHeading line1="Recent" line2="News" />
         <div>
-          {NEWS_PREVIEW.map((item, i) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: 28, padding: '20px 0', borderBottom: i < NEWS_PREVIEW.length - 1 ? `1px solid ${th.border}` : 'none' }}>
-              <span className="tag-pill" style={{ alignSelf: 'start', justifySelf: 'start', fontSize: 12 }}>{item.date}</span>
+          {newsItems.map((item, i) => (
+            <div key={item.id} style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 28, padding: '20px 0', borderBottom: i < newsItems.length - 1 ? `1px solid ${th.border}` : 'none' }}>
+              <span className="tag-pill" style={{ alignSelf: 'start', justifySelf: 'start', fontSize: 12 }}>{formatIsoDate(item.date)}</span>
               <div>
                 <p style={{ fontFamily: th.serif, fontSize: 23, fontWeight: 500, marginBottom: 4 }}>{item.title}</p>
-                <p style={{ fontSize: 14, color: th.muted, lineHeight: 1.7 }}>{item.desc}</p>
+                <p style={{ fontSize: 14, color: th.muted, lineHeight: 1.7 }}>{item.summary}</p>
               </div>
             </div>
           ))}
@@ -99,7 +117,6 @@ function HomePage() {
 
       <Divider />
 
-      {/* ── RESEARCH ── */}
       <section className="section-pad">
         <SectionLabel text="Research Interests" />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
@@ -118,43 +135,32 @@ function HomePage() {
 
       <Divider />
 
-      {/* ── PROJECTS ── */}
       <section className="section-pad">
-        <SectionLabel text="Selected Projects" />
+        <SectionLabel text="Selected Work" />
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 28 }}>
-          {PROJECTS_PREVIEW.map((p, i) => (
-            <div key={i} className="card-lift" style={{ border: `1px solid ${th.border}`, padding: 32 }}>
-              <div style={{ width: '100%', height: 100, background: th.placeholder, marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ fontFamily: 'monospace', fontSize: 10, color: th.muted }}>project visual</span>
-              </div>
-              <p style={{ fontFamily: th.serif, fontSize: 24, fontWeight: 500, marginBottom: 8 }}>{p.title}</p>
-              <p style={{ fontSize: 14, color: th.muted, lineHeight: 1.75 }}>{p.desc}</p>
-            </div>
-          ))}
+          {works.map(item => <HomeWorkCard key={item.id} item={item} />)}
         </div>
         <a href="projects.html" style={{ display: 'inline-block', marginTop: 28, fontSize: 13, color: th.accent, fontWeight: 500 }}>View all projects →</a>
       </section>
 
       <Divider />
 
-      {/* ── BLOG (editorial 2-col from C) ── */}
       <section style={{ padding: '56px 80px', display: 'grid', gridTemplateColumns: '200px 1fr', gap: 56 }}>
         <SideHeading line1="From" line2="the Blog" />
         <div>
-          {BLOG_PREVIEW.map((bp, i) => (
-            <div key={i} style={{ padding: '18px 0', borderBottom: i < BLOG_PREVIEW.length - 1 ? `1px solid ${th.border}` : 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {blogItems.map((bp, i) => (
+            <div key={bp.id} style={{ padding: '18px 0', borderBottom: i < blogItems.length - 1 ? `1px solid ${th.border}` : 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
                 <span className="tag-pill">{bp.tag}</span>
                 <p style={{ fontFamily: th.serif, fontSize: 21, fontWeight: 500 }}>{bp.title}</p>
               </div>
-              <span style={{ fontSize: 14, color: th.muted, flexShrink: 0 }}>{bp.date}</span>
+              <span style={{ fontSize: 14, color: th.muted, flexShrink: 0 }}>{bp.dateLabel}</span>
             </div>
           ))}
           <a href="blog.html" style={{ display: 'inline-block', marginTop: 20, fontSize: 13, color: th.accent, fontWeight: 500 }}>Read more posts →</a>
         </div>
       </section>
 
-      {/* ── CATS (full-bleed from C) ── */}
       <section>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
           {CATS_DATA.map(cat => (

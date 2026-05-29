@@ -2,7 +2,6 @@ const { useTweaks, TweaksPanel, TweakSection, TweakRadio, TweakToggle, TweakColo
 
 /* ═══════ SHARED DATA ═══════ */
 const NEWS = [
-  { date: 'May 2026', title: 'Presenting at AERA Annual Meeting', desc: 'Paper on AI-facilitated collaborative mathematics learning' },
   { date: 'Apr 2026', title: 'Paper accepted at LAK 2026', desc: 'Learning analytics for neurodivergent student support' },
   { date: 'Jan 2026', title: 'ICLS Workshop Proceedings Published', desc: 'Co-facilitated workshop on AI and equity in STEM' },
 ];
@@ -28,7 +27,6 @@ const CATS = [
 const BLOG_POSTS = [
   { title: 'Rethinking AI as a Learning Facilitator', date: 'Apr 2026', tag: 'Research' },
   { title: 'On Being a Cat Parent During a PhD', date: 'Mar 2026', tag: 'Personal' },
-  { title: 'Notes from AERA 2025', date: 'Jan 2026', tag: 'Conference' },
 ];
 
 /* ═══════ THEME DERIVATION ═══════ */

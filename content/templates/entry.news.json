@@ -1,0 +1,17 @@
+{
+  "id": "news-slug",
+  "type": "news",
+  "title": "News Title",
+  "date": "2026-01-01",
+  "summary": "Announcement summary for home and news page.",
+  "tags": [
+    "Milestone"
+  ],
+  "status": "Announced",
+  "action": {
+    "label": "View News",
+    "url": "news.html#news-slug",
+    "target": "same_tab"
+  },
+  "newsType": "Milestone"
+}

@@ -120,6 +120,57 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   border-color: #4A6FA5;
 }
 
+/* ═══════ Blog article markdown rendering ═══════ */
+.blog-article {
+  font-size: 19px;
+  line-height: 1.85;
+  color: #2A2722;
+}
+.blog-article p,
+.blog-article ul,
+.blog-article ol,
+.blog-article blockquote,
+.blog-article pre,
+.blog-article h2,
+.blog-article h3,
+.blog-article h4 {
+  margin-bottom: 24px;
+}
+.blog-article h2,
+.blog-article h3,
+.blog-article h4 {
+  font-family: 'Cormorant Garamond', serif;
+  line-height: 1.3;
+}
+.blog-article h2 { font-size: 34px; }
+.blog-article h3 { font-size: 28px; }
+.blog-article h4 { font-size: 24px; }
+.blog-article ul,
+.blog-article ol {
+  padding-left: 24px;
+}
+.blog-article li {
+  margin-bottom: 8px;
+}
+.blog-article blockquote {
+  border-left: 3px solid #4A6FA5;
+  padding-left: 16px;
+  color: #5F564D;
+}
+.blog-article code {
+  background: #E8EDF4;
+  color: #1F1D1A;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.88em;
+}
+.blog-article pre {
+  padding: 14px;
+  background: #F4F1EC;
+  border: 1px solid #D8D2CA;
+  overflow: auto;
+}
+
 /* ═══════ Scrollbar (optional subtlety) ═══════ */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
