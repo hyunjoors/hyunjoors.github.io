@@ -135,24 +135,6 @@ function HomePage() {
 
       <Divider />
 
-      <section className="section-pad">
-        <SectionLabel text="Research Interests" />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-          {RESEARCH_INTEREST.map((r, i) => (
-            <div key={i} style={{ display: 'flex', gap: 24 }}>
-              <div style={{ width: 3, minHeight: 40, background: th.accent, flexShrink: 0, marginTop: 6 }}></div>
-              <div>
-                <p style={{ fontFamily: th.serif, fontSize: 23, fontWeight: 500, marginBottom: 6 }}>{r.title}</p>
-                <p style={{ fontSize: 15, color: th.muted, lineHeight: 1.75, maxWidth: 640 }}>{r.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-        <a href="research.html" style={{ display: 'inline-block', marginTop: 28, fontSize: 13, color: th.accent, fontWeight: 500 }}>Explore research & publications →</a>
-      </section>
-
-      <Divider />
-
       <section style={{ padding: '56px 80px', display: 'grid', gridTemplateColumns: '200px 1fr', gap: 56 }}>
         <SideHeading line1="From" line2="the Blog" />
         <div>

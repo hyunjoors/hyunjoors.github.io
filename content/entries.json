@@ -2,6 +2,7 @@
   "entries": [
     {
       "id": "project-number-sandbox",
+      "type": "project",
       "date": "2026-01-10",
       "title": "Number Sandbox",
       "keywords": [
@@ -9,19 +10,19 @@
         "Sandbox",
         "Euler"
       ],
-      "type": "project",
-      "description": "Explore how rectangles become recipes, and how recipes reveal different kinds of numbers.\n\nRole: Lead Developer & Designer\n\nMath dust all over you",
+      "description": "Math dust all over you.\n\nExplore how rectangles become recipes, and how recipes reveal different kinds of numbers.\n\nRole: Lead Developer & Designer",
+      "mode": "embedded",
       "authors": [
         {
           "name": "Shin, R.",
           "me": true
         }
       ],
-      "url": "projects/rrs/index.html",
-      "mode": "embedded"
+      "url": "projects/rrs/index.html"
     },
     {
       "id": "project-eve",
+      "type": "project",
       "date": "2026-02-15",
       "title": "EVE",
       "keywords": [
@@ -30,19 +31,19 @@
         "K-12",
         "Game-based Learning"
       ],
-      "type": "project",
-      "description": "An AI platform that helps students externalize mathematical reasoning through collaborative problem-solving while giving teachers visibility into student thinking.\n\nRole: Lead Developer & Researcher\n\nEnactive Virtual Environment with Dynamic Human-AI Learning Partnerships",
+      "description": "Enactive Virtual Environment with Dynamic Human-AI Learning Partnerships\n\nRole: Lead Developer & Researcher",
+      "mode": "external",
       "authors": [
         {
           "name": "Shin, R.",
           "me": true
         }
       ],
-      "url": "https://regal.umd.edu/evelyn",
-      "mode": "external"
+      "url": "https://regal.umd.edu/evelyn"
     },
     {
       "id": "poster-lak26",
+      "type": "presentation",
       "date": "2026-04-01",
       "title": "AI-Facilitated Collaborative Learning in K-12 Math Classrooms",
       "keywords": [
@@ -50,14 +51,25 @@
         "AI",
         "Learning Analytics"
       ],
-      "type": "presentation",
-      "presType": "Refereed Posters",
       "description": "Poster presentation highlighting capabilities and limitations of LLMs as human collaborators in computational thinking behavior analysis and labeling.",
+      "presType": "Refereed Posters",
       "venue": "LAK 2026",
       "authors": [
         {
           "name": "Shin, R.",
           "me": true
+        },
+        {
+          "name": "Ke, F.",
+          "me": false
+        },
+        {
+          "name": "Zhou, X.",
+          "me": false
+        },
+        {
+          "name": "Zhang, N",
+          "me": false
         }
       ],
       "attachmentUrl": "uploads/LAK26_Poster.png"
@@ -94,7 +106,7 @@
       "keywords": [
         "HCIL"
       ],
-      "description": "- Lightening talk on capabilities and limitations of LLM as a human collaborator in computational thinking behavior analysis and labeling.\n- Demo on EVE platform",
+      "description": "- Lightening talk on capabilities and limitations of LLM as a human collaborator in computational thinking behavior analysis and labeling\n- Demo on EVE platform",
       "url": ""
     }
   ]

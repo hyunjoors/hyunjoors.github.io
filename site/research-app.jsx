@@ -75,9 +75,9 @@ function ResearchPage() {
         <SectionLabel text="Research Interests" />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
           {RESEARCH_AREAS.map((r, i) => (
-            <div key={i} style={{ display: 'flex', gap: 24, maxWidth: 800 }}>
+            <div key={i} style={{ display: 'flex', gap: 24 }}>
               <div style={{ width: 3, minHeight: 40, background: th.accent, flexShrink: 0, marginTop: 6 }}></div>
-              <div>
+              <div style={{ flex: 1 }}>
                 <p style={{ fontFamily: th.serif, fontSize: 26, fontWeight: 500, marginBottom: 8 }}>{r.title}</p>
                 <p style={{ fontSize: 16, color: th.muted, lineHeight: 1.8 }}>{r.desc}</p>
               </div>
