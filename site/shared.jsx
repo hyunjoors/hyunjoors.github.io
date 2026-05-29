@@ -65,7 +65,7 @@ function Nav({ active }) {
   const links = [
     { label: 'About', href: 'index.html' },
     { label: 'Research', href: 'research.html' },
-    { label: 'Projects', href: 'projects.html' },
+    { label: 'Playground', href: 'playground.html' },
     { label: 'News', href: 'news.html' },
     { label: 'Blog', href: 'blog.html' },
     { label: 'Cats', href: 'cats.html' },
@@ -156,14 +156,17 @@ function Divider() {
 function getSiteContent() {
   const fallback = {
     entriesById: {},
-    worksByDateDesc: [],
-    newsByDateDesc: [],
+    recentNewsIds: [],
+    newsAllByDateDesc: [],
+    publicationsByType: {},
     publicationsByDateDesc: [],
+    presentationsByDateDesc: [],
     projectsByDateDesc: [],
-    demosByDateDesc: [],
-    postersByDateDesc: [],
+    newsByDateDesc: [],
+    playgroundByDateDesc: [],
     blogByDateDesc: [],
-    homeSelections: { selectedWorkIds: [], selectedNewsIds: [], selectedBlogIds: [] },
+    pubTypes: [],
+    presTypes: [],
   };
   if (!window.SITE_CONTENT) {
     console.warn('window.SITE_CONTENT is missing. Did you run scripts/build_content.py?');
@@ -186,32 +189,103 @@ function formatIsoDate(dateString, options) {
 
 function entryTypeLabel(type) {
   const labels = {
-    project: 'Project',
-    demo: 'Demo',
-    poster: 'Poster',
     publication: 'Publication',
+    presentation: 'Presentation',
+    project: 'Project',
     news: 'News',
   };
   return labels[type] || type;
 }
 
-function runEntryAction(entry, onEmbed) {
-  if (!entry || !entry.action) return;
-  const { url, target } = entry.action;
-  if (target === 'embed' && typeof onEmbed === 'function') {
+function entrySubtypeLabel(entry) {
+  if (!entry) return '';
+  if (entry.type === 'publication') return entry.pubType || 'Publication';
+  if (entry.type === 'presentation') return entry.presType || 'Presentation';
+  if (entry.type === 'project') return 'Project';
+  if (entry.type === 'news') return 'News';
+  return entryTypeLabel(entry.type);
+}
+
+function entryPrimaryUrl(entry) {
+  if (!entry) return '';
+  if (entry.type === 'publication') return entry.pdfUrl || '';
+  if (entry.type === 'presentation') return entry.attachmentUrl || '';
+  if (entry.type === 'project') return entry.url || '';
+  if (entry.type === 'news') return entry.url || '';
+  return '';
+}
+
+function openEntry(entry, onEmbed) {
+  if (!entry) return;
+  const url = entryPrimaryUrl(entry);
+  if (!url) return;
+  if (entry.type === 'project' && entry.mode === 'embedded' && typeof onEmbed === 'function') {
     onEmbed(entry);
     return;
   }
-  if (target === 'same_tab') {
-    window.location.href = url;
-    return;
+  const isExternal = /^https?:\/\//i.test(url);
+  if (isExternal) {
+    window.open(url, '_blank', 'noopener');
+  } else {
+    window.open(url, '_blank', 'noopener');
   }
-  window.open(url, '_blank', 'noopener');
+}
+
+function renderAuthors(authors) {
+  if (!Array.isArray(authors) || authors.length === 0) return null;
+  return authors.map((a, i) => {
+    const sep = i < authors.length - 1 ? ', ' : '';
+    if (a.me) {
+      return React.createElement(React.Fragment, { key: i },
+        React.createElement('strong', { style: { color: THEME.text } }, a.name),
+        sep
+      );
+    }
+    return React.createElement(React.Fragment, { key: i }, a.name, sep);
+  });
+}
+
+/* ═══════ KEYWORD CHIPS FILTER ═══════ */
+function KeywordChips({ entries, selected, onToggle }) {
+  const th = THEME;
+  const keywords = React.useMemo(() => {
+    const set = new Set();
+    entries.forEach(e => (e.keywords || []).forEach(k => set.add(k)));
+    return [...set].sort((a, b) => a.localeCompare(b));
+  }, [entries]);
+  if (keywords.length === 0) return null;
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+      {keywords.map(k => {
+        const active = selected.includes(k);
+        return (
+          <button
+            key={k}
+            onClick={() => onToggle(k)}
+            className={`tag-pill ${active ? 'active' : ''}`}
+            style={{ fontSize: 11 }}
+          >
+            {k}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function filterByKeywords(entries, selected) {
+  if (!selected || selected.length === 0) return entries;
+  return entries.filter(e => {
+    const ks = e.keywords || [];
+    return selected.every(s => ks.includes(s));
+  });
 }
 
 /* ═══════ EXPORT TO WINDOW ═══════ */
 Object.assign(window, {
   THEME, PawCursor, Nav, Footer, PageLayout, SectionLabel,
   SideHeading, PageHero, Divider,
-  getSiteContent, resolveByIds, formatIsoDate, entryTypeLabel, runEntryAction,
+  getSiteContent, resolveByIds, formatIsoDate,
+  entryTypeLabel, entrySubtypeLabel, entryPrimaryUrl, openEntry, renderAuthors,
+  KeywordChips, filterByKeywords,
 });

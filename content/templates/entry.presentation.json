@@ -1,0 +1,12 @@
+{
+  "id": "presentation-slug",
+  "type": "presentation",
+  "date": "2026-01-01",
+  "title": "Presentation title",
+  "keywords": ["Keyword1"],
+  "description": "",
+  "presType": "Refereed Presentations",
+  "venue": "",
+  "authors": [{ "name": "Shin, R.", "me": true }],
+  "attachmentUrl": ""
+}

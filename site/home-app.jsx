@@ -1,4 +1,4 @@
-/* ═══════ HOMEPAGE ═══════ */
+/* ═══════ HOMEPAGE (About) ═══════ */
 
 const CATS_DATA = [
   { name: 'Sirius', kr: '현금', img: 'uploads/LAB06305%20sh%20%E1%84%8C%E1%85%B3%E1%86%BC%E1%84%86%E1%85%A7%E1%86%BC.jpg' },
@@ -17,31 +17,56 @@ const RESEARCH_INTEREST = [
   { title: 'Neurodivergent Learners in STEM Education', desc: 'Exploring inclusive learning technologies and adaptive supports for neurodivergent learners, including students with ADHD, autism, and dyscalculia, in STEM learning contexts.' },
 ];
 
-function HomeWorkCard({ item }) {
+function isImage(url) {
+  return /\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(url || '');
+}
+
+function RecentNewsRow({ item, isLast }) {
   const th = THEME;
-  const hasImage = item.type === 'poster' && item.thumbnail;
+  const url = entryPrimaryUrl(item);
+  const showAttachment = item.type === 'presentation' && url;
 
   return (
-    <div className="card-lift" style={{ border: `1px solid ${th.border}`, padding: 24 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginBottom: 14 }}>
-        <span className="tag-pill">{entryTypeLabel(item.type)}</span>
-        <span style={{ fontSize: 12, color: th.muted }}>{item.status || ''}</span>
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: showAttachment ? '110px 1fr 140px' : '110px 1fr',
+        gap: 24,
+        padding: '20px 0',
+        borderBottom: isLast ? 'none' : `1px solid ${th.border}`,
+        alignItems: 'start',
+      }}
+    >
+      <div>
+        <span className="tag-pill" style={{ fontSize: 11 }}>{formatIsoDate(item.date)}</span>
+        <p style={{ fontSize: 11, color: th.muted, marginTop: 6 }}>{entrySubtypeLabel(item)}</p>
       </div>
-      <div style={{ width: '100%', height: 120, background: th.placeholder, marginBottom: 18, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {hasImage ? (
-          <img src={item.thumbnail} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        ) : (
-          <span style={{ fontFamily: 'monospace', fontSize: 10, color: th.muted }}>{entryTypeLabel(item.type).toLowerCase()} preview</span>
+      <div>
+        <p style={{ fontFamily: th.serif, fontSize: 22, fontWeight: 500, marginBottom: 4, lineHeight: 1.35 }}>{item.title}</p>
+        {item.description && (
+          <p style={{ fontSize: 14, color: th.muted, lineHeight: 1.7, marginBottom: 6 }}>{item.description}</p>
+        )}
+        {Array.isArray(item.authors) && item.authors.length > 0 && (
+          <p style={{ fontSize: 13, color: th.muted, marginBottom: 4 }}>{renderAuthors(item.authors)}</p>
+        )}
+        {item.venue && (
+          <p style={{ fontSize: 13, color: th.accent, fontStyle: 'italic' }}>{item.venue}</p>
+        )}
+        {url && (
+          <button onClick={() => openEntry(item)} style={{ marginTop: 8, fontSize: 13, color: th.accent, fontWeight: 500 }}>
+            Open →
+          </button>
         )}
       </div>
-      <p style={{ fontFamily: th.serif, fontSize: 24, fontWeight: 500, marginBottom: 8 }}>{item.title}</p>
-      <p style={{ fontSize: 14, color: th.muted, lineHeight: 1.75, marginBottom: 14 }}>{item.summary}</p>
-      <button
-        onClick={() => runEntryAction(item)}
-        style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', background: th.accent, color: 'white', fontSize: 13, fontWeight: 500 }}
-      >
-        {item.action?.label || 'Open'} →
-      </button>
+      {showAttachment && (
+        <a href={url} target="_blank" rel="noopener" style={{ display: 'block', width: 140, height: 100, background: th.placeholder, overflow: 'hidden' }}>
+          {isImage(url) ? (
+            <img src={url} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: th.muted }}>PDF →</div>
+          )}
+        </a>
+      )}
     </div>
   );
 }
@@ -50,15 +75,11 @@ function HomePage() {
   const th = THEME;
   const content = getSiteContent();
   const entriesById = content.entriesById || {};
-  const blogById = Object.fromEntries((content.blogByDateDesc || []).map(post => [post.id, post]));
+  const recentNews = resolveByIds(content.recentNewsIds || [], entriesById)
+    .slice()
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
 
-  const selectedWorks = resolveByIds(content.homeSelections.selectedWorkIds, entriesById);
-  const selectedNews = resolveByIds(content.homeSelections.selectedNewsIds, entriesById);
-  const selectedBlogs = resolveByIds(content.homeSelections.selectedBlogIds, blogById);
-
-  const works = selectedWorks.length > 0 ? selectedWorks : (content.worksByDateDesc || []).slice(0, 3);
-  const newsItems = selectedNews.length > 0 ? selectedNews : (content.newsByDateDesc || []).slice(0, 3);
-  const blogItems = selectedBlogs.length > 0 ? selectedBlogs : (content.blogByDateDesc || []).slice(0, 3);
+  const blogPreview = (content.blogByDateDesc || []).slice(0, 3);
 
   return (
     <PageLayout active="About">
@@ -102,14 +123,11 @@ function HomePage() {
       <section style={{ padding: '56px 80px', display: 'grid', gridTemplateColumns: '200px 1fr', gap: 56 }}>
         <SideHeading line1="Recent" line2="News" />
         <div>
-          {newsItems.map((item, i) => (
-            <div key={item.id} style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 28, padding: '20px 0', borderBottom: i < newsItems.length - 1 ? `1px solid ${th.border}` : 'none' }}>
-              <span className="tag-pill" style={{ alignSelf: 'start', justifySelf: 'start', fontSize: 12 }}>{formatIsoDate(item.date)}</span>
-              <div>
-                <p style={{ fontFamily: th.serif, fontSize: 23, fontWeight: 500, marginBottom: 4 }}>{item.title}</p>
-                <p style={{ fontSize: 14, color: th.muted, lineHeight: 1.7 }}>{item.summary}</p>
-              </div>
-            </div>
+          {recentNews.length === 0 && (
+            <p style={{ fontSize: 14, color: th.muted }}>No Recent News selected yet — pick up to 5 in the notebook.</p>
+          )}
+          {recentNews.map((item, i) => (
+            <RecentNewsRow key={item.id} item={item} isLast={i === recentNews.length - 1} />
           ))}
           <a href="news.html" style={{ display: 'inline-block', marginTop: 20, fontSize: 13, color: th.accent, fontWeight: 500 }}>View all news →</a>
         </div>
@@ -135,21 +153,11 @@ function HomePage() {
 
       <Divider />
 
-      <section className="section-pad">
-        <SectionLabel text="Selected Work" />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 28 }}>
-          {works.map(item => <HomeWorkCard key={item.id} item={item} />)}
-        </div>
-        <a href="projects.html" style={{ display: 'inline-block', marginTop: 28, fontSize: 13, color: th.accent, fontWeight: 500 }}>View all projects →</a>
-      </section>
-
-      <Divider />
-
       <section style={{ padding: '56px 80px', display: 'grid', gridTemplateColumns: '200px 1fr', gap: 56 }}>
         <SideHeading line1="From" line2="the Blog" />
         <div>
-          {blogItems.map((bp, i) => (
-            <div key={bp.id} style={{ padding: '18px 0', borderBottom: i < blogItems.length - 1 ? `1px solid ${th.border}` : 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {blogPreview.map((bp, i) => (
+            <div key={bp.id} style={{ padding: '18px 0', borderBottom: i < blogPreview.length - 1 ? `1px solid ${th.border}` : 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
                 <span className="tag-pill">{bp.tag}</span>
                 <p style={{ fontFamily: th.serif, fontSize: 21, fontWeight: 500 }}>{bp.title}</p>

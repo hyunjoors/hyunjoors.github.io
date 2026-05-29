@@ -2,165 +2,141 @@
   "entries": [
     {
       "id": "project-number-sandbox",
-      "type": "project",
-      "title": "Number Sandbox",
       "date": "2026-01-10",
-      "summary": "Explore how rectangles become recipes, and how recipes reveal different kinds of numbers.",
-      "tags": [
+      "title": "Number Sandbox",
+      "keywords": [
         "Algebra",
         "Sandbox",
         "Euler"
       ],
-      "status": "Live",
-      "action": {
-        "label": "Launch",
-        "url": "projects/rrs/index.html",
-        "target": "embed"
-      },
-      "mode": "embedded",
-      "role": "Lead Developer & Designer",
-      "tagline": "Math dust all over you"
+      "type": "project",
+      "description": "Explore how rectangles become recipes, and how recipes reveal different kinds of numbers.\n\nRole: Lead Developer & Designer\n\nMath dust all over you",
+      "authors": [
+        {
+          "name": "Shin, R.",
+          "me": true
+        }
+      ],
+      "url": "projects/rrs/index.html",
+      "mode": "embedded"
     },
     {
       "id": "project-eve",
-      "type": "project",
-      "title": "EVE",
       "date": "2026-02-15",
-      "summary": "An AI platform that helps students externalize mathematical reasoning through collaborative problem-solving while giving teachers visibility into student thinking.",
-      "tags": [
+      "title": "EVE",
+      "keywords": [
         "AI",
         "Collaboration",
         "K-12",
         "Game-based Learning"
       ],
-      "status": "Pilot",
-      "action": {
-        "label": "Visit",
-        "url": "https://regal.umd.edu/evelyn",
-        "target": "new_tab"
-      },
-      "mode": "external",
-      "role": "Lead Developer & Researcher",
-      "tagline": "Enactive Virtual Environment with Dynamic Human-AI Learning Partnerships"
+      "type": "project",
+      "description": "An AI platform that helps students externalize mathematical reasoning through collaborative problem-solving while giving teachers visibility into student thinking.\n\nRole: Lead Developer & Researcher\n\nEnactive Virtual Environment with Dynamic Human-AI Learning Partnerships",
+      "authors": [
+        {
+          "name": "Shin, R.",
+          "me": true
+        }
+      ],
+      "url": "https://regal.umd.edu/evelyn",
+      "mode": "external"
     },
     {
       "id": "demo-number-sandbox",
-      "type": "demo",
-      "title": "Number Sandbox",
       "date": "2026-03-12",
-      "summary": "Explore how rectangles become recipes, and how recipes reveal different kinds of numbers.",
-      "tags": [
+      "title": "Number Sandbox",
+      "keywords": [
         "Demo",
         "Algebra"
       ],
-      "status": "Class Demo",
-      "action": {
-        "label": "Launch Demo",
-        "url": "projects/rrs/index.html",
-        "target": "embed"
-      },
-      "mode": "embedded",
-      "role": "Lead Developer",
-      "venue": "S26 788Y"
+      "type": "presentation",
+      "presType": "Demo",
+      "description": "Explore how rectangles become recipes, and how recipes reveal different kinds of numbers.\n\nRole: Lead Developer",
+      "venue": "S26 788Y",
+      "authors": [
+        {
+          "name": "Shin, R.",
+          "me": true
+        }
+      ],
+      "attachmentUrl": ""
     },
     {
       "id": "demo-eve",
-      "type": "demo",
-      "title": "EVE",
       "date": "2026-04-08",
-      "summary": "MathReason prompts students to articulate thinking step-by-step while teachers gain a real-time view of student approaches.",
-      "tags": [
+      "title": "EVE",
+      "keywords": [
         "Demo",
         "AI",
         "Collaborative Learning"
       ],
-      "status": "Lab Demo",
-      "action": {
-        "label": "Visit Demo",
-        "url": "https://regal.umd.edu/evelyn",
-        "target": "new_tab"
-      },
-      "mode": "external",
-      "role": "Lead Developer & Researcher",
-      "venue": "REGAL Lab"
+      "type": "presentation",
+      "presType": "Demo",
+      "description": "MathReason prompts students to articulate thinking step-by-step while teachers gain a real-time view of student approaches.\n\nRole: Lead Developer & Researcher",
+      "venue": "REGAL Lab",
+      "authors": [
+        {
+          "name": "Shin, R.",
+          "me": true
+        }
+      ],
+      "attachmentUrl": ""
     },
     {
       "id": "poster-lak26",
-      "type": "poster",
-      "title": "AI-Facilitated Collaborative Learning in K-12 Math Classrooms",
       "date": "2026-04-01",
-      "summary": "Poster presentation highlighting capabilities and limitations of LLMs as human collaborators in computational thinking behavior analysis and labeling.",
-      "tags": [
+      "title": "AI-Facilitated Collaborative Learning in K-12 Math Classrooms",
+      "keywords": [
         "Poster",
         "AI",
         "Learning Analytics"
       ],
-      "status": "Presented",
-      "action": {
-        "label": "View Poster",
-        "url": "uploads/LAK26_Poster.png",
-        "target": "new_tab"
-      },
+      "type": "presentation",
+      "presType": "Refereed Posters",
+      "description": "Poster presentation highlighting capabilities and limitations of LLMs as human collaborators in computational thinking behavior analysis and labeling.",
       "venue": "LAK 2026",
-      "year": 2026,
-      "thumbnail": "uploads/LAK26_Poster.png"
+      "authors": [
+        {
+          "name": "Shin, R.",
+          "me": true
+        }
+      ],
+      "attachmentUrl": "uploads/LAK26_Poster.png"
     },
     {
       "id": "news-lak-2026",
-      "type": "news",
-      "title": "Presenting at LAK 2026",
       "date": "2026-05-01",
-      "summary": "Presenting a paper on capabilities and limitations of LLM as a human collaborator in computational thinking behavior analysis and labeling.",
-      "tags": [
+      "title": "Presenting at LAK 2026",
+      "keywords": [
         "LAK",
         "Poster"
       ],
-      "status": "Announced",
-      "action": {
-        "label": "View News",
-        "url": "news.html#news-lak-2026",
-        "target": "same_tab"
-      },
-      "newsType": "Poster"
+      "type": "news",
+      "description": "Presenting a paper on capabilities and limitations of LLM as a human collaborator in computational thinking behavior analysis and labeling.",
+      "url": ""
     },
     {
       "id": "news-phd-start-2025",
-      "type": "news",
-      "title": "Started PhD at University of Maryland",
       "date": "2025-08-01",
-      "summary": "Joined the Teaching and Learning, Policy and Leadership PhD program in the College of Education to research AI-supported collaborative learning environments.",
-      "tags": [
+      "title": "Started PhD at University of Maryland",
+      "keywords": [
         "Milestone",
         "PhD"
       ],
-      "status": "Announced",
-      "action": {
-        "label": "View News",
-        "url": "news.html#news-phd-start-2025",
-        "target": "same_tab"
-      },
-      "newsType": "Milestone"
+      "type": "news",
+      "description": "Joined the Teaching and Learning, Policy and Leadership PhD program in the College of Education to research AI-supported collaborative learning environments.",
+      "url": ""
     },
     {
-      "id": "publication-llm-collaborator-lak",
-      "type": "publication",
-      "title": "Capabilities and Limitations of LLM as a Human Collaborator in Computational Thinking Behavior Analysis and Labeling",
-      "date": "2026-05-01",
-      "summary": "Investigates where LLMs help and where they fail when supporting human coding and interpretation of computational thinking behaviors.",
-      "tags": [
-        "LLM",
-        "Computational Thinking",
-        "AI in Education"
+      "id": "news-HCIL-2026",
+      "type": "news",
+      "date": "2026-05-29",
+      "title": "Presenting at HCIL Symposium 2026",
+      "keywords": [
+        "HCIL"
       ],
-      "status": "Presented",
-      "action": {
-        "label": "View Details",
-        "url": "news.html#news-lak-2026",
-        "target": "same_tab"
-      },
-      "authors": "Shin, R.",
-      "venue": "LAK 2026",
-      "pubType": "conference"
+      "description": "- Lightening talk on capabilities and limitations of LLM as a human collaborator in computational thinking behavior analysis and labeling.\\n\n- Demo on EVE platform",
+      "url": ""
     }
   ]
 }

@@ -1,6 +1,22 @@
 #!/usr/bin/env python3
-"""Build and validate static content bundle for the site."""
+"""Build and validate static content bundle for the site.
 
+Schema (entries.json):
+- All entries: id (required), type, date (required), title (required), keywords[]
+- publication: pubType, description?, venue?, authors[], pdfUrl?
+- presentation: presType, description?, venue?, authors[], attachmentUrl?
+- project: description?, authors[], url?, mode (external|embedded)
+- news: description?, url?
+
+home.json: { "recentNewsIds": [<=5 ids referencing non-blog entries] }
+
+Routing (computed groups exposed to the site):
+- recentNews        : entries referenced by home.json.recentNewsIds, sorted desc by date
+- newsAll           : every publication/presentation/project/news entry, desc
+- publicationsByType: publications grouped by pubType, each list desc
+- playground        : projects + presentations where presType in {Workshop, Demo}, desc
+- blogByDateDesc    : blog posts (markdown) desc
+"""
 from __future__ import annotations
 
 import argparse
@@ -9,6 +25,7 @@ import html
 import json
 import re
 import sys
+from collections import OrderedDict
 from pathlib import Path
 
 
@@ -18,24 +35,31 @@ DEFAULT_HOME_PATH = REPO_ROOT / "content" / "home.json"
 DEFAULT_BLOG_DIR = REPO_ROOT / "content" / "blog"
 DEFAULT_OUTPUT_PATH = REPO_ROOT / "site" / "generated" / "content.bundle.js"
 
-ALLOWED_TYPES = {"project", "demo", "poster", "publication", "news"}
-ALLOWED_TARGETS = {"embed", "new_tab", "same_tab"}
-ALLOWED_MODES = {"embedded", "external", "showcase"}
-ALLOWED_PUB_TYPES = {"journal", "conference", "workshop"}
+ENTRY_TYPES = {"publication", "presentation", "project", "news"}
+PROJECT_MODES = {"external", "embedded"}
+PUB_TYPES = [
+    "Books",
+    "Chapters",
+    "Refereed Journal Articles",
+    "Refereed Conference Proceedings",
+]
+PRES_TYPES = [
+    "Keynotes",
+    "Invited Talks",
+    "Refereed Presentations",
+    "Refereed Posters",
+    "Non-Refereed Presentations",
+    "Non-Refereed Panels",
+    "Workshops",
+    "Demo",
+]
+PLAYGROUND_PRES_TYPES = {"Workshops", "Demo"}
 
-COMMON_FIELDS = {"id", "type", "title", "date", "summary", "tags", "action"}
-TYPE_FIELDS = {
-    "project": {"mode", "role"},
-    "demo": {"mode", "role"},
-    "poster": {"venue", "year", "thumbnail"},
-    "publication": {"authors", "venue", "pubType"},
-    "news": {"newsType"},
-}
 BLOG_FIELDS = {"id", "title", "date", "tag", "excerpt", "readTime"}
 
 
 class ValidationError(Exception):
-    """Raised on content validation failures."""
+    pass
 
 
 def load_json(path: Path) -> dict:
@@ -51,55 +75,164 @@ def parse_iso_date(value: str, label: str) -> dt.date:
     try:
         return dt.date.fromisoformat(value)
     except ValueError as exc:
-        raise ValidationError(f"{label} must use YYYY-MM-DD format: {value}") from exc
+        raise ValidationError(f"{label} must be YYYY-MM-DD: {value!r}") from exc
 
 
-def assert_string(value: object, label: str) -> str:
-    if not isinstance(value, str) or not value.strip():
-        raise ValidationError(f"{label} must be a non-empty string")
-    return value.strip()
+def need_str(entry: dict, key: str, label: str) -> str:
+    v = entry.get(key)
+    if not isinstance(v, str) or not v.strip():
+        raise ValidationError(f"{label} is required")
+    return v.strip()
+
+
+def opt_str(entry: dict, key: str) -> str:
+    v = entry.get(key)
+    return v.strip() if isinstance(v, str) and v.strip() else ""
+
+
+def opt_list(entry: dict, key: str) -> list:
+    v = entry.get(key)
+    return v if isinstance(v, list) else []
+
+
+def clean_authors(value, label: str) -> list[dict]:
+    if not isinstance(value, list):
+        return []
+    out: list[dict] = []
+    for i, a in enumerate(value):
+        if not isinstance(a, dict):
+            raise ValidationError(f"{label}.authors[{i}] must be an object")
+        name = a.get("name")
+        if not isinstance(name, str) or not name.strip():
+            continue
+        out.append({"name": name.strip(), "me": bool(a.get("me"))})
+    return out
+
+
+def clean_keywords(value, label: str) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    out: list[str] = []
+    for kw in value:
+        if not isinstance(kw, str):
+            continue
+        s = kw.strip()
+        if s:
+            out.append(s)
+    return out
+
+
+def validate_entry(raw: dict) -> tuple[dict, dt.date]:
+    if not isinstance(raw, dict):
+        raise ValidationError("Every entry must be an object")
+
+    entry_id = need_str(raw, "id", "entry.id")
+    entry_type = need_str(raw, "type", f"{entry_id}.type")
+    if entry_type not in ENTRY_TYPES:
+        raise ValidationError(
+            f"{entry_id}.type must be one of {sorted(ENTRY_TYPES)}, got {entry_type!r}"
+        )
+
+    title = need_str(raw, "title", f"{entry_id}.title")
+    date_value = need_str(raw, "date", f"{entry_id}.date")
+    parsed = parse_iso_date(date_value, f"{entry_id}.date")
+
+    entry: dict = {
+        "id": entry_id,
+        "type": entry_type,
+        "title": title,
+        "date": parsed.isoformat(),
+        "dateLabel": parsed.strftime("%B %d, %Y"),
+        "dateLabelShort": parsed.strftime("%b %Y"),
+        "year": parsed.year,
+        "keywords": clean_keywords(raw.get("keywords"), entry_id),
+        "description": opt_str(raw, "description"),
+    }
+
+    if entry_type == "publication":
+        pub_type = opt_str(raw, "pubType")
+        if pub_type and pub_type not in PUB_TYPES:
+            raise ValidationError(
+                f"{entry_id}.pubType must be one of {PUB_TYPES}, got {pub_type!r}"
+            )
+        entry["pubType"] = pub_type or PUB_TYPES[-1]
+        entry["venue"] = opt_str(raw, "venue")
+        entry["authors"] = clean_authors(raw.get("authors"), entry_id)
+        entry["pdfUrl"] = opt_str(raw, "pdfUrl")
+
+    elif entry_type == "presentation":
+        pres_type = opt_str(raw, "presType")
+        if pres_type and pres_type not in PRES_TYPES:
+            raise ValidationError(
+                f"{entry_id}.presType must be one of {PRES_TYPES}, got {pres_type!r}"
+            )
+        entry["presType"] = pres_type or PRES_TYPES[2]
+        entry["venue"] = opt_str(raw, "venue")
+        entry["authors"] = clean_authors(raw.get("authors"), entry_id)
+        entry["attachmentUrl"] = opt_str(raw, "attachmentUrl")
+
+    elif entry_type == "project":
+        mode = opt_str(raw, "mode") or "external"
+        if mode not in PROJECT_MODES:
+            raise ValidationError(
+                f"{entry_id}.mode must be one of {sorted(PROJECT_MODES)}, got {mode!r}"
+            )
+        entry["mode"] = mode
+        entry["authors"] = clean_authors(raw.get("authors"), entry_id)
+        entry["url"] = opt_str(raw, "url")
+
+    elif entry_type == "news":
+        entry["url"] = opt_str(raw, "url")
+
+    return entry, parsed
+
+
+def load_entries(path: Path) -> tuple[list[dict], dict[str, dict]]:
+    payload = load_json(path)
+    raw_list = payload.get("entries")
+    if not isinstance(raw_list, list):
+        raise ValidationError(f"{path} must include 'entries' array")
+    entries: list[dict] = []
+    by_id: dict[str, dict] = {}
+    seen: set[str] = set()
+    for raw in raw_list:
+        entry, _ = validate_entry(raw)
+        if entry["id"] in seen:
+            raise ValidationError(f"Duplicate entry id: {entry['id']}")
+        seen.add(entry["id"])
+        entries.append(entry)
+        by_id[entry["id"]] = entry
+    return entries, by_id
 
 
 def parse_frontmatter(raw_text: str, path: Path) -> tuple[dict, str]:
     lines = raw_text.splitlines()
     if not lines or lines[0].strip() != "---":
-        raise ValidationError(f"{path} must begin with frontmatter '---'")
-
+        raise ValidationError(f"{path} must begin with '---'")
     end_idx = None
     for idx in range(1, len(lines)):
         if lines[idx].strip() == "---":
             end_idx = idx
             break
     if end_idx is None:
-        raise ValidationError(f"{path} is missing closing frontmatter '---'")
-
-    frontmatter = {}
+        raise ValidationError(f"{path} missing closing '---'")
+    fm: dict = {}
     for line in lines[1:end_idx]:
         if not line.strip():
             continue
         if ":" not in line:
-            raise ValidationError(f"Invalid frontmatter line in {path}: {line}")
+            raise ValidationError(f"Bad frontmatter line in {path}: {line}")
         key, raw_value = line.split(":", 1)
-        key = key.strip()
-        value = raw_value.strip()
-        if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
-            value = value[1:-1]
-        if value.lower() in {"true", "false"}:
-            frontmatter[key] = value.lower() == "true"
-        else:
-            frontmatter[key] = value
-
-    body = "\n".join(lines[end_idx + 1 :]).strip()
-    return frontmatter, body
+        fm[key.strip()] = raw_value.strip()
+    return fm, "\n".join(lines[end_idx + 1 :]).strip()
 
 
-def format_inline(markdown_text: str) -> str:
-    text = html.escape(markdown_text, quote=True)
-
+def format_inline(text: str) -> str:
+    text = html.escape(text, quote=True)
     code_spans: list[str] = []
 
-    def capture_code(match: re.Match[str]) -> str:
-        code_spans.append(match.group(1))
+    def capture_code(m: re.Match[str]) -> str:
+        code_spans.append(m.group(1))
         return f"@@CODE_{len(code_spans) - 1}@@"
 
     text = re.sub(r"`([^`]+)`", capture_code, text)
@@ -110,370 +243,228 @@ def format_inline(markdown_text: str) -> str:
     )
     text = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", text)
     text = re.sub(r"\*([^*]+)\*", r"<em>\1</em>", text)
-
-    for idx, code_value in enumerate(code_spans):
-        escaped_code = html.escape(code_value, quote=True)
-        text = text.replace(f"@@CODE_{idx}@@", f"<code>{escaped_code}</code>")
-
+    for idx, code in enumerate(code_spans):
+        text = text.replace(f"@@CODE_{idx}@@", f"<code>{html.escape(code, quote=True)}</code>")
     return text
 
 
-def markdown_to_html(markdown_text: str) -> str:
-    lines = markdown_text.splitlines()
-    output: list[str] = []
-    in_ul = False
-    in_ol = False
-    in_code = False
+def markdown_to_html(text: str) -> str:
+    lines = text.splitlines()
+    out: list[str] = []
+    in_ul = in_ol = in_code = False
     code_lines: list[str] = []
 
     def close_lists() -> None:
         nonlocal in_ul, in_ol
         if in_ul:
-            output.append("</ul>")
+            out.append("</ul>")
             in_ul = False
         if in_ol:
-            output.append("</ol>")
+            out.append("</ol>")
             in_ol = False
 
-    for raw_line in lines:
-        line = raw_line.rstrip()
-        stripped = line.strip()
+    for raw in lines:
+        line = raw.rstrip()
+        s = line.strip()
 
-        if stripped.startswith("```"):
+        if s.startswith("```"):
             close_lists()
             if in_code:
-                output.append("<pre><code>")
-                output.append(html.escape("\n".join(code_lines)))
-                output.append("</code></pre>")
+                out.append("<pre><code>")
+                out.append(html.escape("\n".join(code_lines)))
+                out.append("</code></pre>")
                 code_lines = []
                 in_code = False
             else:
                 in_code = True
             continue
-
         if in_code:
             code_lines.append(line)
             continue
-
-        if not stripped:
+        if not s:
             close_lists()
             continue
 
-        header_match = re.match(r"^(#{1,6})\s+(.+)$", stripped)
-        if header_match:
+        h = re.match(r"^(#{1,6})\s+(.+)$", s)
+        if h:
             close_lists()
-            level = len(header_match.group(1))
-            content = format_inline(header_match.group(2))
-            output.append(f"<h{level}>{content}</h{level}>")
+            level = len(h.group(1))
+            out.append(f"<h{level}>{format_inline(h.group(2))}</h{level}>")
             continue
-
-        bullet_match = re.match(r"^-\s+(.+)$", stripped)
-        if bullet_match:
+        bm = re.match(r"^-\s+(.+)$", s)
+        if bm:
             if in_ol:
-                output.append("</ol>")
+                out.append("</ol>")
                 in_ol = False
             if not in_ul:
-                output.append("<ul>")
+                out.append("<ul>")
                 in_ul = True
-            output.append(f"<li>{format_inline(bullet_match.group(1))}</li>")
+            out.append(f"<li>{format_inline(bm.group(1))}</li>")
             continue
-
-        ordered_match = re.match(r"^\d+\.\s+(.+)$", stripped)
-        if ordered_match:
+        om = re.match(r"^\d+\.\s+(.+)$", s)
+        if om:
             if in_ul:
-                output.append("</ul>")
+                out.append("</ul>")
                 in_ul = False
             if not in_ol:
-                output.append("<ol>")
+                out.append("<ol>")
                 in_ol = True
-            output.append(f"<li>{format_inline(ordered_match.group(1))}</li>")
+            out.append(f"<li>{format_inline(om.group(1))}</li>")
             continue
-
-        if stripped.startswith("> "):
+        if s.startswith("> "):
             close_lists()
-            output.append(f"<blockquote>{format_inline(stripped[2:].strip())}</blockquote>")
+            out.append(f"<blockquote>{format_inline(s[2:].strip())}</blockquote>")
             continue
-
         close_lists()
-        output.append(f"<p>{format_inline(stripped)}</p>")
+        out.append(f"<p>{format_inline(s)}</p>")
 
     if in_code:
-        output.append("<pre><code>")
-        output.append(html.escape("\n".join(code_lines)))
-        output.append("</code></pre>")
+        out.append("<pre><code>")
+        out.append(html.escape("\n".join(code_lines)))
+        out.append("</code></pre>")
     close_lists()
-
-    return "\n".join(output)
-
-
-def validate_action(action: object, label: str) -> dict:
-    if not isinstance(action, dict):
-        raise ValidationError(f"{label}.action must be an object")
-
-    for field in ("label", "url", "target"):
-        assert_string(action.get(field), f"{label}.action.{field}")
-
-    target = action["target"]
-    if target not in ALLOWED_TARGETS:
-        raise ValidationError(f"{label}.action.target must be one of {sorted(ALLOWED_TARGETS)}")
-
-    return {
-        "label": action["label"].strip(),
-        "url": action["url"].strip(),
-        "target": target,
-    }
-
-
-def validate_entry(entry: object) -> tuple[dict, dt.date]:
-    if not isinstance(entry, dict):
-        raise ValidationError("Every entry must be an object")
-
-    entry_id = assert_string(entry.get("id"), "entry.id")
-    entry_type = assert_string(entry.get("type"), f"{entry_id}.type")
-
-    if entry_type not in ALLOWED_TYPES:
-        raise ValidationError(f"{entry_id}.type must be one of {sorted(ALLOWED_TYPES)}")
-
-    for field in COMMON_FIELDS:
-        if field not in entry:
-            raise ValidationError(f"{entry_id} is missing required field: {field}")
-
-    title = assert_string(entry["title"], f"{entry_id}.title")
-    summary = assert_string(entry["summary"], f"{entry_id}.summary")
-    date_value = assert_string(entry["date"], f"{entry_id}.date")
-    parsed_date = parse_iso_date(date_value, f"{entry_id}.date")
-
-    tags = entry.get("tags")
-    if not isinstance(tags, list) or not tags:
-        raise ValidationError(f"{entry_id}.tags must be a non-empty array of strings")
-    clean_tags = [assert_string(tag, f"{entry_id}.tags[]") for tag in tags]
-
-    clean_entry = dict(entry)
-    clean_entry["id"] = entry_id
-    clean_entry["type"] = entry_type
-    clean_entry["title"] = title
-    clean_entry["summary"] = summary
-    clean_entry["date"] = parsed_date.isoformat()
-    clean_entry["tags"] = clean_tags
-    clean_entry["action"] = validate_action(entry.get("action"), entry_id)
-    clean_entry["dateLabel"] = parsed_date.strftime("%B %Y")
-
-    required_type_fields = TYPE_FIELDS[entry_type]
-    for field in required_type_fields:
-        if field not in entry:
-            raise ValidationError(f"{entry_id} is missing required type field: {field}")
-
-    if entry_type in {"project", "demo"}:
-        mode = assert_string(entry.get("mode"), f"{entry_id}.mode")
-        if mode not in ALLOWED_MODES:
-            raise ValidationError(f"{entry_id}.mode must be one of {sorted(ALLOWED_MODES)}")
-        clean_entry["mode"] = mode
-        clean_entry["role"] = assert_string(entry.get("role"), f"{entry_id}.role")
-
-    if entry_type == "poster":
-        clean_entry["venue"] = assert_string(entry.get("venue"), f"{entry_id}.venue")
-        if not isinstance(entry.get("year"), int):
-            raise ValidationError(f"{entry_id}.year must be an integer")
-        clean_entry["year"] = entry["year"]
-        clean_entry["thumbnail"] = assert_string(entry.get("thumbnail"), f"{entry_id}.thumbnail")
-
-    if entry_type == "publication":
-        clean_entry["authors"] = assert_string(entry.get("authors"), f"{entry_id}.authors")
-        clean_entry["venue"] = assert_string(entry.get("venue"), f"{entry_id}.venue")
-        pub_type = assert_string(entry.get("pubType"), f"{entry_id}.pubType")
-        if pub_type not in ALLOWED_PUB_TYPES:
-            raise ValidationError(
-                f"{entry_id}.pubType must be one of {sorted(ALLOWED_PUB_TYPES)}"
-            )
-        clean_entry["pubType"] = pub_type
-
-    if entry_type == "news":
-        clean_entry["newsType"] = assert_string(entry.get("newsType"), f"{entry_id}.newsType")
-
-    return clean_entry, parsed_date
-
-
-def load_entries(entries_path: Path) -> tuple[list[dict], dict[str, dict]]:
-    payload = load_json(entries_path)
-    entries_raw = payload.get("entries")
-    if not isinstance(entries_raw, list):
-        raise ValidationError(f"{entries_path} must include an 'entries' array")
-
-    entries: list[dict] = []
-    entries_by_id: dict[str, dict] = {}
-    seen_ids: set[str] = set()
-
-    for raw in entries_raw:
-        entry, _ = validate_entry(raw)
-        entry_id = entry["id"]
-        if entry_id in seen_ids:
-            raise ValidationError(f"Duplicate entry id: {entry_id}")
-        seen_ids.add(entry_id)
-        entries.append(entry)
-        entries_by_id[entry_id] = entry
-
-    return entries, entries_by_id
+    return "\n".join(out)
 
 
 def load_blog_posts(blog_dir: Path) -> list[dict]:
     if not blog_dir.exists():
-        raise ValidationError(f"Blog directory does not exist: {blog_dir}")
-
-    blog_posts: list[dict] = []
-    seen_ids: set[str] = set()
-
-    for file_path in sorted(blog_dir.glob("*.md")):
-        raw_text = file_path.read_text(encoding="utf-8")
-        frontmatter, body_markdown = parse_frontmatter(raw_text, file_path)
-
-        missing = [field for field in BLOG_FIELDS if field not in frontmatter]
+        return []
+    posts: list[dict] = []
+    seen: set[str] = set()
+    for path in sorted(blog_dir.glob("*.md")):
+        fm, body = parse_frontmatter(path.read_text(encoding="utf-8"), path)
+        missing = [f for f in BLOG_FIELDS if f not in fm]
         if missing:
-            raise ValidationError(f"{file_path} is missing blog fields: {', '.join(missing)}")
-
-        post_id = assert_string(frontmatter["id"], f"{file_path}.id")
-        if post_id in seen_ids:
+            raise ValidationError(f"{path} missing blog fields: {', '.join(missing)}")
+        post_id = fm["id"].strip()
+        if post_id in seen:
             raise ValidationError(f"Duplicate blog id: {post_id}")
-        seen_ids.add(post_id)
-
-        date_value = assert_string(frontmatter["date"], f"{file_path}.date")
-        parsed_date = parse_iso_date(date_value, f"{file_path}.date")
-
-        post = {
+        seen.add(post_id)
+        parsed = parse_iso_date(fm["date"].strip(), f"{path}.date")
+        posts.append({
             "id": post_id,
-            "title": assert_string(frontmatter["title"], f"{file_path}.title"),
-            "date": parsed_date.isoformat(),
-            "dateLabel": parsed_date.strftime("%B %d, %Y"),
-            "tag": assert_string(frontmatter["tag"], f"{file_path}.tag"),
-            "excerpt": assert_string(frontmatter["excerpt"], f"{file_path}.excerpt"),
-            "readTime": assert_string(frontmatter["readTime"], f"{file_path}.readTime"),
-            "bodyMarkdown": body_markdown,
-            "bodyHtml": markdown_to_html(body_markdown),
-        }
-        blog_posts.append(post)
-
-    return blog_posts
+            "title": fm["title"].strip(),
+            "date": parsed.isoformat(),
+            "dateLabel": parsed.strftime("%B %d, %Y"),
+            "tag": fm["tag"].strip(),
+            "excerpt": fm["excerpt"].strip(),
+            "readTime": fm["readTime"].strip(),
+            "bodyMarkdown": body,
+            "bodyHtml": markdown_to_html(body),
+        })
+    return posts
 
 
 def sort_desc(items: list[dict]) -> list[dict]:
-    return sorted(items, key=lambda item: (item["date"], item["id"]), reverse=True)
+    return sorted(items, key=lambda i: (i["date"], i["id"]), reverse=True)
 
 
-def load_home_selections(
-    home_path: Path, entries_by_id: dict[str, dict], blog_posts: list[dict]
-) -> dict:
+def load_recent_news(home_path: Path, by_id: dict[str, dict]) -> list[str]:
     payload = load_json(home_path)
-    expected_fields = ("selectedWorkIds", "selectedNewsIds", "selectedBlogIds")
-    for field in expected_fields:
-        if field not in payload:
-            raise ValidationError(f"{home_path} is missing required field: {field}")
-        if not isinstance(payload[field], list):
-            raise ValidationError(f"{home_path}.{field} must be an array")
+    ids = payload.get("recentNewsIds", [])
+    if not isinstance(ids, list):
+        raise ValidationError(f"{home_path}.recentNewsIds must be a list")
+    cleaned: list[str] = []
+    for eid in ids:
+        if not isinstance(eid, str) or not eid.strip():
+            continue
+        if eid not in by_id:
+            raise ValidationError(f"home.recentNewsIds references unknown entry id: {eid}")
+        cleaned.append(eid)
+    if len(cleaned) > 5:
+        raise ValidationError(f"home.recentNewsIds is capped at 5 (got {len(cleaned)})")
+    return cleaned
 
-    blog_ids = {post["id"] for post in blog_posts}
 
-    for entry_id in payload["selectedWorkIds"]:
-        if entry_id not in entries_by_id:
-            raise ValidationError(f"home.selectedWorkIds references unknown entry id: {entry_id}")
-        entry_type = entries_by_id[entry_id]["type"]
-        if entry_type not in {"project", "demo", "poster"}:
-            raise ValidationError(
-                f"home.selectedWorkIds can only include project/demo/poster ids: {entry_id}"
-            )
-
-    for entry_id in payload["selectedNewsIds"]:
-        if entry_id not in entries_by_id:
-            raise ValidationError(f"home.selectedNewsIds references unknown entry id: {entry_id}")
-        if entries_by_id[entry_id]["type"] != "news":
-            raise ValidationError(f"home.selectedNewsIds can only include news ids: {entry_id}")
-
-    for blog_id in payload["selectedBlogIds"]:
-        if blog_id not in blog_ids:
-            raise ValidationError(f"home.selectedBlogIds references unknown blog id: {blog_id}")
-
-    return {
-        "selectedWorkIds": payload["selectedWorkIds"],
-        "selectedNewsIds": payload["selectedNewsIds"],
-        "selectedBlogIds": payload["selectedBlogIds"],
-    }
+def group_publications(pubs: list[dict]) -> "OrderedDict[str, list[dict]]":
+    groups: OrderedDict[str, list[dict]] = OrderedDict()
+    for label in PUB_TYPES:
+        groups[label] = []
+    for p in pubs:
+        groups.setdefault(p["pubType"], []).append(p)
+    for k in list(groups):
+        groups[k] = sort_desc(groups[k])
+        if not groups[k]:
+            del groups[k]
+    return groups
 
 
 def build_payload(entries_path: Path, home_path: Path, blog_dir: Path) -> dict:
-    entries, entries_by_id = load_entries(entries_path)
+    entries, by_id = load_entries(entries_path)
     blog_posts = sort_desc(load_blog_posts(blog_dir))
-    home_selections = load_home_selections(home_path, entries_by_id, blog_posts)
+    recent_ids = load_recent_news(home_path, by_id)
 
-    works = sort_desc([entry for entry in entries if entry["type"] in {"project", "demo", "poster"}])
-    news = sort_desc([entry for entry in entries if entry["type"] == "news"])
-    publications = sort_desc([entry for entry in entries if entry["type"] == "publication"])
-    projects = sort_desc([entry for entry in entries if entry["type"] == "project"])
-    demos = sort_desc([entry for entry in entries if entry["type"] == "demo"])
-    posters = sort_desc([entry for entry in entries if entry["type"] == "poster"])
+    news_all = sort_desc(entries)
+    pubs = [e for e in entries if e["type"] == "publication"]
+    pres = [e for e in entries if e["type"] == "presentation"]
+    projects = [e for e in entries if e["type"] == "project"]
+    news_only = [e for e in entries if e["type"] == "news"]
+
+    playground = sort_desc(
+        projects + [p for p in pres if p["presType"] in PLAYGROUND_PRES_TYPES]
+    )
 
     return {
         "generatedAt": dt.datetime.now(dt.timezone.utc).isoformat(),
-        "entriesById": entries_by_id,
-        "worksByDateDesc": works,
-        "newsByDateDesc": news,
-        "publicationsByDateDesc": publications,
-        "projectsByDateDesc": projects,
-        "demosByDateDesc": demos,
-        "postersByDateDesc": posters,
+        "entriesById": by_id,
+        "recentNewsIds": recent_ids,
+        "newsAllByDateDesc": news_all,
+        "publicationsByType": group_publications(pubs),
+        "publicationsByDateDesc": sort_desc(pubs),
+        "presentationsByDateDesc": sort_desc(pres),
+        "projectsByDateDesc": sort_desc(projects),
+        "newsByDateDesc": sort_desc(news_only),
+        "playgroundByDateDesc": playground,
         "blogByDateDesc": blog_posts,
-        "homeSelections": home_selections,
+        "pubTypes": PUB_TYPES,
+        "presTypes": PRES_TYPES,
     }
 
 
 def write_bundle(output_path: Path, payload: dict) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_js = (
+    output_path.write_text(
         "// Generated by scripts/build_content.py. Do not edit directly.\n"
         "window.SITE_CONTENT = "
         + json.dumps(payload, indent=2, ensure_ascii=False)
-        + ";\n"
+        + ";\n",
+        encoding="utf-8",
     )
-    output_path.write_text(output_js, encoding="utf-8")
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Build content bundle for the site.")
-    parser.add_argument("--check", action="store_true", help="Validate only, do not write output.")
-    parser.add_argument("--entries", type=Path, default=DEFAULT_ENTRIES_PATH)
-    parser.add_argument("--home", type=Path, default=DEFAULT_HOME_PATH)
-    parser.add_argument("--blog-dir", type=Path, default=DEFAULT_BLOG_DIR)
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT_PATH)
-    return parser.parse_args()
+    p = argparse.ArgumentParser(description="Build content bundle for the site.")
+    p.add_argument("--check", action="store_true")
+    p.add_argument("--entries", type=Path, default=DEFAULT_ENTRIES_PATH)
+    p.add_argument("--home", type=Path, default=DEFAULT_HOME_PATH)
+    p.add_argument("--blog-dir", type=Path, default=DEFAULT_BLOG_DIR)
+    p.add_argument("--output", type=Path, default=DEFAULT_OUTPUT_PATH)
+    return p.parse_args()
 
 
 def main() -> int:
     args = parse_args()
     try:
         payload = build_payload(args.entries, args.home, args.blog_dir)
-        if args.check:
-            print("Content validation passed.")
-            print(
-                "Counts:",
-                f"entries={len(payload['entriesById'])}",
-                f"works={len(payload['worksByDateDesc'])}",
-                f"news={len(payload['newsByDateDesc'])}",
-                f"publications={len(payload['publicationsByDateDesc'])}",
-                f"blogs={len(payload['blogByDateDesc'])}",
-            )
-            return 0
-
-        write_bundle(args.output, payload)
-        print(f"Wrote content bundle: {args.output}")
-        print(
-            "Counts:",
-            f"entries={len(payload['entriesById'])}",
-            f"works={len(payload['worksByDateDesc'])}",
-            f"news={len(payload['newsByDateDesc'])}",
-            f"publications={len(payload['publicationsByDateDesc'])}",
-            f"blogs={len(payload['blogByDateDesc'])}",
-        )
-        return 0
     except ValidationError as exc:
         print(f"Validation error: {exc}", file=sys.stderr)
         return 1
+
+    counts = {
+        "entries": len(payload["entriesById"]),
+        "publications": len(payload["publicationsByDateDesc"]),
+        "presentations": len(payload["presentationsByDateDesc"]),
+        "projects": len(payload["projectsByDateDesc"]),
+        "news": len(payload["newsByDateDesc"]),
+        "playground": len(payload["playgroundByDateDesc"]),
+        "blogs": len(payload["blogByDateDesc"]),
+    }
+    if args.check:
+        print("Content validation passed.", counts)
+        return 0
+    write_bundle(args.output, payload)
+    print(f"Wrote {args.output}", counts)
+    return 0
 
 
 if __name__ == "__main__":

@@ -1,0 +1,12 @@
+{
+  "id": "publication-slug",
+  "type": "publication",
+  "date": "2026-01-01",
+  "title": "Publication title",
+  "keywords": ["Keyword1", "Keyword2"],
+  "description": "",
+  "pubType": "Refereed Conference Proceedings",
+  "venue": "",
+  "authors": [{ "name": "Shin, R.", "me": true }],
+  "pdfUrl": ""
+}
