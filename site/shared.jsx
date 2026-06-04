@@ -86,6 +86,41 @@ function Nav({ active }) {
   );
 }
 
+/* ═══════ VISITOR COUNTER (GoatCounter) ═══════ */
+// Replace 'YOUR_CODE' with your GoatCounter subdomain (e.g. 'rosalynshin' if your dashboard is rosalynshin.goatcounter.com)
+// Then in your GoatCounter site settings, enable "Allow viewing statistics without login" so the counter endpoint is public.
+const GOATCOUNTER_CODE = 'hyunjoors';
+
+function GoatCounterTracker() {
+  React.useEffect(() => {
+    if (!GOATCOUNTER_CODE || GOATCOUNTER_CODE === 'YOUR_CODE') return;
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = '//gc.zgo.at/count.js';
+    s.setAttribute('data-goatcounter', `https://${GOATCOUNTER_CODE}.goatcounter.com/count`);
+    document.body.appendChild(s);
+    return () => { s.remove(); };
+  }, []);
+  return null;
+}
+
+function VisitorCount() {
+  const [count, setCount] = React.useState(null);
+  React.useEffect(() => {
+    if (!GOATCOUNTER_CODE || GOATCOUNTER_CODE === 'YOUR_CODE') return;
+    fetch(`https://${GOATCOUNTER_CODE}.goatcounter.com/counter/TOTAL.json`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setCount(Number(data.count_unique ?? data.count ?? 0)); })
+      .catch(() => {});
+  }, []);
+  if (count === null) return null;
+  return (
+    <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
+      {count.toLocaleString()} visitors
+    </span>
+  );
+}
+
 /* ═══════ FOOTER ═══════ */
 function Footer() {
   return (
@@ -94,7 +129,8 @@ function Footer() {
       background: THEME.accent, color: 'rgba(255,255,255,0.92)',
     }}>
       <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>© 2026 Rosalyn Shin</span>
-      <div style={{ display: 'flex', gap: 24, fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
+      <div style={{ display: 'flex', gap: 24, fontSize: 13, color: 'rgba(255,255,255,0.6)', alignItems: 'center' }}>
+        <VisitorCount />
         {['GitHub', 'Google Scholar', 'Email'].map(l => (
           <span key={l} style={{ cursor: 'pointer' }}>{l}</span>
         ))}
@@ -108,6 +144,7 @@ function PageLayout({ active, children }) {
   return (
     <div style={{ background: THEME.bgOuter, minHeight: '100vh' }}>
       <PawCursor />
+      <GoatCounterTracker />
       <div className="page-wrap">
         <Nav active={active} />
         {children}
