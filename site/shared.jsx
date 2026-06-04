@@ -122,6 +122,37 @@ function VisitorCount() {
 }
 
 /* ═══════ FOOTER ═══════ */
+const FOOTER_LINKS = [
+  { label: 'GitHub', href: 'https://github.com/hyunjoors' },
+  { label: 'Google Scholar', href: 'https://scholar.google.com/citations?user=j3iiG8UAAAAJ' },
+];
+
+// Email is split so scrapers don't see the raw address in the HTML.
+// Assembled at runtime — humans see a normal "Email" link.
+const EMAIL_PARTS = { user: 'rhjshin', domain: 'umd.edu' };
+
+function EmailLink() {
+  const [href, setHref] = React.useState('#');
+  React.useEffect(() => {
+    setHref(`mailto:${EMAIL_PARTS.user}@${EMAIL_PARTS.domain}`);
+  }, []);
+  const onClick = (e) => {
+    if (href === '#') {
+      e.preventDefault();
+      window.location.href = `mailto:${EMAIL_PARTS.user}@${EMAIL_PARTS.domain}`;
+    }
+  };
+  return (
+    <a
+      href={href}
+      onClick={onClick}
+      style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}
+    >
+      Email
+    </a>
+  );
+}
+
 function Footer() {
   return (
     <footer style={{
@@ -131,9 +162,18 @@ function Footer() {
       <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>© 2026 Rosalyn Shin</span>
       <div style={{ display: 'flex', gap: 24, fontSize: 13, color: 'rgba(255,255,255,0.6)', alignItems: 'center' }}>
         <VisitorCount />
-        {['GitHub', 'Google Scholar', 'Email'].map(l => (
-          <span key={l} style={{ cursor: 'pointer' }}>{l}</span>
+        {FOOTER_LINKS.map(l => (
+          <a
+            key={l.label}
+            href={l.href}
+            target="_blank"
+            rel="noopener"
+            style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}
+          >
+            {l.label}
+          </a>
         ))}
+        <EmailLink />
       </div>
     </footer>
   );
