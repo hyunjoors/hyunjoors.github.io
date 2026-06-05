@@ -11,7 +11,9 @@ function PubItem({ pub, isLast }) {
   return (
     <div style={{ padding: '20px 0', borderBottom: isLast ? 'none' : `1px solid ${th.border}` }}>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 14, fontWeight: 600, color: th.accent, fontVariantNumeric: 'tabular-nums' }}>{pub.year}</span>
+        <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', padding: '2px 8px', borderRadius: 3, background: th.accentWash, color: th.accent }}>
+          {pub.pubType}
+        </span>
       </div>
       <p style={{ fontFamily: th.serif, fontSize: 22, fontWeight: 500, lineHeight: 1.35, marginBottom: 6 }}>{pub.title}</p>
       {Array.isArray(pub.authors) && pub.authors.length > 0 && (
@@ -61,13 +63,14 @@ function ResearchPage() {
 
   const matchesType = (pub) => pubTypeFilter === 'all' || pub.pubType === pubTypeFilter;
   const filteredAll = filterByKeywords(allPubs.filter(p => matchesType(p) && matchesQuery(p)), keywords);
-  const filteredGroups = {};
-  pubTypeOrder.forEach(t => {
-    if (pubTypeFilter !== 'all' && pubTypeFilter !== t) return;
-    const list = (groups[t] || []).filter(matchesQuery);
-    const kept = filterByKeywords(list, keywords);
-    if (kept.length > 0) filteredGroups[t] = kept;
-  });
+
+  const groupedByYear = filteredAll.reduce((acc, pub) => {
+    const year = pub.year;
+    if (!acc[year]) acc[year] = [];
+    acc[year].push(pub);
+    return acc;
+  }, {});
+  const sortedYears = Object.keys(groupedByYear).sort((a, b) => Number(b) - Number(a));
 
   return (
     <PageLayout active="Research">
@@ -126,13 +129,12 @@ function ResearchPage() {
           {filteredAll.length} publication{filteredAll.length !== 1 ? 's' : ''}
         </p>
 
-        {pubTypeOrder.map(type => {
-          const items = filteredGroups[type];
-          if (!items || items.length === 0) return null;
+        {sortedYears.map(year => {
+          const items = groupedByYear[year];
           return (
-            <div key={type} style={{ marginBottom: 40 }}>
+            <div key={year} style={{ marginBottom: 40 }}>
               <h3 style={{ fontFamily: th.serif, fontSize: 24, fontWeight: 400, color: th.accent, marginBottom: 8, borderBottom: `2px solid ${th.accent}`, paddingBottom: 6 }}>
-                {type}
+                {year}
               </h3>
               {items.map((pub, i) => (
                 <PubItem key={pub.id} pub={pub} isLast={i === items.length - 1} />

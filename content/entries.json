@@ -8,7 +8,10 @@
       "keywords": [
         "Algebra",
         "Sandbox",
-        "Euler"
+        "Greek Math",
+        "Euler",
+        "e",
+        "pi"
       ],
       "description": "Math dust all over you.\n\nExplore how rectangles become recipes, and how recipes reveal different kinds of numbers.\n\nRole: Lead Developer & Designer",
       "mode": "embedded",
@@ -24,7 +27,7 @@
       "id": "project-eve",
       "type": "project",
       "date": "2026-02-15",
-      "title": "EVE",
+      "title": "EVE Platform",
       "keywords": [
         "AI",
         "Collaboration",
@@ -37,6 +40,18 @@
         {
           "name": "Shin, R.",
           "me": true
+        },
+        {
+          "name": "Ke, F",
+          "me": false
+        },
+        {
+          "name": "Zhang, N.",
+          "me": false
+        },
+        {
+          "name": "Dai, C.-P",
+          "me": false
         }
       ],
       "url": "https://regal.umd.edu/evelyn"
@@ -191,7 +206,7 @@
         "personnel selection",
         "sourcing algorithms"
       ],
-      "description": "Sourcing algorithms are technologies used in online platforms to identify, screen, and\ninform potential applicants about job openings. The popularity of such technologies is\nrapidly increasing due to their pervasiveness in online advertising and beliefs that\nsourcing algorithms can decrease time to hire while improving the quality of new hires.\nWhat is little known, however, are their potential risks: sourcing algorithms could\n(intentionally or unintentionally) encode or exacerbate occupational demographic\ndisparities, thereby hindering organizational diversity and/or decreasing the effectiveness of online hiring practices. Because sourcing algorithms identify and screen\npotential job applicants before they are made aware of employment opportunities,\nmethods for evaluating discrimination in hiring which focus solely on job applicants\n(e.g., adverse impact ratio), may fail to detect the effects of discriminatory sourcing\nalgorithms. Thus, we propose an expanded model of the employee hiring process to\ntake into account the role of sourcing algorithms. Based on empirical approximations,\nwe conducted a Monte Carlo simulation study to examine the magnitude and nature\nof sourcing algorithms' influence on hiring outcomes. Our findings suggest that\nsourcing algorithms could hinder the diversity of new hires while misleadingly\nsuggesting positive diversity outcomes in personnel selection. We provide practical\nguidance for the use of sourcing algorithms and call for a systematic re‐examination of\nhow to evaluate selection system fairness in the era of algorithmic recruitment.",
+      "description": "Sourcing algorithms are technologies used in online platforms to identify, screen, and inform potential applicants about job openings. The popularity of such technologies is rapidly increasing due to their pervasiveness in online advertising and beliefs that sourcing algorithms can decrease time to hire while improving the quality of new hires. What is little known, however, are their potential risks: sourcing algorithms could (intentionally or unintentionally) encode or exacerbate occupational demographic disparities, thereby hindering organizational diversity and/or decreasing the effectiveness of online hiring practices. Because sourcing algorithms identify and screen potential job applicants before they are made aware of employment opportunities, methods for evaluating discrimination in hiring which focus solely on job applicants (e.g., adverse impact ratio), may fail to detect the effects of discriminatory sourcing algorithms. Thus, we propose an expanded model of the employee hiring process to take into account the role of sourcing algorithms. Based on empirical approximations, we conducted a Monte Carlo simulation study to examine the magnitude and nature of sourcing algorithms' influence on hiring outcomes. Our findings suggest that sourcing algorithms could hinder the diversity of new hires while misleadingly suggesting positive diversity outcomes in personnel selection. We provide practical guidance for the use of sourcing algorithms and call for a systematic re‐examination of how to evaluate selection system fairness in the era of algorithmic recruitment.",
       "pubType": "Refereed Journal Articles",
       "venue": "International Journal of Selection and Assessment",
       "authors": [
@@ -353,6 +368,62 @@
         }
       ],
       "pdfUrl": ""
+    },
+    {
+      "id": "talk-HCIL26",
+      "type": "presentation",
+      "date": "2026-05-01",
+      "title": "Capabilities and limitations of LLM as a human collaborator in computational thinking behavior analysis and labeling",
+      "keywords": [
+        "HCIL",
+        "LLM",
+        "behavioral coding",
+        "virtual environment"
+      ],
+      "description": "Lightening talk at HCIL Symposium 2026",
+      "presType": "Non-Refereed Presentations",
+      "venue": "HCIL Symposium",
+      "authors": [
+        {
+          "name": "Shin, R.",
+          "me": true
+        },
+        {
+          "name": "Ke, F.",
+          "me": false
+        }
+      ],
+      "attachmentUrl": ""
+    },
+    {
+      "id": "demo-HCIL26",
+      "type": "presentation",
+      "date": "2026-05-01",
+      "title": "EVE: a gamified learning environment",
+      "keywords": [
+        "HCIL",
+        "LLM",
+        "virtual environment",
+        "game-based learning"
+      ],
+      "description": "Demo at HCIL Symposium 2026",
+      "presType": "Demo",
+      "venue": "HCIL Symposium",
+      "authors": [
+        {
+          "name": "Shin, R.",
+          "me": true
+        },
+        {
+          "name": "Ke, F.",
+          "me": false
+        },
+        {
+          "name": "Liu, M.",
+          "me": false
+        }
+      ],
+      "attachmentUrl": ""
     }
   ]
 }
