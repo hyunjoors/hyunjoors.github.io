@@ -46,6 +46,7 @@ function ResearchPage() {
 
   const [query, setQuery] = React.useState('');
   const [keywords, setKeywords] = React.useState([]);
+  const [pubTypeFilter, setPubTypeFilter] = React.useState('all');
   const toggleKeyword = (k) => setKeywords(prev => prev.includes(k) ? prev.filter(x => x !== k) : [...prev, k]);
 
   const matchesQuery = (pub) => {
@@ -58,9 +59,11 @@ function ResearchPage() {
       || (pub.keywords || []).some(k => k.toLowerCase().includes(q));
   };
 
-  const filteredAll = filterByKeywords(allPubs.filter(matchesQuery), keywords);
+  const matchesType = (pub) => pubTypeFilter === 'all' || pub.pubType === pubTypeFilter;
+  const filteredAll = filterByKeywords(allPubs.filter(p => matchesType(p) && matchesQuery(p)), keywords);
   const filteredGroups = {};
   pubTypeOrder.forEach(t => {
+    if (pubTypeFilter !== 'all' && pubTypeFilter !== t) return;
     const list = (groups[t] || []).filter(matchesQuery);
     const kept = filterByKeywords(list, keywords);
     if (kept.length > 0) filteredGroups[t] = kept;
@@ -90,6 +93,15 @@ function ResearchPage() {
 
       <section className="section-pad">
         <SectionLabel text="Publications" />
+
+        <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+          <button className={`tag-pill ${pubTypeFilter === 'all' ? 'active' : ''}`} onClick={() => setPubTypeFilter('all')}>All</button>
+          {pubTypeOrder.map(t => (
+            <button key={t} className={`tag-pill ${pubTypeFilter === t ? 'active' : ''}`} onClick={() => setPubTypeFilter(t)}>
+              {t}
+            </button>
+          ))}
+        </div>
 
         <div style={{ marginBottom: 24 }}>
           <div style={{ position: 'relative', marginBottom: 16 }}>

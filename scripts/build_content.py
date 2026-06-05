@@ -38,10 +38,10 @@ DEFAULT_OUTPUT_PATH = REPO_ROOT / "site" / "generated" / "content.bundle.js"
 ENTRY_TYPES = {"publication", "presentation", "project", "news"}
 PROJECT_MODES = {"external", "embedded"}
 PUB_TYPES = [
-    "Books",
-    "Chapters",
     "Refereed Journal Articles",
     "Refereed Conference Proceedings",
+    "Book Chapters",
+    "Books",
 ]
 PRES_TYPES = [
     "Keynotes",
