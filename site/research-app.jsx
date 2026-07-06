@@ -1,9 +1,9 @@
 /* ═══════ RESEARCH PAGE ═══════ */
 
 const RESEARCH_AREAS = [
-  { title: 'AI-Supported Embodied and Collaborative Mathematics Sensemaking', desc: 'Designing and studying AI-supported mathematics learning environments that help students externalize, share, revise, and reflect on mathematical reasoning through embodied interaction, peer discourse, and multimodal representations.' },
-  { title: 'Visible Student Learning Dynamics and Trace-Informed AI Mediation', desc: 'Investigating how students’ reasoning, struggle, revision, collaboration, and cognitive offloading become visible through interactional and multimodal traces, and how AI mediation can respond to these dynamics without replacing productive mathematical effort.' },
-  { title: 'Inclusive and Neurodivergent STEM Learning Technologies', desc: 'Exploring how adaptive, multimodal, and AI-supported learning environments can better support neurodivergent learners, including students with ADHD, autism, and dyscalculia, in STEM learning contexts.' },
+  { title: 'Embodied and Collaborative Mathematical Sensemaking', desc: 'I study how students develop mathematical understanding through embodied, social, and representational activity, with a focus on algebraic reasoning, peer discourse, and productive struggle.' },
+  { title: 'Visible Student Learning Dynamics and Trace-Informed AI Mediation', desc: 'I design AI-supported learning environments that make students’ reasoning, revision, collaboration, and cognitive offloading visible through multimodal traces, and examine how AI mediation can support learning without replacing human sensemaking.' },
+  { title: 'Inclusive STEM Learning Technologies', desc: 'I explore how adaptive, multimodal, and AI-supported learning technologies can support neurodivergent learners’ participation, expression, and sensemaking in STEM learning contexts.' },
 ];
 
 function PubItem({ pub, isLast }) {
