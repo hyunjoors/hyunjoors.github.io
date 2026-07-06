@@ -11,12 +11,6 @@ const EDUCATION = [
   { degree: 'B.S.', field: 'Computer Science', school: 'Purdue University', status: '' },
 ];
 
-const RESEARCH_INTEREST = [
-  { title: 'AI-Supported Embodied and Collaborative Mathematics Sensemaking', desc: 'Designing AI-supported learning environments that foster students’ mathematical reasoning through embodied interaction, peer collaboration, and multimodal learning experiences.' },
-  { title: 'Teacher Orchestration and Learning Analytics', desc: 'Investigating how learning analytics and AI can support teachers in noticing, interpreting, and responding to students’ thinking in real time.' },
-  { title: 'Neurodivergent Learners in STEM Education', desc: 'Exploring inclusive learning technologies and adaptive supports for neurodivergent learners, including students with ADHD, autism, and dyscalculia, in STEM learning contexts.' },
-];
-
 function isImage(url) {
   return /\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(url || '');
 }
@@ -93,8 +87,10 @@ function HomePage() {
           </h1>
           <div style={{ width: 48, height: 2, background: th.accent, marginBottom: 28 }}></div>
           <p style={{ fontSize: 17, lineHeight: 1.85, maxWidth: 540, color: th.text, opacity: 0.7 }}>
-            I am a PhD student in <a href="https://education.umd.edu/academics/departments/tlpl" style={{ color: th.accent, textDecoration: 'underline' }}>Technology and Learning, Policy and Leadership</a> at the <a href="https://umd.edu/" style={{ color: th.accent, textDecoration: 'underline' }}>University of Maryland, College Park</a>, advised by <a href="https://regal.umd.edu/#people" style={{ color: th.accent, textDecoration: 'underline' }}>Dr. Fengfeng Ke</a> in the <a href="https://regal.umd.edu" style={{ color: th.accent, textDecoration: 'underline' }}>REGAL Lab</a>. My research explores how AI can support mathematical sensemaking without replacing the human and social dimensions of learning. I design AI-supported learning environments that foster students’ reasoning, collaboration, and teacher responsiveness in mathematics classrooms.
-            My current work focuses on embodied and collaborative learning experiences in algebra, integrating conversational AI, multimodal interaction, and teacher-facing learning analytics to support both student learning and instructional orchestration.
+            I am a PhD student in <a href="https://education.umd.edu/academics/departments/tlpl" style={{ color: th.accent, textDecoration: 'underline' }}>Technology and Learning, Policy and Leadership</a> at the <a href="https://umd.edu/" style={{ color: th.accent, textDecoration: 'underline' }}>University of Maryland, College Park</a>, advised by <a href="https://regal.umd.edu/#people" style={{ color: th.accent, textDecoration: 'underline' }}>Dr. Fengfeng Ke</a> in the <a href="https://regal.umd.edu" style={{ color: th.accent, textDecoration: 'underline' }}>REGAL Lab</a>. My research is grounded in the Learning Sciences and lies at the intersection of human-computer interaction, mathematics education, and AI-supported learning. I study how students develop mathematical understanding through embodied, collaborative, and representational activity, and how AI-supported environments can make these learning dynamics visible without replacing the human and social practices through which sensemaking occurs.
+          </p>
+          <p style={{ fontSize: 17, lineHeight: 1.85, maxWidth: 540, color: th.text, opacity: 0.7 }}>
+            My current work focuses on AI-mediated collaborative mathematics learning, especially in algebra. I design and study learning environments that support students in externalizing, sharing, revising, and reflecting on their mathematical reasoning through peer discourse, multimodal interaction, and productive struggle.
           </p>
         </div>
         <div style={{ width: 280, height: 360, overflow: 'hidden', flexShrink: 0, background: '#ddd' }}>
