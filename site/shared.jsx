@@ -68,6 +68,7 @@ function Nav({ active }) {
     { label: 'Playground', href: 'playground.html' },
     { label: 'News', href: 'news.html' },
     { label: 'Blog', href: 'blog.html' },
+    { label: 'Phrasebook', href: 'phrasebook.html' },
     { label: 'Cats', href: 'cats.html' },
   ];
   return (
